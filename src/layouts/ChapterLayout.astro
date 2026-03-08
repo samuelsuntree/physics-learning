@@ -8,9 +8,20 @@ interface Props {
   courseId: string;
   chapterId: string;
   lang?: string;
+  frontmatter?: {
+    title: string;
+    courseId: string;
+    chapterId: string;
+    lang?: string;
+  };
 }
 
-const { title, courseId, chapterId, lang = 'zh' } = Astro.props;
+// Support both direct props (from .astro) and frontmatter (from .mdx layout)
+const fm = Astro.props.frontmatter;
+const title = fm?.title || Astro.props.title;
+const courseId = fm?.courseId || Astro.props.courseId;
+const chapterId = fm?.chapterId || Astro.props.chapterId;
+const lang = fm?.lang || Astro.props.lang || 'zh';
 const langKey = lang as 'zh' | 'en';
 const course = courses.find(c => c.id === courseId);
 const chapters = course?.chapters || [];

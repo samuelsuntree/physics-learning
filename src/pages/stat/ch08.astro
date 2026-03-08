@@ -1,38 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const clausiusClapeyron = `$$\\frac{dP}{dT}\\bigg|_{\\text{coex}} = \\frac{L}{T\\,\\Delta v} = \\frac{s_2 - s_1}{v_2 - v_1}$$`;
-const isingHamiltonian = `$$H = -J\\sum_{\\langle i,j\\rangle} s_i s_j - h\\sum_i s_i, \\qquad s_i = \\pm 1$$`;
-const transferMatrix = `$$\\mathbf{T} = \\begin{pmatrix} e^{\\beta(J+h)} & e^{-\\beta J} \\\\ e^{-\\beta J} & e^{\\beta(J-h)} \\end{pmatrix}$$`;
-const partitionTransfer = `$$Z_N = \\text{Tr}\\,\\mathbf{T}^N = \\lambda_+^N + \\lambda_-^N$$`;
-const eigenvaluesTransfer = `$$\\lambda_{\\pm} = e^{\\beta J}\\left[\\cosh(\\beta h) \\pm \\sqrt{\\sinh^2(\\beta h) + e^{-4\\beta J}}\\,\\right]$$`;
-const freeEnergy1D = `$$f = -k_BT\\ln\\lambda_+ = -J - k_BT\\ln\\left[\\cosh(\\beta h) + \\sqrt{\\sinh^2(\\beta h) + e^{-4\\beta J}}\\,\\right]$$`;
-const onsagerTc = `$$\\sinh\\!\\left(\\frac{2J}{k_BT_c}\\right) = 1 \\qquad \\Longrightarrow \\qquad \\frac{k_BT_c}{J} = \\frac{2}{\\ln(1+\\sqrt{2})} \\approx 2.269$$`;
-const onsagerMagnetization = `$$m(T) = \\left[1 - \\sinh^{-4}\\!\\left(\\frac{2J}{k_BT}\\right)\\right]^{1/8} \\qquad (T < T_c,\\; h = 0^+)$$`;
-const meanFieldSelfConsistent = `$$m = \\tanh\\!\\left[\\beta\\,(h + zJm)\\right]$$`;
-const meanFieldTc = `$$k_BT_c^{\\text{MF}} = zJ$$`;
-const meanFieldBetaCritical = `$$m \\approx \\left(\\frac{3(T_c - T)}{T_c}\\right)^{1/2} \\propto (T_c - T)^{1/2} \\qquad (T \\lesssim T_c)$$`;
-const meanFieldSusceptibility = `$$\\chi = \\frac{\\partial m}{\\partial h}\\bigg|_{h=0} = \\frac{1}{k_B(T - T_c)} \\qquad (T > T_c)$$`;
-const meanFieldIsotherm = `$$h \\approx \\frac{k_BT_c}{3}\\,m^3 \\qquad (T = T_c)$$`;
-const ginzburgCriterion = `$$\\text{Gi} = \\frac{\\langle (\\delta m)^2\\rangle}{m^2} \\sim \\frac{k_BT_c\\,\\xi^{-d}}{a_0^2/b} \\ll 1$$`;
-const ginzburgNumber = `$$|t| \\gg \\text{Gi} \\sim \\left(\\frac{k_BT_c}{\\Delta F\\,\\xi_0^d}\\right)^{\\!2/(4-d)}$$`;
-const landauFreeEnergy = `$$F(m,T) = F_0(T) + a(T)\\,m^2 + b\\,m^4 + \\cdots$$`;
-const landauCoeffA = `$$a(T) = a_0(T - T_c), \\qquad a_0 > 0$$`;
-const landauEquilibrium = `$$\\frac{\\partial F}{\\partial m} = 2a\\,m + 4b\\,m^3 = 0 \\qquad \\Longrightarrow \\qquad m = \\begin{cases} 0, & T > T_c \\\\ \\pm\\sqrt{\\dfrac{a_0(T_c - T)}{2b}}, & T < T_c \\end{cases}$$`;
-const landauFirstOrder = `$$F(m) = F_0 + a(T)\\,m^2 + b\\,m^4 + c\\,m^6, \\qquad b < 0,\\; c > 0$$`;
-const scalingFreeEnergy = `$$f_{\\text{sing}}(t, h) = |t|^{2-\\alpha}\\,\\Phi_{\\pm}\\!\\left(\\frac{h}{|t|^{\\Delta}}\\right)$$`;
-const correlationLength = `$$\\xi(T) \\sim \\xi_0\\,|t|^{-\\nu}, \\qquad t \\equiv \\frac{T - T_c}{T_c}$$`;
-const correlationFunction = `$$G(\\mathbf{r}) = \\langle s(\\mathbf{0})\\,s(\\mathbf{r})\\rangle - \\langle s\\rangle^2 \\sim \\begin{cases} \\dfrac{e^{-r/\\xi}}{r^{d-2+\\eta}}, & T \\neq T_c \\\\[8pt] \\dfrac{1}{r^{d-2+\\eta}}, & T = T_c \\end{cases}$$`;
-const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
----
-
-<ChapterLayout title="第八章 相变与临界现象" courseId="stat" chapterId="ch08">
-
-  <h1>第八章 相变与临界现象</h1>
+const content = String.raw`<h1>第八章 相变与临界现象</h1>
 
   <p>
     相变是自然界中最壮观的集体行为之一——在特定的温度或压力下，由天文数目粒子组成的宏观系统突然改变其性质：水结冰、铁磁体失去磁性、超导体变为正常金属。这些现象的共同特征是：微观相互作用的微小改变，通过多体关联的累积放大，导致宏观态的质变。本章将系统建立相变理论的框架——从唯象分类出发，经过精确可解模型和平均场近似，最终到达Landau对称性破缺理论和标度律，触及现代统计力学的核心：<strong>普适性</strong>与<strong>重整化群</strong>。
@@ -101,7 +70,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     其中 $L = T(s_2 - s_1)$ 是每单位质量的潜热，$\Delta v = v_2 - v_1$ 是比体积之差。这就是<strong>Clausius-Clapeyron方程</strong>，给出了共存线的斜率。
   </p>
 
-  <Derivation title="Clausius-Clapeyron方程的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">Clausius-Clapeyron方程的推导</summary><div class="derivation-content">
     <p>在共存线上，两相的摩尔Gibbs自由能相等：$g_1(T,P) = g_2(T,P)$。沿共存线微小移动 $(dT, dP)$ 后仍需满足平衡：</p>
     $$
       g_1(T+dT, P+dP) = g_2(T+dT, P+dP)
@@ -119,7 +88,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
       \frac{dP}{dT} \approx \frac{LP}{k_BT^2} \qquad \Longrightarrow \qquad P(T) \propto e^{-L/(k_BT)}
     $$
     <p>这就是共存曲线的Clausius-Clapeyron指数近似。</p>
-  </Derivation>
+  </div></details>
 
   <h3>临界点处响应函数的发散</h3>
   <p>
@@ -137,13 +106,13 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     这六个临界指数 $\alpha, \beta, \gamma, \delta, \nu, \eta$ 完整刻画了临界点附近的奇异行为。如我们将在后面看到，它们之间并非独立，而是受到<strong>标度关系</strong>的约束，只有两个是独立的。
   </p>
 
-  <InsightBox title="响应函数发散的物理图像">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>响应函数发散的物理图像</span></div>
     <p>
       在临界点附近，关联长度 $\xi$ 趋于无穷大——系统中出现所有尺度的涨落。这意味着一个局部的微扰（如施加微小外场 $h$）会影响整个系统，因此响应（磁化率 $\chi$、压缩率 $\kappa_T$）发散。从微观看，临界点处既不是"全部有序"也不是"全部无序"，而是出现大小各异的有序区域（"临界涨落"），其尺度分布满足幂律——系统呈现<strong>自相似</strong>（scale invariance）结构。正是这种无特征长度的自相似性导致了热力学量的幂律奇异行为，并最终解释了普适性：当关联长度远大于微观尺度时，细节不再重要，只有少数几个"相关"参量（维度 $d$、序参量维度 $n$）决定临界行为。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria &amp; Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 12.1</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 14.1-14.2</li>
@@ -151,7 +120,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
       <li>Landau &amp; Lifshitz, <em>Statistical Physics Part 1</em>, &sect;83, &sect;152</li>
       <li>H.E. Stanley, <em>Introduction to Phase Transitions and Critical Phenomena</em>, Ch. 1</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="ising">8.2 Ising模型与精确解</h2>
@@ -189,7 +158,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
   </p>
   <Fragment set:html={eigenvaluesTransfer} />
 
-  <Derivation title="一维Ising配分函数的转移矩阵推导">
+  <details class="derivation-block"><summary class="derivation-toggle">一维Ising配分函数的转移矩阵推导</summary><div class="derivation-content">
     <p>将配分函数改写为矩阵乘积的形式。对于每一对相邻自旋 $(s_i, s_{i+1})$，定义</p>
     $$
       T_{s_i, s_{i+1}} = \exp\!\left[\beta J s_i s_{i+1} + \tfrac{1}{2}\beta h(s_i + s_{i+1})\right]
@@ -214,7 +183,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     $$
       f = -J - k_BT\ln\!\left[\cosh(\beta h) + \sqrt{\sinh^2(\beta h) + e^{-4\beta J}}\,\right]
     $$
-  </Derivation>
+  </div></details>
 
   <p>
     在热力学极限 $N \to \infty$ 中，每格点自由能由最大特征值决定：
@@ -230,7 +199,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     自由能 $f(T, h=0) = -k_BT\ln[2\cosh(\beta J)]$ 是温度的解析函数——没有非解析性，没有相变。只有在 $T = 0$ 时，$m \to 1$（完全有序）。
   </p>
 
-  <ThinkingBox title="一维系统为何没有有限温度相变？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>一维系统为何没有有限温度相变？</span></div>
     <p>
       物理上，可以用Peierls论证理解。考虑 $h = 0$ 的一维链，完全有序的基态（所有自旋向上）能量为 $E_0 = -NJ$。在链的某处插入一个畴壁（domain wall）——左侧自旋向上，右侧自旋向下——的能量代价仅为 $\Delta E = 2J$（只破坏一对最近邻键）。但畴壁可以放在 $N-1$ 个位置中的任何一个，带来熵增 $\Delta S = k_B\ln(N-1) \approx k_B\ln N$。自由能变化为
     </p>
@@ -243,7 +212,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     <p>
       在 $d \geq 2$ 维中，畴壁是 $(d-1)$ 维面，能量代价 $\Delta E \propto L^{d-1}$（$L$ 为系统线度），而畴壁的熵虽然也增大，但面的构型数的熵增长不足以补偿 $d \geq 2$ 时的能量代价。因此存在临界温度 $T_c > 0$：在 $T < T_c$ 时畴壁受到能量压制，有序态稳定。这就是维度在相变中起关键角色的根本原因。
     </p>
-  </ThinkingBox>
+  </div>
 
   <h3>二维Ising模型：Onsager精确解</h3>
   <p>
@@ -315,7 +284,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     <li>Josephson（$d=2$）：$2 - \alpha = d\nu = 2 \times 1 = 2$ ✓</li>
   </ul>
 
-  <InsightBox title="维度与相变——上临界维度 d_c = 4">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>维度与相变——上临界维度 d_c = 4</span></div>
     <p>
       Ising模型的相变行为深刻地依赖于空间维度 $d$：
     </p>
@@ -328,9 +297,9 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     <p>
       $d_c = 4$ 称为<strong>上临界维度</strong>。在 $d < d_c$ 时，涨落强烈修正平均场结果；在 $d > d_c$ 时，涨落在临界点附近变得不重要（Ginzburg判据自动满足）。从重整化群的角度看，$d = d_c$ 对应于非平凡不动点与Gauss（平均场）不动点合并。$\epsilon = 4 - d$ 展开（Wilson-Fisher, 1972）是处理 $d < 4$ 临界现象的强有力工具。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria &amp; Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 13.2-13.4</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 14.3-14.5, Ch. 15</li>
@@ -339,7 +308,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
       <li>C.N. Yang, <em>Phys. Rev.</em> <strong>85</strong>, 808 (1952) — 自发磁化精确解</li>
       <li>B.M. McCoy &amp; T.T. Wu, <em>The Two-Dimensional Ising Model</em>, 2nd ed.</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="mean-field">8.3 平均场理论</h2>
@@ -360,7 +329,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     这是一个<strong>自洽方程</strong>——$m$ 既是输出（左边的 $\tanh$ 给出单自旋在有效场中的平均值），又是输入（有效场本身依赖于 $m$）。
   </p>
 
-  <Derivation title="平均场自洽方程及临界温度的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">平均场自洽方程及临界温度的推导</summary><div class="derivation-content">
     <p>在有效场 $h_{\text{eff}} = h + zJm$ 中，单个自旋的配分函数为</p>
     $$
       z_1 = \sum_{s=\pm 1} e^{\beta h_{\text{eff}}\,s} = 2\cosh(\beta h_{\text{eff}})
@@ -383,7 +352,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
       m \approx \sqrt{\frac{3(T_c - T)}{T_c}} \propto (T_c - T)^{1/2}
     $$
     <p>因此平均场给出临界指数 $\beta = 1/2$。</p>
-  </Derivation>
+  </div></details>
 
   <h3>平均场临界温度</h3>
   <Fragment set:html={meanFieldTc} />
@@ -479,7 +448,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     对于常规铁磁体和液-气转变，$\xi_0 \sim$ 原子间距，Ginzburg区间非常窄，平均场在远离 $T_c$ 时是好的近似。但对于超导体（BCS理论中 $\xi_0 \sim 10^{-4}$ cm远大于原子尺度），Ginzburg区间极窄（$\text{Gi} \sim 10^{-12}$），平均场几乎完全精确——这就是为什么BCS理论（本质上是平均场）能如此成功地描述超导。
   </p>
 
-  <ThinkingBox title="为什么d=4是分界线？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>为什么d=4是分界线？</span></div>
     <p>
       物理直觉来自涨落的"密度"。在关联体积 $\xi^d$ 内的自由度数为 $N_\xi \sim (\xi/a)^d$（$a$ 为格点间距）。根据大数定律，$N_\xi$ 个自由度的涨落相对于均值之比为 $\sim N_\xi^{-1/2} \sim (\xi/a)^{-d/2}$。另一方面，序参量在 $T_c$ 附近的均值 $m \sim |t|^\beta \sim (\xi/\xi_0)^{-\beta/\nu}$。平均场给出 $\beta/\nu = 1$，涨落与均值之比为
     </p>
@@ -492,9 +461,9 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     <p>
       从场论角度：Ising模型的连续极限是 $\phi^4$ 标量场论。耦合常数 $u$（$\phi^4$ 项的系数）的量纲为 $[u] = L^{d-4}$。当 $d > 4$ 时，$u$ 具有负的质量量纲——在长距离（低能）极限 $u_{\text{eff}} \to 0$（不相关算符），高斯（自由场）不动点稳定，平均场精确。当 $d < 4$ 时，$u$ 为相关算符，$\phi^4$ 相互作用在大尺度上增强，涨落主导临界行为。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria &amp; Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 12.5-12.6</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 16.1-16.3</li>
@@ -503,7 +472,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
       <li>V.L. Ginzburg, <em>Sov. Phys. Solid State</em> <strong>2</strong>, 1824 (1960) — Ginzburg判据</li>
       <li>M. Kardar, <em>Statistical Physics of Fields</em>, Ch. 5.2</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="landau">8.4 Landau理论与对称性破缺</h2>
@@ -534,7 +503,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     这正是平均场给出的行为。Landau理论的威力在于其<strong>普遍性</strong>：只要序参量是标量且系统有 $Z_2$ 对称性，无论微观Hamiltonian的具体形式如何，相变的临界行为都由上述自由能函数决定——临界指数仅取决于展开的结构，即 $\beta = 1/2$, $\gamma = 1$, $\delta = 3$, $\alpha = 0$。
   </p>
 
-  <Derivation title="Landau理论给出的比热跳变">
+  <details class="derivation-block"><summary class="derivation-toggle">Landau理论给出的比热跳变</summary><div class="derivation-content">
     <p>在 $h = 0$ 时，平衡自由能为：</p>
     <ul>
       <li>$T > T_c$：$m = 0$，$F = F_0(T)$</li>
@@ -554,7 +523,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
       \Delta C = C(T_c^-) - C(T_c^+) = \frac{a_0^2\,T_c}{2b} > 0
     $$
     <p>比热在 $T_c$ 处有一个正的、有限的跳变——低温侧的比热更大（有序态的涨落贡献额外的比热）。这与BCS超导转变、liquid helium的比热跳变定性吻合。</p>
-  </Derivation>
+  </div></details>
 
   <h3>一阶相变（$b < 0$）</h3>
   <p>
@@ -585,7 +554,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     <li><strong>连续对称性</strong>的SSB：XY模型（$O(2)$）、Heisenberg模型（$O(3)$）。当连续对称性自发破缺时，<strong>Goldstone定理</strong>保证存在无能隙（gapless）的激发模式——<strong>Goldstone玻色子</strong>（或Nambu-Goldstone模式）。</li>
   </ul>
 
-  <InsightBox title="Goldstone定理——对称性破缺的普遍后果">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Goldstone定理——对称性破缺的普遍后果</span></div>
     <p>
       <strong>Goldstone定理</strong>（1961）：如果系统的Hamiltonian具有连续对称群 $G$，而基态（有序相）只保留其子群 $H \subset G$（即 $G$ 自发破缺到 $H$），则必然存在 $\dim(G/H)$ 个无能隙的集体激发模式（Goldstone模式）。
     </p>
@@ -598,9 +567,9 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     <p>
       Goldstone模式的存在深刻影响了系统的低能物理：它们主导了低温热力学（如铁磁体的 $C \propto T^{3/2}$，反铁磁体的 $C \propto T^3$），也通过增强涨落可能破坏低维系统的长程序（Mermin-Wagner定理：$d \leq 2$ 时连续对称性不能自发破缺）。值得注意的是，超导体中的 $U(1)$ 对称性破缺是规范对称性的破缺——此时Goldstone模式被"吃掉"（Anderson-Higgs机制），规范场获得质量，Goldstone定理以不同方式实现。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Landau &amp; Lifshitz, <em>Statistical Physics Part 1</em>, &sect;143-150</li>
       <li>Pathria &amp; Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 12.7</li>
@@ -610,7 +579,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
       <li>J. Goldstone, <em>Nuovo Cimento</em> <strong>19</strong>, 154 (1961) — Goldstone定理</li>
       <li>P.W. Anderson, <em>Phys. Rev.</em> <strong>130</strong>, 439 (1963) — Anderson-Higgs机制</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="scaling">8.5 标度律与普适性</h2>
@@ -646,7 +615,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     四个等式、六个指数——只有<strong>两个独立</strong>的临界指数（例如取 $\nu$ 和 $\eta$，其余都可以推出）。
   </p>
 
-  <Derivation title="标度关系的推导——基于标度假说">
+  <details class="derivation-block"><summary class="derivation-toggle">标度关系的推导——基于标度假说</summary><div class="derivation-content">
     <p><strong>标度假说</strong>（Widom, 1965）：在临界点附近，自由能的奇异部分是约化温度 $t$ 和外场 $h$ 的<strong>广义齐次函数</strong>：</p>
     $$
       f_{\text{sing}}(t, h) = |t|^{2-\alpha}\,\Phi_\pm\!\left(\frac{h}{|t|^\Delta}\right)
@@ -655,7 +624,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     <p><strong>Rushbrooke等式</strong>：磁化强度 $m = -\partial f/\partial h \sim |t|^{2-\alpha-\Delta}\,\Phi'$，在 $h \to 0$ 时 $m \sim |t|^\beta$，因此 $\beta = 2 - \alpha - \Delta$。磁化率 $\chi = -\partial^2 f/\partial h^2 \sim |t|^{2-\alpha-2\Delta}$，在 $h \to 0$ 时 $\chi \sim |t|^{-\gamma}$，因此 $\gamma = 2\Delta - (2 - \alpha)$。将两式相加：$\beta + \gamma = \Delta - (2-\alpha) + 2\Delta - (2-\alpha) = 2\Delta + \alpha - 2 + \beta$，即 $\gamma = 2\Delta - 2 + \alpha = 2\beta\delta - 2 + \alpha$。利用 $\Delta = \beta + \gamma$（从 $\beta = 2 - \alpha - \Delta$ 和 $\gamma = 2\Delta - 2 + \alpha$ 推出），得 $\alpha + 2\beta + \gamma = 2$。</p>
     <p><strong>Widom等式</strong>：在临界等温线 $t = 0$ 上，$f_{\text{sing}}(0, h) \sim h^{(2-\alpha)/\Delta}$（由齐次性），$m \sim h^{(2-\alpha)/\Delta - 1} = h^{1/\delta}$。因此 $(2-\alpha)/\Delta = 1 + 1/\delta$，即 $\Delta = \beta\delta$，给出 $\gamma = \beta(\delta - 1)$。</p>
     <p><strong>Josephson等式</strong>：自由能密度的量纲为 $[f] = \text{能量}/\text{体积}$。在临界点附近，唯一的相关长度标度是关联长度 $\xi \sim |t|^{-\nu}$。奇异自由能密度应满足 $f_{\text{sing}} \sim k_BT/\xi^d \sim |t|^{d\nu}$。与 $f_{\text{sing}} \sim |t|^{2-\alpha}$ 比较，得 $2 - \alpha = d\nu$。</p>
-  </Derivation>
+  </div></details>
 
   <h3>标度假说与齐次性</h3>
   <p>
@@ -726,7 +695,7 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     同一不动点的<strong>吸引域</strong>（basin of attraction）中的所有Hamiltonian在长距离行为上完全等价——它们属于同一<strong>普适性类</strong>，共享相同的临界指数。临界指数由相关算符在不动点处的<strong>标度维度</strong>（RG特征值）决定。
   </p>
 
-  <ThinkingBox title="重整化群——从物理直觉到数学结构">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>重整化群——从物理直觉到数学结构</span></div>
     <p>
       重整化群的思想可以用一个物理比喻来理解。想象从飞机上俯瞰一片正在经历临界点的系统（如液-气临界乳光）。当飞机在高空时，你看到大尺度的密度涨落团；降低高度，看到更小尺度的涨落嵌套在大涨落之中；继续降低，更小的涨落出现——<strong>各个尺度上看到的统计图案是一样的</strong>。这就是标度不变性，或称"自相似"。
     </p>
@@ -742,15 +711,15 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
     <p>
       对 $n = 1$, $d = 3$（$\epsilon = 1$），这给出 $\nu \approx 0.583$，与精确值 $\nu \approx 0.630$ 定性一致（更高阶展开和Borel重求和给出定量精确的结果）。Wilson因"关于相变的临界现象理论"获得1982年Nobel物理学奖。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <InsightBox title="从Ising模型到标准模型——相变物理的统一视野">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>从Ising模型到标准模型——相变物理的统一视野</span></div>
     <p>
       本章讨论的概念——序参量、对称性破缺、Goldstone模式、重整化群、普适性——远远超出了统计力学的范畴。粒子物理的标准模型中，电弱对称性 $SU(2)_L \times U(1)_Y$ 自发破缺到 $U(1)_{\text{em}}$，Higgs场扮演序参量的角色（类比Landau理论中的 $m$），3个Goldstone玻色子被 $W^\pm$ 和 $Z^0$ 规范玻色子"吃掉"（Anderson-Higgs机制），使它们获得质量。量子色动力学中的手征对称性破缺产生了近似Goldstone玻色子（$\pi$ 介子）。量子场论中的重整化群与统计力学中的Wilson RG在数学上完全等价——这一深刻联系由Wilson本人阐明。可以说，理解相变与临界现象是理解整个现代理论物理的基石。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria &amp; Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 12.8-12.10, Ch. 13</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 17.2-17.6</li>
@@ -763,6 +732,9 @@ const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
       <li>N. Goldenfeld, <em>Lectures on Phase Transitions and the Renormalization Group</em></li>
       <li>J. Cardy, <em>Scaling and Renormalization in Statistical Physics</em></li>
     </ul>
-  </ReferenceBox>
+  </div>`;
+---
 
+<ChapterLayout title="第八章 相变与临界现象" courseId="stat" chapterId="ch08">
+  <Fragment set:html={content} />
 </ChapterLayout>

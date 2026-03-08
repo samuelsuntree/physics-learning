@@ -1,160 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const defined = {
-  /* ── helpers: every LaTeX snippet that contains { or } lives here ── */
-
-  /* §2.1 */
-  calH: String.raw`$\mathcal{H}$`,
-  psiKet: String.raw`$|\psi\rangle$`,
-  eiaPsi: String.raw`$e^{i\alpha}|\psi\rangle$`,
-  alphaR: String.raw`$\alpha \in \mathbb{R}$`,
-  rayClass: String.raw`$\{e^{i\alpha}|\psi\rangle \mid \alpha \in \mathbb{R}\}$`,
-  projH: String.raw`$\mathbb{P}\mathcal{H}$`,
-  psi1Ket: String.raw`$|\psi_1\rangle$`,
-  psi2Ket: String.raw`$|\psi_2\rangle$`,
-  superpositionEq: String.raw`$$|\psi\rangle = c_1|\psi_1\rangle + c_2|\psi_2\rangle, \quad c_1, c_2 \in \mathbb{C}$$`,
-  rhoKetBra: String.raw`$$\rho = |\psi\rangle\langle\psi|$$`,
-  rhoIdempotent: String.raw`$\rho^2 = \rho$`,
-  trRho1: String.raw`$\text{Tr}(\rho) = 1$`,
-  trRhoSq1: String.raw`$\text{Tr}(\rho^2) = 1$`,
-  rhoMixed: String.raw`$$\rho = \sum_i w_i |\psi_i\rangle\langle\psi_i|, \quad w_i \geq 0, \quad \sum_i w_i = 1$$`,
-  trRhoLt1: String.raw`$\text{Tr}(\rho^2) < 1$`,
-  upKet: String.raw`$|\!\uparrow\rangle$`,
-  downKet: String.raw`$|\!\downarrow\rangle$`,
-  psiCoherent: String.raw`$|\psi\rangle = \frac{1}{\sqrt{2}}(|\!\uparrow\rangle + |\!\downarrow\rangle)$`,
-  rhoPure: String.raw`$\rho_{\text{pure}} = \frac{1}{2}(|\!\uparrow\rangle + |\!\downarrow\rangle)(\langle\uparrow\!| + \langle\downarrow\!|) = \frac{1}{2}(|\!\uparrow\rangle\langle\uparrow\!| + |\!\uparrow\rangle\langle\downarrow\!| + |\!\downarrow\rangle\langle\uparrow\!| + |\!\downarrow\rangle\langle\downarrow\!|)$`,
-  rhoMix: String.raw`$\rho_{\text{mix}} = \frac{1}{2}|\!\uparrow\rangle\langle\uparrow\!| + \frac{1}{2}|\!\downarrow\rangle\langle\downarrow\!|$`,
-  upBraDown: String.raw`$|\!\uparrow\rangle\langle\downarrow\!|$`,
-  downBraUp: String.raw`$|\!\downarrow\rangle\langle\uparrow\!|$`,
-  trPure1: String.raw`$\text{Tr}(\rho_{\text{pure}}^2) = 1$`,
-  trMixHalf: String.raw`$\text{Tr}(\rho_{\text{mix}}^2) = 1/2 < 1$`,
-  expectA: String.raw`$\langle\psi|A|\psi\rangle$`,
-  psiC1C2: String.raw`$|\psi\rangle = c_1|1\rangle + c_2|2\rangle$`,
-  c2Phase: String.raw`$c_2 e^{i\phi}$`,
-  interf: String.raw`$c_1^* c_2 e^{i\phi}$`,
-
-  /* §2.2 */
-  AhatDagger: String.raw`$\hat{A} = \hat{A}^\dagger$`,
-  eigenEq: String.raw`$$\hat{A}|a\rangle = a|a\rangle$$`,
-  aKet: String.raw`$|a\rangle$`,
-  orthoDiscrete: String.raw`$\langle a'|a\rangle = \delta_{a'a}$`,
-  completenessDiscrete: String.raw`$\sum_a |a\rangle\langle a| = \hat{I}$`,
-  spectralDiscrete: String.raw`$$\hat{A} = \sum_a a\,|a\rangle\langle a|$$`,
-  orthoContinuous: String.raw`$\langle a'|a\rangle = \delta(a' - a)$`,
-  spectralContinuous: String.raw`$$\int |a\rangle\langle a|\,da = \hat{I}, \qquad \hat{A} = \int a\,|a\rangle\langle a|\,da$$`,
-  spectralDegen: String.raw`$\hat{A} = \sum_a a\,\hat{P}_a$`,
-  projDegen: String.raw`$\hat{P}_a = \sum_\alpha |a, \alpha\rangle\langle a, \alpha|$`,
-  commAB: String.raw`$[\hat{A}, \hat{B}] = 0$`,
-  ABaKet: String.raw`$\hat{A}\hat{B}|a\rangle = \hat{B}\hat{A}|a\rangle = a\hat{B}|a\rangle$`,
-  cscoSet: String.raw`$\{\hat{A}, \hat{B}, \hat{C}, \ldots\}$`,
-  cscoState: String.raw`$|a, b, c, \ldots\rangle$`,
-  cscoABC: String.raw`$(a, b, c, \ldots)$`,
-  cscoExample: String.raw`$\{\hat{H}, \hat{L}^2, \hat{L}_z\}$`,
-  nlmKet: String.raw`$|n, l, m\rangle$`,
-  canonComm: String.raw`$$[\hat{x}, \hat{p}] = i\hbar$$`,
-  canonComm3d: String.raw`$$[\hat{x}_i, \hat{p}_j] = i\hbar\,\delta_{ij}, \quad [\hat{x}_i, \hat{x}_j] = 0, \quad [\hat{p}_i, \hat{p}_j] = 0$$`,
-  poissonBracket: String.raw`$\{x_i, p_j\} = \delta_{ij}$`,
-  diracQuantization: String.raw`$\{\cdot, \cdot\}_{\text{P.B.}} \to \frac{1}{i\hbar}[\cdot, \cdot]$`,
-  pHatPsi: String.raw`$\hat{p}\psi(x)$`,
-  commXPpsi: String.raw`$[\hat{x}, \hat{p}]\psi(x) = i\hbar\,\psi(x)$`,
-  pAnsatz: String.raw`$\hat{p} = f(x, \partial/\partial x)$`,
-  commExpand: String.raw`$x\hat{p}\psi(x) - \hat{p}[x\psi(x)] = i\hbar\,\psi(x)$`,
-  pAnsatz2: String.raw`$\hat{p} = -i\hbar\frac{\partial}{\partial x} + g(x)$`,
-  commVerify: String.raw`$x\left(-i\hbar\frac{\partial\psi}{\partial x} + g\psi\right) - \left(-i\hbar\frac{\partial(x\psi)}{\partial x} + gx\psi\right) = -i\hbar x\frac{\partial\psi}{\partial x} + gx\psi + i\hbar\psi + i\hbar x\frac{\partial\psi}{\partial x} - gx\psi = i\hbar\psi$`,
-  pResult: String.raw`$\hat{p} = -i\hbar\frac{\partial}{\partial x}$`,
-  gaugeTransform: String.raw`$\psi \to e^{ig(x)x/\hbar}\psi$`,
-
-  /* §2.3 */
-  collapseEq: String.raw`$$|\psi\rangle \xrightarrow{\text{测量得 } a} \frac{\hat{P}_a|\psi\rangle}{\sqrt{\langle\psi|\hat{P}_a|\psi\rangle}}$$`,
-  projAlpha: String.raw`$\hat{P}_a = \sum_\alpha |a, \alpha\rangle\langle a, \alpha|$`,
-  bornGeneral: String.raw`$$P(a) = \langle\psi|\hat{P}_a|\psi\rangle = \sum_\alpha |\langle a, \alpha|\psi\rangle|^2$$`,
-  bornSimple: String.raw`$$P(a) = |\langle a|\psi\rangle|^2$$`,
-  psiExpand: String.raw`$|\psi\rangle = \sum_a c_a |a\rangle$`,
-  caInner: String.raw`$c_a = \langle a|\psi\rangle$`,
-  caSq: String.raw`$|c_a|^2$`,
-  expectGeneral: String.raw`$$\langle\hat{A}\rangle = \langle\psi|\hat{A}|\psi\rangle = \sum_a a\,P(a) = \sum_a a\,|\langle a|\psi\rangle|^2$$`,
-  expectTrace: String.raw`$$\langle\hat{A}\rangle = \text{Tr}(\rho\hat{A})$$`,
-  nthMoment: String.raw`$\langle\hat{A}^n\rangle = \text{Tr}(\rho\hat{A}^n)$`,
-  varianceDef: String.raw`$(\Delta A)^2 = \langle\hat{A}^2\rangle - \langle\hat{A}\rangle^2$`,
-
-  /* §2.4 */
-  schEq: String.raw`$$i\hbar\frac{\partial}{\partial t}|\psi(t)\rangle = \hat{H}|\psi(t)\rangle$$`,
-  evolve: String.raw`$$|\psi(t)\rangle = \hat{U}(t, t_0)|\psi(t_0)\rangle$$`,
-  unitaryExp: String.raw`$$\hat{U}(t) = e^{-i\hat{H}t/\hbar}$$`,
-  dyson: String.raw`$$\hat{U}(t, t_0) = \mathcal{T}\exp\left(-\frac{i}{\hbar}\int_{t_0}^{t}\hat{H}(t')\,dt'\right)$$`,
-  unitaryCond: String.raw`$\hat{U}^\dagger\hat{U} = \hat{U}\hat{U}^\dagger = \hat{I}$`,
-  normPreserve: String.raw`$$\langle\psi(t)|\psi(t)\rangle = \langle\psi(0)|\hat{U}^\dagger\hat{U}|\psi(0)\rangle = \langle\psi(0)|\psi(0)\rangle = 1$$`,
-  unitaryIff: String.raw`$\hat{U} = e^{-i\hat{H}t/\hbar}$`,
-  Hdagger: String.raw`$\hat{H} = \hat{H}^\dagger$`,
-  braEvolve: String.raw`$-i\hbar\frac{\partial}{\partial t}\langle\psi(t)| = \langle\psi(t)|\hat{H}^\dagger$`,
-  normDeriv: String.raw`$\frac{d}{dt}\langle\psi|\psi\rangle = \left(\frac{\partial}{\partial t}\langle\psi|\right)|\psi\rangle + \langle\psi|\left(\frac{\partial}{\partial t}|\psi\rangle\right) = \frac{i}{\hbar}\langle\psi|\hat{H}^\dagger|\psi\rangle - \frac{i}{\hbar}\langle\psi|\hat{H}|\psi\rangle = \frac{i}{\hbar}\langle\psi|(\hat{H}^\dagger - \hat{H})|\psi\rangle$`,
-  normZero: String.raw`$\frac{d}{dt}\langle\psi|\psi\rangle = 0$`,
-  schPicState: String.raw`$$|\psi_S(t)\rangle = \hat{U}(t)|\psi_S(0)\rangle, \qquad \hat{A}_S = \text{const.}$$`,
-  heisPicState: String.raw`$$|\psi_H\rangle = |\psi_S(0)\rangle = \text{const.}, \qquad \hat{A}_H(t) = \hat{U}^\dagger(t)\hat{A}_S\hat{U}(t)$$`,
-  heisEOM: String.raw`$$\frac{d\hat{A}_H}{dt} = \frac{1}{i\hbar}[\hat{A}_H, \hat{H}] + \left(\frac{\partial\hat{A}_S}{\partial t}\right)_H$$`,
-  classicalEOM: String.raw`$\frac{dA}{dt} = \{A, H\}_{\text{P.B.}}$`,
-  HSplit: String.raw`$\hat{H} = \hat{H}_0 + \hat{V}$`,
-  intPicDef: String.raw`$$|\psi_I(t)\rangle = e^{i\hat{H}_0 t/\hbar}|\psi_S(t)\rangle, \qquad \hat{A}_I(t) = e^{i\hat{H}_0 t/\hbar}\hat{A}_S\,e^{-i\hat{H}_0 t/\hbar}$$`,
-  intPicEOM: String.raw`$$i\hbar\frac{\partial}{\partial t}|\psi_I(t)\rangle = \hat{V}_I(t)|\psi_I(t)\rangle$$`,
-  VIdef: String.raw`$\hat{V}_I(t) = e^{i\hat{H}_0 t/\hbar}\hat{V}\,e^{-i\hat{H}_0 t/\hbar}$`,
-  ehrenfestEq: String.raw`$$\frac{d\langle\hat{x}\rangle}{dt} = \frac{\langle\hat{p}\rangle}{m}, \qquad \frac{d\langle\hat{p}\rangle}{dt} = -\left\langle\frac{\partial V}{\partial x}\right\rangle$$`,
-  hamiltonianKE: String.raw`$\hat{H} = \frac{\hat{p}^2}{2m} + V(\hat{x})$`,
-  dxdt1: String.raw`$\frac{d\langle\hat{x}\rangle}{dt} = \frac{1}{i\hbar}\langle[\hat{x}, \hat{H}]\rangle = \frac{1}{i\hbar}\left\langle\left[\hat{x}, \frac{\hat{p}^2}{2m}\right]\right\rangle = \frac{1}{i\hbar}\cdot\frac{1}{2m}\langle[\hat{x}, \hat{p}^2]\rangle$`,
-  xp2comm: String.raw`$[\hat{x}, \hat{p}^2] = [\hat{x}, \hat{p}]\hat{p} + \hat{p}[\hat{x}, \hat{p}] = 2i\hbar\hat{p}$`,
-  dxdt2: String.raw`$\frac{d\langle\hat{x}\rangle}{dt} = \frac{1}{i\hbar}\cdot\frac{2i\hbar}{2m}\langle\hat{p}\rangle = \frac{\langle\hat{p}\rangle}{m}$`,
-  dpdt1: String.raw`$\frac{d\langle\hat{p}\rangle}{dt} = \frac{1}{i\hbar}\langle[\hat{p}, \hat{H}]\rangle = \frac{1}{i\hbar}\langle[\hat{p}, V(\hat{x})]\rangle$`,
-  pVcomm: String.raw`$[\hat{p}, V(\hat{x})] = -i\hbar\frac{\partial V}{\partial x}$`,
-  dpdt2: String.raw`$\frac{d\langle\hat{p}\rangle}{dt} = -\left\langle\frac{\partial V}{\partial x}\right\rangle$`,
-  newtonLaw: String.raw`$m\ddot{x} = F = -\frac{\partial V}{\partial x}$`,
-  FxExpect: String.raw`$\langle F(\hat{x})\rangle$`,
-  FxClassical: String.raw`$F(\langle\hat{x}\rangle)$`,
-  FxApprox: String.raw`$\langle F(\hat{x})\rangle \approx F(\langle\hat{x}\rangle)$`,
-
-  /* §2.5 */
-  robertson: String.raw`$$\Delta A \cdot \Delta B \geq \frac{1}{2}\left|\langle[\hat{A}, \hat{B}]\rangle\right|$$`,
-  stdDev: String.raw`$\Delta A = \sqrt{\langle\hat{A}^2\rangle - \langle\hat{A}\rangle^2}$`,
-  schrodinger_uncert: String.raw`$$(\Delta A)^2 (\Delta B)^2 \geq \frac{1}{4}\left|\langle[\hat{A}, \hat{B}]\rangle\right|^2 + \frac{1}{4}\left|\langle\{\Delta\hat{A}, \Delta\hat{B}\}\rangle\right|^2$$`,
-  deltaAdef: String.raw`$\Delta\hat{A} = \hat{A} - \langle\hat{A}\rangle$`,
-  anticommSymbol: String.raw`$\{\cdot, \cdot\}$`,
-  alphaVec: String.raw`$|\alpha\rangle = \Delta\hat{A}|\psi\rangle = (\hat{A} - \langle\hat{A}\rangle)|\psi\rangle$`,
-  betaVec: String.raw`$|\beta\rangle = \Delta\hat{B}|\psi\rangle = (\hat{B} - \langle\hat{B}\rangle)|\psi\rangle$`,
-  cauchySchwarz: String.raw`$\langle\alpha|\alpha\rangle\langle\beta|\beta\rangle \geq |\langle\alpha|\beta\rangle|^2$`,
-  alphaAlpha: String.raw`$\langle\alpha|\alpha\rangle = \langle(\Delta\hat{A})^2\rangle = (\Delta A)^2$`,
-  betaBeta: String.raw`$\langle\beta|\beta\rangle = (\Delta B)^2$`,
-  alphaBeta: String.raw`$\langle\alpha|\beta\rangle = \langle\Delta\hat{A}\,\Delta\hat{B}\rangle$`,
-  decompose: String.raw`$\langle\Delta\hat{A}\,\Delta\hat{B}\rangle = \frac{1}{2}\langle\{\Delta\hat{A}, \Delta\hat{B}\}\rangle + \frac{1}{2}\langle[\Delta\hat{A}, \Delta\hat{B}]\rangle$`,
-  commReduce: String.raw`$[\Delta\hat{A}, \Delta\hat{B}] = [\hat{A}, \hat{B}]$`,
-  anticommReal: String.raw`$\langle\{\Delta\hat{A}, \Delta\hat{B}\}\rangle$`,
-  commImag: String.raw`$\langle[\hat{A}, \hat{B}]\rangle$`,
-  modSquared: String.raw`$|\langle\alpha|\beta\rangle|^2 = \frac{1}{4}|\langle\{\Delta\hat{A}, \Delta\hat{B}\}\rangle|^2 + \frac{1}{4}|\langle[\hat{A}, \hat{B}]\rangle|^2$`,
-  robertsonSq: String.raw`$(\Delta A)^2(\Delta B)^2 \geq \frac{1}{4}|\langle[\hat{A}, \hat{B}]\rangle|^2$`,
-  robertsonFinal: String.raw`$\Delta A \cdot \Delta B \geq \frac{1}{2}|\langle[\hat{A}, \hat{B}]\rangle|$`,
-  xpComm: String.raw`$[\hat{x}, \hat{p}] = i\hbar$`,
-  heisenberg: String.raw`$$\Delta x \cdot \Delta p \geq \frac{\hbar}{2}$$`,
-  energyTime: String.raw`$$\Delta E \cdot \Delta t \geq \frac{\hbar}{2}$$`,
-  dtBdef: String.raw`$\Delta t_B = \Delta B / |d\langle\hat{B}\rangle/dt|$`,
-  mandelstamTamm: String.raw`$$\Delta E \cdot \Delta t_B \geq \frac{\hbar}{2}$$`,
-  stationaryPhase: String.raw`$|\psi(t)\rangle = e^{-iEt/\hbar}|E\rangle$`,
-  dBdt: String.raw`$\frac{d\langle\hat{B}\rangle}{dt} = \frac{1}{i\hbar}\langle[\hat{B}, \hat{H}]\rangle$`,
-  mtRobertson: String.raw`$\Delta B \cdot \Delta E \geq \frac{1}{2}|\langle[\hat{B}, \hat{H}]\rangle| = \frac{\hbar}{2}\left|\frac{d\langle\hat{B}\rangle}{dt}\right|$`,
-  dtBdefEq: String.raw`$\Delta t_B \equiv \frac{\Delta B}{|d\langle\hat{B}\rangle/dt|}$`,
-  mtResult: String.raw`$\Delta E \cdot \Delta t_B \geq \frac{\hbar}{2}$`,
-  betaLambdaAlpha: String.raw`$|\beta\rangle = \lambda|\alpha\rangle$`,
-  minUncertEq: String.raw`$$(\hat{p} - \langle\hat{p}\rangle)|\psi\rangle = \lambda(\hat{x} - \langle\hat{x}\rangle)|\psi\rangle$$`,
-  gaussianWave: String.raw`$$\psi(x) = \left(\frac{1}{2\pi(\Delta x)^2}\right)^{1/4}\exp\left(-\frac{(x - \langle x\rangle)^2}{4(\Delta x)^2} + \frac{i\langle p\rangle x}{\hbar}\right)$$`,
-  coherentDef: String.raw`$$\hat{a}|\alpha\rangle = \alpha|\alpha\rangle, \quad \alpha \in \mathbb{C}$$`,
-  dxdpMin: String.raw`$\Delta x \cdot \Delta p = \hbar/2$`,
-};
----
-
-<ChapterLayout title="第二章 量子力学公设体系" courseId="qm" chapterId="ch02">
-
-  <h1>第二章 量子力学公设体系</h1>
+const content = String.raw`<h1>第二章 量子力学公设体系</h1>
 
   <p>
     量子力学的逻辑结构建立在一组公设（postulates）之上。这些公设不能从更基本的原理推导出来，
@@ -162,7 +9,7 @@ const defined = {
     并深入讨论每一条公设的物理含义与数学结构。
   </p>
 
-  <InsightBox title="公设体系的逻辑地位">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>公设体系的逻辑地位</span></div>
     <p>
       量子力学的公设体系类似于欧几里得几何中的公理：它们是不可证明的出发点，但由此可以推导出
       全部量子力学的结论。一个好的公设体系应当是<strong>逻辑独立的</strong>（任何一条不能由
@@ -170,7 +17,7 @@ const defined = {
       数量略有差异，但物理内容是等价的。Weinberg 在 <em>Lectures on Quantum Mechanics</em>
       Ch.3 中特别强调，这些公设的正当性完全来自实验验证，而非先验论证。
     </p>
-  </InsightBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 2.1 态矢量与态空间 -->
@@ -180,25 +27,25 @@ const defined = {
   <h3>公设一：态矢量公设</h3>
 
   <p>
-    <strong>公设一</strong>：在任意时刻 $t$，一个量子力学系统的状态由 Hilbert 空间 <Fragment set:html={defined.calH} />
-    中的一个归一化态矢量 <Fragment set:html={defined.psiKet} /> 完全描述。两个仅相差全局相位因子的态矢量
-    <Fragment set:html={defined.psiKet} /> 和 <Fragment set:html={defined.eiaPsi} />（<Fragment set:html={defined.alphaR} />）描述同一个物理状态。
+    <strong>公设一</strong>：在任意时刻 $t$，一个量子力学系统的状态由 Hilbert 空间 $\mathcal{H}$
+    中的一个归一化态矢量 $|\psi\rangle$ 完全描述。两个仅相差全局相位因子的态矢量
+    $|\psi\rangle$ 和 $e^{i\alpha}|\psi\rangle$（$\alpha \in \mathbb{R}$）描述同一个物理状态。
   </p>
 
   <p>
     更精确地说，物理状态与 Hilbert 空间中的<strong>射线</strong>（ray）一一对应，即态矢量的
-    等价类 <Fragment set:html={defined.rayClass} />。这意味着态空间实际上是
-    射影 Hilbert 空间 <Fragment set:html={defined.projH} />。
+    等价类 $\{e^{i\alpha}|\psi\rangle \mid \alpha \in \mathbb{R}\}$。这意味着态空间实际上是
+    射影 Hilbert 空间 $\mathbb{P}\mathcal{H}$。
   </p>
 
   <h3>叠加原理</h3>
 
   <p>
-    Hilbert 空间的线性结构保证了<strong>叠加原理</strong>：若 <Fragment set:html={defined.psi1Ket} /> 和
-    <Fragment set:html={defined.psi2Ket} /> 都是系统可能的状态，则它们的任意线性组合
+    Hilbert 空间的线性结构保证了<strong>叠加原理</strong>：若 $|\psi_1\rangle$ 和
+    $|\psi_2\rangle$ 都是系统可能的状态，则它们的任意线性组合
   </p>
 
-  <Fragment set:html={defined.superpositionEq} />
+  $$|\psi\rangle = c_1|\psi_1\rangle + c_2|\psi_2\rangle, \quad c_1, c_2 \in \mathbb{C}$$
 
   <p>
     也是系统的一个可能状态（归一化后）。叠加原理是量子力学区别于经典力学的最根本特征之一。
@@ -210,13 +57,13 @@ const defined = {
 
   <p>
     当我们对系统的状态有完全的知识时，系统处于<strong>纯态</strong>（pure state），
-    由单一的态矢量 <Fragment set:html={defined.psiKet} /> 描述。纯态的密度算符为：
+    由单一的态矢量 $|\psi\rangle$ 描述。纯态的密度算符为：
   </p>
 
-  <Fragment set:html={defined.rhoKetBra} />
+  $$\rho = |\psi\rangle\langle\psi|$$
 
   <p>
-    纯态密度算符满足 <Fragment set:html={defined.rhoIdempotent} />（幂等性），<Fragment set:html={defined.trRho1} />，且 <Fragment set:html={defined.trRhoSq1} />。
+    纯态密度算符满足 $\rho^2 = \rho$（幂等性），$\text{Tr}(\rho) = 1$，且 $\text{Tr}(\rho^2) = 1$。
   </p>
 
   <p>
@@ -224,59 +71,59 @@ const defined = {
     我们需要用<strong>混合态</strong>（mixed state）来描述，对应密度算符：
   </p>
 
-  <Fragment set:html={defined.rhoMixed} />
+  $$\rho = \sum_i w_i |\psi_i\rangle\langle\psi_i|, \quad w_i \geq 0, \quad \sum_i w_i = 1$$
 
   <p>
-    其中 $w_i$ 是经典概率权重，<Fragment set:html={defined.psiKet} /> 不必正交。混合态满足
-    <Fragment set:html={defined.trRho1} /> 但 <Fragment set:html={defined.trRhoLt1} />。密度算符是描述量子态的最一般工具，
+    其中 $w_i$ 是经典概率权重，$|\psi\rangle$ 不必正交。混合态满足
+    $\text{Tr}(\rho) = 1$ 但 $\text{Tr}(\rho^2) < 1$。密度算符是描述量子态的最一般工具，
     纯态只是其特殊情形。
   </p>
 
-  <ThinkingBox title="相干叠加 vs 经典混合">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>相干叠加 vs 经典混合</span></div>
     <p>
-      考虑两个状态 <Fragment set:html={defined.upKet} /> 和 <Fragment set:html={defined.downKet} />。
-      <strong>相干叠加</strong>态 <Fragment set:html={defined.psiCoherent} /> 的密度算符为：
+      考虑两个状态 $|\!\uparrow\rangle$ 和 $|\!\downarrow\rangle$。
+      <strong>相干叠加</strong>态 $|\psi\rangle = \frac{1}{\sqrt{2}}(|\!\uparrow\rangle + |\!\downarrow\rangle)$ 的密度算符为：
     </p>
     <p>
-      <Fragment set:html={defined.rhoPure} />
+      $\rho_{\text{pure}} = \frac{1}{2}(|\!\uparrow\rangle + |\!\downarrow\rangle)(\langle\uparrow\!| + \langle\downarrow\!|) = \frac{1}{2}(|\!\uparrow\rangle\langle\uparrow\!| + |\!\uparrow\rangle\langle\downarrow\!| + |\!\downarrow\rangle\langle\uparrow\!| + |\!\downarrow\rangle\langle\downarrow\!|)$
     </p>
     <p>
       而<strong>经典混合</strong>态的密度算符为：
     </p>
     <p>
-      <Fragment set:html={defined.rhoMix} />
+      $\rho_{\text{mix}} = \frac{1}{2}|\!\uparrow\rangle\langle\uparrow\!| + \frac{1}{2}|\!\downarrow\rangle\langle\downarrow\!|$
     </p>
     <p>
-      两者的差别在于非对角元（off-diagonal terms）<Fragment set:html={defined.upBraDown} />
-      和 <Fragment set:html={defined.downBraUp} />，即<strong>相干项</strong>。这些非对角元
+      两者的差别在于非对角元（off-diagonal terms）$|\!\uparrow\rangle\langle\downarrow\!|$
+      和 $|\!\downarrow\rangle\langle\uparrow\!|$，即<strong>相干项</strong>。这些非对角元
       携带了相对相位信息，正是干涉效应的来源。注意
-      <Fragment set:html={defined.trPure1} /> 而
-      <Fragment set:html={defined.trMixHalf} />。
+      $\text{Tr}(\rho_{\text{pure}}^2) = 1$ 而
+      $\text{Tr}(\rho_{\text{mix}}^2) = 1/2 < 1$。
     </p>
-  </ThinkingBox>
+  </div>
 
   <h3>相位的物理意义</h3>
 
   <p>
-    态矢量的<strong>全局相位</strong>（global phase）没有物理意义：<Fragment set:html={defined.psiKet} /> 和
-    <Fragment set:html={defined.eiaPsi} /> 给出完全相同的物理预言，因为所有可观测量的期望值
-    <Fragment set:html={defined.expectA} /> 不依赖于 $\alpha$。
+    态矢量的<strong>全局相位</strong>（global phase）没有物理意义：$|\psi\rangle$ 和
+    $e^{i\alpha}|\psi\rangle$ 给出完全相同的物理预言，因为所有可观测量的期望值
+    $\langle\psi|A|\psi\rangle$ 不依赖于 $\alpha$。
   </p>
 
   <p>
     然而，<strong>相对相位</strong>（relative phase）具有可观测的物理效应。考虑叠加态
-    <Fragment set:html={defined.psiC1C2} />，若将 $c_2$ 替换为 <Fragment set:html={defined.c2Phase} />，
-    则干涉项 <Fragment set:html={defined.interf} /> 将导致不同的可观测结果。双缝干涉、
+    $|\psi\rangle = c_1|1\rangle + c_2|2\rangle$，若将 $c_2$ 替换为 $c_2 e^{i\phi}$，
+    则干涉项 $c_1^* c_2 e^{i\phi}$ 将导致不同的可观测结果。双缝干涉、
     Aharonov-Bohm 效应等都是相对相位可观测性的直接体现。
   </p>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.1.1-1.3：态矢量和 Hilbert 空间的基本框架</li>
       <li>曾谨言,《量子力学》卷I, 第三章：量子力学的基本假定</li>
       <li>Weinberg, <em>Lectures on Quantum Mechanics</em>, Ch.3.1：态矢量的射线描述</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 2.2 可观测量与算符 -->
@@ -287,7 +134,7 @@ const defined = {
 
   <p>
     <strong>公设二</strong>：每一个可观测的物理量（observable）$A$ 对应 Hilbert 空间上的
-    一个<strong>Hermite 算符</strong>（自伴算符）$\hat A$，满足 <Fragment set:html={defined.AhatDagger} />。
+    一个<strong>Hermite 算符</strong>（自伴算符）$\hat A$，满足 $\hat{A} = \hat{A}^\dagger$。
   </p>
 
   <p>
@@ -301,51 +148,51 @@ const defined = {
     Hermite 算符 $\hat A$ 的本征值方程为：
   </p>
 
-  <Fragment set:html={defined.eigenEq} />
+  $$\hat{A}|a\rangle = a|a\rangle$$
 
   <p>
-    其中 $a$ 为本征值（必为实数），<Fragment set:html={defined.aKet} /> 为对应的本征态。对于<strong>离散谱</strong>，
-    本征态满足正交归一关系 <Fragment set:html={defined.orthoDiscrete} /> 和完备性关系
-    <Fragment set:html={defined.completenessDiscrete} />。由此得到<strong>谱分解</strong>：
+    其中 $a$ 为本征值（必为实数），$|a\rangle$ 为对应的本征态。对于<strong>离散谱</strong>，
+    本征态满足正交归一关系 $\langle a'|a\rangle = \delta_{a'a}$ 和完备性关系
+    $\sum_a |a\rangle\langle a| = \hat{I}$。由此得到<strong>谱分解</strong>：
   </p>
 
-  <Fragment set:html={defined.spectralDiscrete} />
+  $$\hat{A} = \sum_a a\,|a\rangle\langle a|$$
 
   <p>
     对于<strong>连续谱</strong>（如位置算符和动量算符），正交归一关系变为
-    <Fragment set:html={defined.orthoContinuous} />，完备性关系和谱分解相应地变为：
+    $\langle a'|a\rangle = \delta(a' - a)$，完备性关系和谱分解相应地变为：
   </p>
 
-  <Fragment set:html={defined.spectralContinuous} />
+  $$\int |a\rangle\langle a|\,da = \hat{I}, \qquad \hat{A} = \int a\,|a\rangle\langle a|\,da$$
 
   <p>
     若本征值有简并（degeneracy），即多个线性无关的本征态对应同一个本征值 $a$，
-    则需引入简并指标 $\alpha$，谱分解变为 <Fragment set:html={defined.spectralDegen} />，
-    其中 <Fragment set:html={defined.projDegen} /> 是到本征子空间的投影算符。
+    则需引入简并指标 $\alpha$，谱分解变为 $\hat{A} = \sum_a a\,\hat{P}_a$，
+    其中 $\hat{P}_a = \sum_\alpha |a, \alpha\rangle\langle a, \alpha|$ 是到本征子空间的投影算符。
   </p>
 
   <h3>完全对易可观测量组（CSCO）</h3>
 
   <p>
-    若两个可观测量 $\hat A$ 和 $\hat B$ 对易，即 <Fragment set:html={defined.commAB} />，
-    则它们存在<strong>共同本征态</strong>。这是因为若 <Fragment set:html={defined.aKet} /> 是 $\hat A$
+    若两个可观测量 $\hat A$ 和 $\hat B$ 对易，即 $[\hat{A}, \hat{B}] = 0$，
+    则它们存在<strong>共同本征态</strong>。这是因为若 $|a\rangle$ 是 $\hat A$
     的本征态，则 $\hat B|a\rangle$ 也是 $\hat A$ 属于本征值 $a$ 的本征态
-    （<Fragment set:html={defined.ABaKet} />），
+    （$\hat{A}\hat{B}|a\rangle = \hat{B}\hat{A}|a\rangle = a\hat{B}|a\rangle$），
     因此 $\hat B$ 在 $\hat A$ 的每个本征子空间内作用，可以在该子空间中将
     $\hat B$ 同时对角化。
   </p>
 
   <p>
     一组<strong>完全对易可观测量组</strong>（Complete Set of Commuting Observables, CSCO）是指
-    一组两两对易的可观测量 <Fragment set:html={defined.cscoSet} />，使得它们的共同本征态
-    <Fragment set:html={defined.cscoState} /> 构成 Hilbert 空间的一组<strong>唯一确定</strong>的正交归一基。
-    换言之，给定所有这些可观测量的本征值 <Fragment set:html={defined.cscoABC} />，对应的共同本征态是唯一的
+    一组两两对易的可观测量 $\{\hat{A}, \hat{B}, \hat{C}, \ldots\}$，使得它们的共同本征态
+    $|a, b, c, \ldots\rangle$ 构成 Hilbert 空间的一组<strong>唯一确定</strong>的正交归一基。
+    换言之，给定所有这些可观测量的本征值 $(a, b, c, \ldots)$，对应的共同本征态是唯一的
     （无简并）。
   </p>
 
   <p>
-    例如，对于三维空间中的中心力场问题，<Fragment set:html={defined.cscoExample} />
-    构成一组 CSCO，对应的共同本征态即 <Fragment set:html={defined.nlmKet} />。
+    例如，对于三维空间中的中心力场问题，$\{\hat{H}, \hat{L}^2, \hat{L}_z\}$
+    构成一组 CSCO，对应的共同本征态即 $|n, l, m\rangle$。
   </p>
 
   <h3>正则对易关系</h3>
@@ -354,53 +201,53 @@ const defined = {
     位置算符 $\hat x$ 和动量算符 $\hat p$ 满足<strong>正则对易关系</strong>：
   </p>
 
-  <Fragment set:html={defined.canonComm} />
+  $$[\hat{x}, \hat{p}] = i\hbar$$
 
   <p>
     更一般地，对于三维空间中的分量：
   </p>
 
-  <Fragment set:html={defined.canonComm3d} />
+  $$[\hat{x}_i, \hat{p}_j] = i\hbar\,\delta_{ij}, \quad [\hat{x}_i, \hat{x}_j] = 0, \quad [\hat{p}_i, \hat{p}_j] = 0$$
 
   <p>
-    正则对易关系是经典力学中 Poisson 括号 <Fragment set:html={defined.poissonBracket} /> 的量子对应物，
-    通过 Dirac 量子化条件 <Fragment set:html={defined.diracQuantization} /> 实现。
+    正则对易关系是经典力学中 Poisson 括号 $\{x_i, p_j\} = \delta_{ij}$ 的量子对应物，
+    通过 Dirac 量子化条件 $\{\cdot, \cdot\}_{\text{P.B.}} \to \frac{1}{i\hbar}[\cdot, \cdot]$ 实现。
     正则对易关系直接导致了位置-动量不确定性关系（见 2.5 节）。
   </p>
 
-  <Derivation title="位置表象中动量算符的形式">
+  <details class="derivation-block"><summary class="derivation-toggle">位置表象中动量算符的形式</summary><div class="derivation-content">
     <p>
-      在位置表象中，设 $\hat p$ 作用在波函数上的结果为 <Fragment set:html={defined.pHatPsi} />。利用正则对易关系：
+      在位置表象中，设 $\hat p$ 作用在波函数上的结果为 $\hat{p}\psi(x)$。利用正则对易关系：
     </p>
     <p>
-      <Fragment set:html={defined.commXPpsi} />
+      $[\hat{x}, \hat{p}]\psi(x) = i\hbar\,\psi(x)$
     </p>
     <p>
-      在位置表象中 $\hat x$ 就是乘以 $x$，设 <Fragment set:html={defined.pAnsatz} />。代入对易关系：
+      在位置表象中 $\hat x$ 就是乘以 $x$，设 $\hat{p} = f(x, \partial/\partial x)$。代入对易关系：
     </p>
     <p>
-      <Fragment set:html={defined.commExpand} />
+      $x\hat{p}\psi(x) - \hat{p}[x\psi(x)] = i\hbar\,\psi(x)$
     </p>
     <p>
-      设 <Fragment set:html={defined.pAnsatz2} />，则：
+      设 $\hat{p} = -i\hbar\frac{\partial}{\partial x} + g(x)$，则：
     </p>
     <p>
-      <Fragment set:html={defined.commVerify} />
+      $x\left(-i\hbar\frac{\partial\psi}{\partial x} + g\psi\right) - \left(-i\hbar\frac{\partial(x\psi)}{\partial x} + gx\psi\right) = -i\hbar x\frac{\partial\psi}{\partial x} + gx\psi + i\hbar\psi + i\hbar x\frac{\partial\psi}{\partial x} - gx\psi = i\hbar\psi$
     </p>
     <p>
       因此对易关系对任意 $g(x)$ 都满足。然而 Hermite 性要求 $g(x) = 0$
       （在标准表象中），于是得到：
     </p>
     <p>
-      <Fragment set:html={defined.pResult} />
+      $\hat{p} = -i\hbar\frac{\partial}{\partial x}$
     </p>
     <p>
       这便是位置表象中动量算符的标准表达式。（注意 $g(x) \neq 0$ 对应于选择不同的相位约定，
-      可由幺正变换 <Fragment set:html={defined.gaugeTransform} /> 消去。）
+      可由幺正变换 $\psi \to e^{ig(x)x/\hbar}\psi$ 消去。）
     </p>
-  </Derivation>
+  </div></details>
 
-  <InsightBox title="算符与可观测量的对应并非平凡">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>算符与可观测量的对应并非平凡</span></div>
     <p>
       并非 Hilbert 空间上的每一个 Hermite 算符都对应一个可观测量。例如，
       在存在超选择定则（superselection rule）的情况下，某些 Hermite 算符
@@ -408,15 +255,15 @@ const defined = {
       算符的定义域问题（自伴性 vs. 对称性）变得更加微妙。
       Weinberg 在 Ch.3 中对此有精辟讨论。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.1.3-1.4：可观测量、本征值与谱分解</li>
       <li>曾谨言,《量子力学》卷I, 第三章 &sect;3.2：力学量的算符表示</li>
       <li>Weinberg, <em>Lectures on Quantum Mechanics</em>, Ch.3.2-3.3：算符与对易关系</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 2.3 测量公设 -->
@@ -426,7 +273,7 @@ const defined = {
   <h3>公设三与公设四：测量与坍缩</h3>
 
   <p>
-    <strong>公设三</strong>：对处于态 <Fragment set:html={defined.psiKet} /> 的系统测量可观测量 $\hat A$，
+    <strong>公设三</strong>：对处于态 $|\psi\rangle$ 的系统测量可观测量 $\hat A$，
     所得到的结果只能是 $\hat A$ 的某一个本征值 $a$。
   </p>
 
@@ -435,56 +282,56 @@ const defined = {
     则测量后系统的态矢量立即<strong>坍缩</strong>到本征值 $a$ 对应的本征子空间上：
   </p>
 
-  <Fragment set:html={defined.collapseEq} />
+  $$|\psi\rangle \xrightarrow{\text{测量得 } a} \frac{\hat{P}_a|\psi\rangle}{\sqrt{\langle\psi|\hat{P}_a|\psi\rangle}}$$
 
   <p>
-    其中 <Fragment set:html={defined.projAlpha} />
+    其中 $\hat{P}_a = \sum_\alpha |a, \alpha\rangle\langle a, \alpha|$
     是向本征值 $a$ 的本征子空间的投影算符。若本征值无简并，则测量后态坍缩为
-    <Fragment set:html={defined.aKet} />。
+    $|a\rangle$。
   </p>
 
   <h3>Born 规则</h3>
 
   <p>
-    <strong>Born 规则</strong>给出测量结果的概率分布：对处于态 <Fragment set:html={defined.psiKet} /> 的系统
+    <strong>Born 规则</strong>给出测量结果的概率分布：对处于态 $|\psi\rangle$ 的系统
     测量 $\hat A$，得到本征值 $a$ 的概率为：
   </p>
 
-  <Fragment set:html={defined.bornGeneral} />
+  $$P(a) = \langle\psi|\hat{P}_a|\psi\rangle = \sum_\alpha |\langle a, \alpha|\psi\rangle|^2$$
 
   <p>
     对于无简并的情形，简化为：
   </p>
 
-  <Fragment set:html={defined.bornSimple} />
+  $$P(a) = |\langle a|\psi\rangle|^2$$
 
   <p>
     Born 规则是量子力学最核心的统计预言。结合态矢量在本征态上的展开
-    <Fragment set:html={defined.psiExpand} />（<Fragment set:html={defined.caInner} />），
-    Born 规则告诉我们 <Fragment set:html={defined.caSq} /> 就是测量得到 $a$ 的概率。
+    $|\psi\rangle = \sum_a c_a |a\rangle$（$c_a = \langle a|\psi\rangle$），
+    Born 规则告诉我们 $|c_a|^2$ 就是测量得到 $a$ 的概率。
   </p>
 
   <h3>期望值</h3>
 
   <p>
-    可观测量 $\hat A$ 在态 <Fragment set:html={defined.psiKet} /> 中的期望值（统计平均值）为：
+    可观测量 $\hat A$ 在态 $|\psi\rangle$ 中的期望值（统计平均值）为：
   </p>
 
-  <Fragment set:html={defined.expectGeneral} />
+  $$\langle\hat{A}\rangle = \langle\psi|\hat{A}|\psi\rangle = \sum_a a\,P(a) = \sum_a a\,|\langle a|\psi\rangle|^2$$
 
   <p>
     用密度算符的语言，期望值可以统一地写为：
   </p>
 
-  <Fragment set:html={defined.expectTrace} />
+  $$\langle\hat{A}\rangle = \text{Tr}(\rho\hat{A})$$
 
   <p>
     这个表达式对纯态和混合态都适用。类似地，$\hat A$ 的 $n$ 次矩为
-    <Fragment set:html={defined.nthMoment} />。方差为
-    <Fragment set:html={defined.varianceDef} />。
+    $\langle\hat{A}^n\rangle = \text{Tr}(\rho\hat{A}^n)$。方差为
+    $(\Delta A)^2 = \langle\hat{A}^2\rangle - \langle\hat{A}\rangle^2$。
   </p>
 
-  <ThinkingBox title="测量问题：量子力学最深层的概念困难">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>测量问题：量子力学最深层的概念困难</span></div>
     <p>
       投影假设引出了量子力学中最令人困扰的概念问题——<strong>测量问题</strong>（measurement problem）。
       困难在于：
@@ -509,7 +356,7 @@ const defined = {
       否认坍缩的存在，认为所有分支同时实现；退相干理论解释了为什么在实践中看不到
       宏观叠加，但并不解决概率的来源问题。这至今仍是物理学和哲学交叉的活跃研究领域。
     </p>
-  </ThinkingBox>
+  </div>
 
   <h3>测量的不可逆性</h3>
 
@@ -522,18 +369,18 @@ const defined = {
 
   <p>
     值得注意的是，同一物理量的<strong>连续两次测量</strong>（中间无其他演化）必定给出
-    相同的结果。这是投影假设的直接推论：第一次测量后态已坍缩到本征态 <Fragment set:html={defined.aKet} />，
+    相同的结果。这是投影假设的直接推论：第一次测量后态已坍缩到本征态 $|a\rangle$，
     第二次测量自然得到同一本征值 $a$。这一性质有时被称为测量的<strong>可重复性</strong>
     （repeatability），也是实验上验证测量公设的基础。
   </p>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.1.4：测量、可观测量与不确定性</li>
       <li>曾谨言,《量子力学》卷I, 第三章 &sect;3.4：力学量的测量与几率</li>
       <li>Weinberg, <em>Lectures on Quantum Mechanics</em>, Ch.3.7：Born 规则与概率诠释</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 2.4 时间演化与Schrödinger方程 -->
@@ -546,7 +393,7 @@ const defined = {
     <strong>公设五</strong>：系统的态矢量随时间的演化由 <strong>Schr&ouml;dinger 方程</strong>支配：
   </p>
 
-  <Fragment set:html={defined.schEq} />
+  $$i\hbar\frac{\partial}{\partial t}|\psi(t)\rangle = \hat{H}|\psi(t)\rangle$$
 
   <p>
     其中 $\hat H$ 是系统的 Hamilton 算符（能量可观测量）。这是量子力学的基本运动方程。
@@ -558,19 +405,19 @@ const defined = {
     Schr&ouml;dinger 方程的形式解可以用<strong>时间演化算符</strong> $\hat U(t, t_0)$ 表达：
   </p>
 
-  <Fragment set:html={defined.evolve} />
+  $$|\psi(t)\rangle = \hat{U}(t, t_0)|\psi(t_0)\rangle$$
 
   <p>
     当 Hamilton 量不显含时间时，时间演化算符有简洁的指数形式：
   </p>
 
-  <Fragment set:html={defined.unitaryExp} />
+  $$\hat{U}(t) = e^{-i\hat{H}t/\hbar}$$
 
   <p>
     （取 $t_0 = 0$）。当 Hamilton 量显含时间时，形式解为 Dyson 时间有序指数：
   </p>
 
-  <Fragment set:html={defined.dyson} />
+  $$\hat{U}(t, t_0) = \mathcal{T}\exp\left(-\frac{i}{\hbar}\int_{t_0}^{t}\hat{H}(t')\,dt'\right)$$
 
   <p>
     其中 $\mathcal T$ 表示时间排序（time-ordering）。
@@ -579,36 +426,36 @@ const defined = {
   <h3>幺正性与概率守恒</h3>
 
   <p>
-    时间演化算符 $\hat U$ 是<strong>幺正</strong>的：<Fragment set:html={defined.unitaryCond} />。
+    时间演化算符 $\hat U$ 是<strong>幺正</strong>的：$\hat{U}^\dagger\hat{U} = \hat{U}\hat{U}^\dagger = \hat{I}$。
     这保证了态矢量的归一化在演化过程中保持不变：
   </p>
 
-  <Fragment set:html={defined.normPreserve} />
+  $$\langle\psi(t)|\psi(t)\rangle = \langle\psi(0)|\hat{U}^\dagger\hat{U}|\psi(0)\rangle = \langle\psi(0)|\psi(0)\rangle = 1$$
 
   <p>
     幺正性等价于<strong>概率守恒</strong>：量子力学中概率不会凭空产生或消失。
-    这也等价于 Hamilton 算符的 Hermite 性；事实上，<Fragment set:html={defined.unitaryIff} />
-    为幺正的当且仅当 <Fragment set:html={defined.Hdagger} />。
+    这也等价于 Hamilton 算符的 Hermite 性；事实上，$\hat{U} = e^{-i\hat{H}t/\hbar}$
+    为幺正的当且仅当 $\hat{H} = \hat{H}^\dagger$。
   </p>
 
-  <Derivation title="证明幺正性等价于 Hamilton 量的 Hermite 性">
+  <details class="derivation-block"><summary class="derivation-toggle">证明幺正性等价于 Hamilton 量的 Hermite 性</summary><div class="derivation-content">
     <p>
       对 Schr&ouml;dinger 方程取伴随，得到 $\langle\psi(t)|$ 的演化方程：
     </p>
     <p>
-      <Fragment set:html={defined.braEvolve} />
+      $-i\hbar\frac{\partial}{\partial t}\langle\psi(t)| = \langle\psi(t)|\hat{H}^\dagger$
     </p>
     <p>
       计算 $\langle\psi(t)|\psi(t)\rangle$ 对时间的导数：
     </p>
     <p>
-      <Fragment set:html={defined.normDeriv} />
+      $\frac{d}{dt}\langle\psi|\psi\rangle = \left(\frac{\partial}{\partial t}\langle\psi|\right)|\psi\rangle + \langle\psi|\left(\frac{\partial}{\partial t}|\psi\rangle\right) = \frac{i}{\hbar}\langle\psi|\hat{H}^\dagger|\psi\rangle - \frac{i}{\hbar}\langle\psi|\hat{H}|\psi\rangle = \frac{i}{\hbar}\langle\psi|(\hat{H}^\dagger - \hat{H})|\psi\rangle$
     </p>
     <p>
-      要使 <Fragment set:html={defined.normZero} /> 对所有态 <Fragment set:html={defined.psiKet} /> 成立，
-      必须 <Fragment set:html={defined.Hdagger} />。反之若 $\hat H$ Hermite，则上式为零，概率守恒。
+      要使 $\frac{d}{dt}\langle\psi|\psi\rangle = 0$ 对所有态 $|\psi\rangle$ 成立，
+      必须 $\hat{H} = \hat{H}^\dagger$。反之若 $\hat H$ Hermite，则上式为零，概率守恒。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>三种绘景</h3>
 
@@ -621,40 +468,40 @@ const defined = {
     <strong>Schr&ouml;dinger 绘景</strong>：态矢量随时间演化，算符（不显含时间的）不变。
   </p>
 
-  <Fragment set:html={defined.schPicState} />
+  $$|\psi_S(t)\rangle = \hat{U}(t)|\psi_S(0)\rangle, \qquad \hat{A}_S = \text{const.}$$
 
   <p>
     <strong>Heisenberg 绘景</strong>：态矢量固定不变，算符随时间演化。
   </p>
 
-  <Fragment set:html={defined.heisPicState} />
+  $$|\psi_H\rangle = |\psi_S(0)\rangle = \text{const.}, \qquad \hat{A}_H(t) = \hat{U}^\dagger(t)\hat{A}_S\hat{U}(t)$$
 
   <p>
     Heisenberg 绘景中算符的运动方程为：
   </p>
 
-  <Fragment set:html={defined.heisEOM} />
+  $$\frac{d\hat{A}_H}{dt} = \frac{1}{i\hbar}[\hat{A}_H, \hat{H}] + \left(\frac{\partial\hat{A}_S}{\partial t}\right)_H$$
 
   <p>
-    这与经典力学中的 Hamilton 运动方程 <Fragment set:html={defined.classicalEOM} />
+    这与经典力学中的 Hamilton 运动方程 $\frac{dA}{dt} = \{A, H\}_{\text{P.B.}}$
     形式类似，体现了量子-经典对应。
   </p>
 
   <p>
-    <strong>相互作用绘景（Dirac 绘景）</strong>：将 Hamilton 量分解为 <Fragment set:html={defined.HSplit} />，
+    <strong>相互作用绘景（Dirac 绘景）</strong>：将 Hamilton 量分解为 $\hat{H} = \hat{H}_0 + \hat{V}$，
     态矢量和算符各承担部分时间演化：
   </p>
 
-  <Fragment set:html={defined.intPicDef} />
+  $$|\psi_I(t)\rangle = e^{i\hat{H}_0 t/\hbar}|\psi_S(t)\rangle, \qquad \hat{A}_I(t) = e^{i\hat{H}_0 t/\hbar}\hat{A}_S\,e^{-i\hat{H}_0 t/\hbar}$$
 
   <p>
     相互作用绘景中的运动方程为：
   </p>
 
-  <Fragment set:html={defined.intPicEOM} />
+  $$i\hbar\frac{\partial}{\partial t}|\psi_I(t)\rangle = \hat{V}_I(t)|\psi_I(t)\rangle$$
 
   <p>
-    其中 <Fragment set:html={defined.VIdef} />。
+    其中 $\hat{V}_I(t) = e^{i\hat{H}_0 t/\hbar}\hat{V}\,e^{-i\hat{H}_0 t/\hbar}$。
     相互作用绘景在微扰论和散射理论中极为重要，是 Dyson 级数展开的基础。
   </p>
 
@@ -664,50 +511,50 @@ const defined = {
     <strong>Ehrenfest 定理</strong>建立了量子力学期望值的运动方程与经典力学 Hamilton 方程之间的联系：
   </p>
 
-  <Fragment set:html={defined.ehrenfestEq} />
+  $$\frac{d\langle\hat{x}\rangle}{dt} = \frac{\langle\hat{p}\rangle}{m}, \qquad \frac{d\langle\hat{p}\rangle}{dt} = -\left\langle\frac{\partial V}{\partial x}\right\rangle$$
 
-  <Derivation title="推导 Ehrenfest 定理">
+  <details class="derivation-block"><summary class="derivation-toggle">推导 Ehrenfest 定理</summary><div class="derivation-content">
     <p>
       利用 Heisenberg 运动方程（或等价地在 Schr&ouml;dinger 绘景中直接计算），
-      对 Hamilton 量 <Fragment set:html={defined.hamiltonianKE} />：
+      对 Hamilton 量 $\hat{H} = \frac{\hat{p}^2}{2m} + V(\hat{x})$：
     </p>
     <p>
-      <Fragment set:html={defined.dxdt1} />
+      $\frac{d\langle\hat{x}\rangle}{dt} = \frac{1}{i\hbar}\langle[\hat{x}, \hat{H}]\rangle = \frac{1}{i\hbar}\left\langle\left[\hat{x}, \frac{\hat{p}^2}{2m}\right]\right\rangle = \frac{1}{i\hbar}\cdot\frac{1}{2m}\langle[\hat{x}, \hat{p}^2]\rangle$
     </p>
     <p>
-      利用恒等式 <Fragment set:html={defined.xp2comm} />：
+      利用恒等式 $[\hat{x}, \hat{p}^2] = [\hat{x}, \hat{p}]\hat{p} + \hat{p}[\hat{x}, \hat{p}] = 2i\hbar\hat{p}$：
     </p>
     <p>
-      <Fragment set:html={defined.dxdt2} />
+      $\frac{d\langle\hat{x}\rangle}{dt} = \frac{1}{i\hbar}\cdot\frac{2i\hbar}{2m}\langle\hat{p}\rangle = \frac{\langle\hat{p}\rangle}{m}$
     </p>
     <p>
       类似地：
     </p>
     <p>
-      <Fragment set:html={defined.dpdt1} />
+      $\frac{d\langle\hat{p}\rangle}{dt} = \frac{1}{i\hbar}\langle[\hat{p}, \hat{H}]\rangle = \frac{1}{i\hbar}\langle[\hat{p}, V(\hat{x})]\rangle$
     </p>
     <p>
-      在位置表象中 <Fragment set:html={defined.pVcomm} />，因此：
+      在位置表象中 $[\hat{p}, V(\hat{x})] = -i\hbar\frac{\partial V}{\partial x}$，因此：
     </p>
     <p>
-      <Fragment set:html={defined.dpdt2} />
+      $\frac{d\langle\hat{p}\rangle}{dt} = -\left\langle\frac{\partial V}{\partial x}\right\rangle$
     </p>
     <p>
-      这两个方程正是经典力学中的 Newton 第二定律 <Fragment set:html={defined.newtonLaw} /> 的期望值版本。
+      这两个方程正是经典力学中的 Newton 第二定律 $m\ddot{x} = F = -\frac{\partial V}{\partial x}$ 的期望值版本。
     </p>
-  </Derivation>
+  </div></details>
 
-  <InsightBox title="Ehrenfest 定理与经典极限">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Ehrenfest 定理与经典极限</span></div>
     <p>
       Ehrenfest 定理表明量子力学期望值的运动方程与经典力学的形式对应，但这并不意味着
-      量子力学自动退化为经典力学。关键在于 <Fragment set:html={defined.FxExpect} /> 一般
-      <strong>不等于</strong> <Fragment set:html={defined.FxClassical} />（除非 $F$ 是至多二次的函数，
+      量子力学自动退化为经典力学。关键在于 $\langle F(\hat{x})\rangle$ 一般
+      <strong>不等于</strong> $F(\langle\hat{x}\rangle)$（除非 $F$ 是至多二次的函数，
       如自由粒子和谐振子）。只有当波包足够窄（$\Delta x$ 远小于势能变化的特征尺度）时，
-      <Fragment set:html={defined.FxApprox} /> 近似成立，
+      $\langle F(\hat{x})\rangle \approx F(\langle\hat{x}\rangle)$ 近似成立，
       期望值才近似遵循经典轨道。这解释了为什么宏观物体的行为接近经典力学——它们的
       de Broglie 波长远小于运动的特征尺度，波包扩散效应可以忽略。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>经典极限的浮现</h3>
 
@@ -719,14 +566,14 @@ const defined = {
     讨论经典极限。
   </p>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.2.1-2.3：时间演化算符与 Schr&ouml;dinger 方程</li>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.2.4-2.5：Schr&ouml;dinger 绘景与 Heisenberg 绘景</li>
       <li>曾谨言,《量子力学》卷I, 第三章 &sect;3.5：Schr&ouml;dinger 方程</li>
       <li>Weinberg, <em>Lectures on Quantum Mechanics</em>, Ch.3.5-3.6：时间演化与绘景</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 2.5 不确定性关系 -->
@@ -736,73 +583,73 @@ const defined = {
   <h3>广义不确定性关系</h3>
 
   <p>
-    对于任意两个可观测量 $\hat A$ 和 $\hat B$，它们在任意态 <Fragment set:html={defined.psiKet} /> 中的
+    对于任意两个可观测量 $\hat A$ 和 $\hat B$，它们在任意态 $|\psi\rangle$ 中的
     均方偏差满足<strong>Robertson 不确定性关系</strong>：
   </p>
 
-  <Fragment set:html={defined.robertson} />
+  $$\Delta A \cdot \Delta B \geq \frac{1}{2}\left|\langle[\hat{A}, \hat{B}]\rangle\right|$$
 
   <p>
-    其中 <Fragment set:html={defined.stdDev} /> 是 $\hat A$ 的标准差。
+    其中 $\Delta A = \sqrt{\langle\hat{A}^2\rangle - \langle\hat{A}\rangle^2}$ 是 $\hat A$ 的标准差。
     更强的 <strong>Schr&ouml;dinger 不确定性关系</strong>为：
   </p>
 
-  <Fragment set:html={defined.schrodinger_uncert} />
+  $$(\Delta A)^2 (\Delta B)^2 \geq \frac{1}{4}\left|\langle[\hat{A}, \hat{B}]\rangle\right|^2 + \frac{1}{4}\left|\langle\{\Delta\hat{A}, \Delta\hat{B}\}\rangle\right|^2$$
 
   <p>
-    其中 <Fragment set:html={defined.deltaAdef} />，<Fragment set:html={defined.anticommSymbol} /> 表示反对易子。
+    其中 $\Delta\hat{A} = \hat{A} - \langle\hat{A}\rangle$，$\{\cdot, \cdot\}$ 表示反对易子。
     Robertson 不等式是其推论（去掉了第二项）。
   </p>
 
-  <Derivation title="Robertson 不确定性关系的证明">
+  <details class="derivation-block"><summary class="derivation-toggle">Robertson 不确定性关系的证明</summary><div class="derivation-content">
     <p>
-      定义 <Fragment set:html={defined.alphaVec} /> 和
-      <Fragment set:html={defined.betaVec} />。
+      定义 $|\alpha\rangle = \Delta\hat{A}|\psi\rangle = (\hat{A} - \langle\hat{A}\rangle)|\psi\rangle$ 和
+      $|\beta\rangle = \Delta\hat{B}|\psi\rangle = (\hat{B} - \langle\hat{B}\rangle)|\psi\rangle$。
     </p>
     <p>
       由 Cauchy-Schwarz 不等式：
     </p>
     <p>
-      <Fragment set:html={defined.cauchySchwarz} />
+      $\langle\alpha|\alpha\rangle\langle\beta|\beta\rangle \geq |\langle\alpha|\beta\rangle|^2$
     </p>
     <p>
-      其中 <Fragment set:html={defined.alphaAlpha} />，
-      <Fragment set:html={defined.betaBeta} />。
+      其中 $\langle\alpha|\alpha\rangle = \langle(\Delta\hat{A})^2\rangle = (\Delta A)^2$，
+      $\langle\beta|\beta\rangle = (\Delta B)^2$。
     </p>
     <p>
-      内积 <Fragment set:html={defined.alphaBeta} /> 是复数，
+      内积 $\langle\alpha|\beta\rangle = \langle\Delta\hat{A}\,\Delta\hat{B}\rangle$ 是复数，
       将其分解为实部和虚部：
     </p>
     <p>
-      <Fragment set:html={defined.decompose} />
+      $\langle\Delta\hat{A}\,\Delta\hat{B}\rangle = \frac{1}{2}\langle\{\Delta\hat{A}, \Delta\hat{B}\}\rangle + \frac{1}{2}\langle[\Delta\hat{A}, \Delta\hat{B}]\rangle$
     </p>
     <p>
-      注意 <Fragment set:html={defined.commReduce} />（常数相消），
-      而 <Fragment set:html={defined.anticommReal} /> 是实数（Hermite 算符的反对易子是 Hermite 的），
-      <Fragment set:html={defined.commImag} /> 是纯虚数（Hermite 算符的对易子是反 Hermite 的）。
+      注意 $[\Delta\hat{A}, \Delta\hat{B}] = [\hat{A}, \hat{B}]$（常数相消），
+      而 $\langle\{\Delta\hat{A}, \Delta\hat{B}\}\rangle$ 是实数（Hermite 算符的反对易子是 Hermite 的），
+      $\langle[\hat{A}, \hat{B}]\rangle$ 是纯虚数（Hermite 算符的对易子是反 Hermite 的）。
     </p>
     <p>
-      因此 <Fragment set:html={defined.modSquared} />。
+      因此 $|\langle\alpha|\beta\rangle|^2 = \frac{1}{4}|\langle\{\Delta\hat{A}, \Delta\hat{B}\}\rangle|^2 + \frac{1}{4}|\langle[\hat{A}, \hat{B}]\rangle|^2$。
     </p>
     <p>
       这就是 Schr&ouml;dinger 不确定性关系。去掉非负的反对易子项，即得 Robertson 不等式：
     </p>
     <p>
-      <Fragment set:html={defined.robertsonSq} />
+      $(\Delta A)^2(\Delta B)^2 \geq \frac{1}{4}|\langle[\hat{A}, \hat{B}]\rangle|^2$
     </p>
     <p>
-      取平方根得到 <Fragment set:html={defined.robertsonFinal} />。
+      取平方根得到 $\Delta A \cdot \Delta B \geq \frac{1}{2}|\langle[\hat{A}, \hat{B}]\rangle|$。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>位置-动量不确定性关系</h3>
 
   <p>
-    将广义不确定性关系应用于 $\hat x$ 和 $\hat p$，利用 <Fragment set:html={defined.xpComm} />，
+    将广义不确定性关系应用于 $\hat x$ 和 $\hat p$，利用 $[\hat{x}, \hat{p}] = i\hbar$，
     得到：
   </p>
 
-  <Fragment set:html={defined.heisenberg} />
+  $$\Delta x \cdot \Delta p \geq \frac{\hbar}{2}$$
 
   <p>
     这是 Heisenberg 于 1927 年提出的位置-动量不确定性关系。
@@ -817,7 +664,7 @@ const defined = {
     <strong>能量-时间不确定性关系</strong>：
   </p>
 
-  <Fragment set:html={defined.energyTime} />
+  $$\Delta E \cdot \Delta t \geq \frac{\hbar}{2}$$
 
   <p>
     这个关系的地位与位置-动量不确定性关系有本质不同。在非相对论量子力学中，
@@ -827,69 +674,69 @@ const defined = {
 
   <p>
     Mandelstam-Tamm 关系给出了严格的表述：对任一不显含时间的可观测量 $\hat B$，定义
-    <Fragment set:html={defined.dtBdef} />，即可观测量 $\hat B$ 的期望值
+    $\Delta t_B = \Delta B / |d\langle\hat{B}\rangle/dt|$，即可观测量 $\hat B$ 的期望值
     发生显著变化所需的时间。则：
   </p>
 
-  <Fragment set:html={defined.mandelstamTamm} />
+  $$\Delta E \cdot \Delta t_B \geq \frac{\hbar}{2}$$
 
   <p>
     物理含义是：能量涨落越大，系统状态变化越快。特别地，能量本征态（$\Delta E = 0$）
     是严格的定态（$\Delta t \to \infty$，态不随时间变化），这与
-    <Fragment set:html={defined.stationaryPhase} /> 一致——态矢量只差一个全局相位。
+    $|\psi(t)\rangle = e^{-iEt/\hbar}|E\rangle$ 一致——态矢量只差一个全局相位。
   </p>
 
-  <Derivation title="Mandelstam-Tamm 关系的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">Mandelstam-Tamm 关系的推导</summary><div class="derivation-content">
     <p>
       对不显含时间的可观测量 $\hat B$，利用 Ehrenfest 关系：
     </p>
     <p>
-      <Fragment set:html={defined.dBdt} />
+      $\frac{d\langle\hat{B}\rangle}{dt} = \frac{1}{i\hbar}\langle[\hat{B}, \hat{H}]\rangle$
     </p>
     <p>
       应用 Robertson 不等式于 $\hat B$ 和 $\hat H$：
     </p>
     <p>
-      <Fragment set:html={defined.mtRobertson} />
+      $\Delta B \cdot \Delta E \geq \frac{1}{2}|\langle[\hat{B}, \hat{H}]\rangle| = \frac{\hbar}{2}\left|\frac{d\langle\hat{B}\rangle}{dt}\right|$
     </p>
     <p>
-      定义 <Fragment set:html={defined.dtBdefEq} />，代入得：
+      定义 $\Delta t_B \equiv \frac{\Delta B}{|d\langle\hat{B}\rangle/dt|}$，代入得：
     </p>
     <p>
-      <Fragment set:html={defined.mtResult} />
+      $\Delta E \cdot \Delta t_B \geq \frac{\hbar}{2}$
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>最小不确定态与相干态</h3>
 
   <p>
     使得不确定性关系取等号的态称为<strong>最小不确定态</strong>（minimum uncertainty state）。
     对于位置-动量不确定性关系，等号成立要求 Cauchy-Schwarz 不等式取等号，
-    即 <Fragment set:html={defined.betaLambdaAlpha} />（$\lambda$ 为复常数），展开为：
+    即 $|\beta\rangle = \lambda|\alpha\rangle$（$\lambda$ 为复常数），展开为：
   </p>
 
-  <Fragment set:html={defined.minUncertEq} />
+  $$(\hat{p} - \langle\hat{p}\rangle)|\psi\rangle = \lambda(\hat{x} - \langle\hat{x}\rangle)|\psi\rangle$$
 
   <p>
     在位置表象中，这是一个一阶微分方程，其解为<strong>高斯波包</strong>：
   </p>
 
-  <Fragment set:html={defined.gaussianWave} />
+  $$\psi(x) = \left(\frac{1}{2\pi(\Delta x)^2}\right)^{1/4}\exp\left(-\frac{(x - \langle x\rangle)^2}{4(\Delta x)^2} + \frac{i\langle p\rangle x}{\hbar}\right)$$
 
   <p>
     谐振子的<strong>相干态</strong>（coherent state）$|\alpha\rangle$ 是最重要的最小不确定态，
     定义为湮灭算符的本征态：
   </p>
 
-  <Fragment set:html={defined.coherentDef} />
+  $$\hat{a}|\alpha\rangle = \alpha|\alpha\rangle, \quad \alpha \in \mathbb{C}$$
 
   <p>
     相干态在时间演化下保持其高斯波包的形状不变，波包中心沿经典轨道运动，且在任意时刻都满足
-    <Fragment set:html={defined.dxdpMin} />。因此相干态被视为"最接近经典的量子态"，
+    $\Delta x \cdot \Delta p = \hbar/2$。因此相干态被视为"最接近经典的量子态"，
     在量子光学和量子信息中有广泛应用。
   </p>
 
-  <InsightBox title="不确定性关系的深层含义">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>不确定性关系的深层含义</span></div>
     <p>
       不确定性关系不是关于"测量扰动"的陈述（虽然 Heisenberg 最初用 $\gamma$ 射线显微镜思想实验
       如此阐释），而是关于<strong>量子态本身的内禀性质</strong>。它反映了互补可观测量
@@ -898,16 +745,16 @@ const defined = {
       从信息论角度看，不确定性关系限制了我们能从量子态中同时提取的关于不同可观测量的信息量，
       这是后来发展的信息论不确定性关系（entropic uncertainty relations）的基础。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.1.4：不确定性关系的推导</li>
       <li>曾谨言,《量子力学》卷I, 第三章 &sect;3.6：不确定性关系</li>
       <li>Weinberg, <em>Lectures on Quantum Mechanics</em>, Ch.3.4：广义不确定性关系与最小不确定态</li>
       <li>关于相干态：Sakurai Ch.2.3，以及 Glauber 的原始论文 (1963)</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 章末总结 -->
@@ -932,7 +779,7 @@ const defined = {
     重要结果。在后续章节中，我们将运用这一公设体系求解具体的物理问题。
   </p>
 
-  <ThinkingBox title="公设体系的开放问题">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>公设体系的开放问题</span></div>
     <p>
       量子力学公设体系虽然在实践中极其成功，但仍留下深刻的开放问题：
     </p>
@@ -953,6 +800,9 @@ const defined = {
         等人的工作在这个方向取得了重要进展。
       </li>
     </ul>
-  </ThinkingBox>
+  </div>`;
+---
 
+<ChapterLayout title="第二章 量子力学公设体系" courseId="qm" chapterId="ch02">
+  <Fragment set:html={content} />
 </ChapterLayout>

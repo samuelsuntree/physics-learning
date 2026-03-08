@@ -1,14 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
----
 
-<ChapterLayout title="第三章 正则系综" courseId="stat" chapterId="ch03">
-
-  <h1>第三章 正则系综</h1>
+const content = String.raw`<h1>第三章 正则系综</h1>
 
   <p>
     正则系综描述一个与温度为 $T$ 的热库达到热平衡的系统——体积 $V$ 和粒子数 $N$ 固定，但能量可以在系统与热库之间交换。相比微正则系综，正则系综在实际计算中极为方便：配分函数 $Z(T,V,N)$ 取代态密度 $\Omega(E)$ 成为核心对象，而且 $Z$ 的乘积性质使得独立子系统的处理变得简单。本章将严格建立正则系综，分析能量涨落，并通过经典理想气体、能量均分定理、Maxwell速度分布、Einstein固体模型和顺磁性等应用展示其威力。
@@ -26,7 +19,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     P_i \propto \Omega_R(E_0 - E_i)
   $$
 
-  <Derivation title="Boltzmann分布的严格推导">
+  <details class="derivation-block"><summary class="derivation-toggle">Boltzmann分布的严格推导</summary><div class="derivation-content">
     <p>对热库的熵做Taylor展开。由于 $E_i \ll E_0$（热库远大于系统），展开到一阶即可：</p>
     $$
       S_R(E_0 - E_i) = S_R(E_0) - E_i\left(\frac{\partial S_R}{\partial E_R}\right)_{V_R, N_R} + O(E_i^2/E_0)
@@ -42,7 +35,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     <p>
       这里的求和遍历系统的所有微观态。关键假设只有两个：(1) 总系统处于微正则系综（等概率假设）；(2) 热库足够大，使Taylor展开到一阶有效。推导的严格性与系统本身的性质完全无关——系统可以是量子的、有强相互作用的、甚至是非线性的。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>配分函数</h3>
   <p>
@@ -75,7 +68,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     F(T, V, N) = -k_BT \ln Z(T, V, N)
   $$
 
-  <Derivation title="$F = -k_BT\ln Z$ 的证明">
+  <details class="derivation-block"><summary class="derivation-toggle">$F = -k_BT\ln Z$ 的证明</summary><div class="derivation-content">
     <p>正则系综中，系统的平均能量为</p>
     $$
       \langle E \rangle = \sum_i E_i P_i = \frac{\sum_i E_i\,e^{-\beta E_i}}{Z} = -\frac{\partial \ln Z}{\partial \beta}
@@ -88,7 +81,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     $$
       F = \langle E\rangle - TS = \langle E\rangle - T\bigl(k_B\beta\langle E\rangle + k_B\ln Z\bigr) = \langle E\rangle - \langle E\rangle - k_BT\ln Z = -k_BT\ln Z
     $$
-  </Derivation>
+  </div></details>
 
   <h3>由自由能推导全部热力学量</h3>
   <p>
@@ -123,20 +116,20 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     相应地，$\ln Z = \ln Z_A + \ln Z_B$，$F = F_A + F_B$。这一乘积性质使得正则系综在处理可分解系统时极为方便——这是它相对于微正则系综的巨大实用优势。
   </p>
 
-  <InsightBox title="为什么正则系综比微正则更常用？">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>为什么正则系综比微正则更常用？</span></div>
     <p>
       在微正则系综中，计算 $\Omega(E)$ 需要精确约束总能量——这意味着对相空间进行等能面上的积分，数学上通常很困难。正则系综中，配分函数 $Z$ 是无约束的全相空间积分（权重为 $e^{-\beta H}$），计算大大简化。更关键的是，乘积性质意味着独立子系统的配分函数可以直接相乘，而微正则系综中的对应运算是卷积（因为能量必须精确分配）。在热力学极限下，两种系综给出相同的热力学结果——这就是<strong>系综等价性</strong>。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 3.1-3.4</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 7.1-7.3</li>
       <li>汪志诚,《热力学·统计物理》, 第6版, &sect;8.1-8.3</li>
       <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;28, &sect;31</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="energy-fluctuations">3.2 能量涨落与热力学稳定性</h2>
@@ -156,7 +149,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     \langle E^2 \rangle = \frac{1}{Z}\sum_i E_i^2\,e^{-\beta E_i} = \frac{1}{Z}\frac{\partial^2 Z}{\partial\beta^2}
   $$
 
-  <Derivation title="能量涨落公式的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">能量涨落公式的推导</summary><div class="derivation-content">
     <p>能量的方差为</p>
     $$
       \langle (\Delta E)^2 \rangle = \langle E^2 \rangle - \langle E \rangle^2
@@ -174,7 +167,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       \langle (\Delta E)^2 \rangle = -\frac{\partial\langle E\rangle}{\partial\beta} = \frac{\partial\langle E\rangle}{\partial T}\cdot\frac{\partial T}{\partial(-\beta^{-1})^{-1}} = k_BT^2\frac{\partial\langle E\rangle}{\partial T} = k_BT^2 C_V
     $$
     <p>其中利用了 $\partial\beta/\partial T = -1/(k_BT^2)$。</p>
-  </Derivation>
+  </div></details>
 
   <p>
     这是一个极为重要的结果：
@@ -203,11 +196,11 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     对于 $N \sim 10^{23}$ 的宏观系统，相对涨落约为 $10^{-12}$——完全不可测量。这解释了为什么宏观系统的能量可以被视为确定值，也证明了正则系综（允许能量涨落）与微正则系综（固定能量）在热力学极限下等价。
   </p>
 
-  <InsightBox title="涨落-耗散关系的先声">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>涨落-耗散关系的先声</span></div>
     <p>
       $\langle(\Delta E)^2\rangle = k_BT^2 C_V$ 将平衡态涨落与系统对外界扰动的响应联系起来。这是<strong>涨落-耗散定理</strong>（Fluctuation-Dissipation Theorem, FDT）最简单的例子。更一般地，FDT断言：任何物理量的平衡态涨落都与对应共轭外场的线性响应函数成正比。Einstein（1905年布朗运动理论）和Nyquist（1928年电阻热噪声）分别在特殊情形下发现了这一关系；Callen和Welton（1951年）给出了量子力学的一般证明。正则系综的涨落公式可视为这一深刻联系的原型。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>$C_V \geq 0$ 的统计力学证明</h3>
   <p>
@@ -223,13 +216,13 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     C_V \geq 0
   $$
 
-  <ThinkingBox title="$C_V \geq 0$ 与热力学稳定性的深层联系">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>$C_V \geq 0$ 与热力学稳定性的深层联系</span></div>
     <p>
       在热力学中，$C_V \geq 0$ 是热力学稳定性的必要条件之一。若 $C_V &lt; 0$，系统失去能量后温度反而升高，会从环境吸收更多热量，导致热失控——这与热力学第二定律不相容。但在某些长程相互作用系统（如自引力系统：恒星、星系团）中，微正则系综确实可以给出 $C_V &lt; 0$，此时正则系综不再适用——系统与热库无法达到稳定平衡。这是系综<strong>不</strong>等价的著名例子。引力系统的负比热直接导致了恒星演化中的"引力热力学灾难"：恒星越辐射越热，直到核燃料耗尽。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 3.6</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 7.4</li>
@@ -237,7 +230,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;35</li>
       <li>D. Lynden-Bell, <em>Monthly Notices of the Royal Astronomical Society</em>, <strong>138</strong>, 495 (1968) — 自引力系统的负比热</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="canonical-applications">3.3 经典正则系综的应用</h2>
@@ -248,7 +241,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     $N$ 个全同、无相互作用的经典粒子在体积 $V$ 中，Hamilton量 $H = \sum_{i=1}^{N} \mathbf{p}_i^2/(2m)$。配分函数为
   </p>
 
-  <Derivation title="理想气体配分函数的完整计算">
+  <details class="derivation-block"><summary class="derivation-toggle">理想气体配分函数的完整计算</summary><div class="derivation-content">
     <p>经典配分函数为</p>
     $$
       Z = \frac{1}{N!\,h^{3N}}\int e^{-\beta H}\,d^{3N}q\,d^{3N}p
@@ -278,7 +271,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     $$
       E = F + TS = \frac{3}{2}Nk_BT, \qquad C_V = \frac{3}{2}Nk_B
     $$
-  </Derivation>
+  </div></details>
 
   <p>
     热de Broglie波长 $\lambda_T$ 的物理意义：它是温度 $T$ 下粒子的量子力学关联长度。当粒子间平均距离 $(V/N)^{1/3} \gg \lambda_T$ 时，经典统计力学有效；当 $(V/N)^{1/3} \sim \lambda_T$ 时，量子统计效应不可忽略（出现玻色凝聚或费米简并）。
@@ -292,7 +285,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     \langle \alpha\xi^2 \rangle = \frac{1}{2}k_BT
   $$
 
-  <Derivation title="均分定理的严格证明">
+  <details class="derivation-block"><summary class="derivation-toggle">均分定理的严格证明</summary><div class="derivation-content">
     <p>在正则系综中，</p>
     $$
       \langle \alpha\xi^2 \rangle = \frac{\displaystyle\int \alpha\xi^2\,e^{-\beta(\alpha\xi^2 + H')}\,d\xi\,d\Gamma'}{\displaystyle\int e^{-\beta(\alpha\xi^2 + H')}\,d\xi\,d\Gamma'}
@@ -310,7 +303,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     $$
       \langle \alpha\xi^2 \rangle = \alpha \cdot \frac{\frac{1}{2}\sqrt{\pi/(\beta\alpha)^3}}{\sqrt{\pi/(\beta\alpha)}} = \frac{\alpha}{2\beta\alpha} = \frac{1}{2\beta} = \frac{1}{2}k_BT
     $$
-  </Derivation>
+  </div></details>
 
   <p>
     <strong>适用条件的讨论</strong>：均分定理的成立要求：
@@ -321,11 +314,11 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     <li><strong>无界积分</strong>：$\xi$ 的取值必须从 $-\infty$ 到 $+\infty$。若 $\xi$ 受约束（如 $\xi \geq 0$），结果会不同。</li>
   </ul>
 
-  <InsightBox title="均分定理失效的历史意义">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>均分定理失效的历史意义</span></div>
     <p>
       均分定理的失效是推动量子力学诞生的关键线索之一。经典理论预言固体的比热为 $C_V = 3Nk_B$（Dulong-Petit定律），在常温下与实验吻合，但在低温下实验观测到比热趋于零——这是均分定理的破产。Einstein（1907年）率先用量子谐振子模型解释了比热的冻结，Debye（1912年）进一步给出了正确的 $T^3$ 低温行为。另一个著名的失败是黑体辐射的Rayleigh-Jeans灾难：均分定理给出辐射能量密度在高频端发散——正是这一灾难促使Planck提出了能量量子化假设。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>Maxwell速度分布律</h3>
   <p>
@@ -356,11 +349,11 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
   </ul>
   <p>三者的关系为 $v_{\text{mp}} &lt; \langle v\rangle &lt; v_{\text{rms}}$，反映了分布的右偏性（长尾）。</p>
 
-  <ThinkingBox title="Maxwell分布的普适性与局限">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>Maxwell分布的普适性与局限</span></div>
     <p>
       Maxwell速度分布假设粒子间无相互作用且处于经典极限。对于稀薄气体，这是极好的近似，已被分子束实验精确验证（O. Stern, 1920; I. Estermann et al., 1947）。但在以下情况下会失效：(1) 量子简并气体（$T$ 低于费米温度或BEC温度时）——费米子遵循Fermi-Dirac分布，玻色子遵循Bose-Einstein分布；(2) 强相互作用系统（如液体）——速度分布偏离Gaussian形式；(3) 相对论性气体——需要使用Juttner分布 $f \propto \exp(-\beta\gamma mc^2)$。此外，非平衡态中的速度分布可能与Maxwell形式有显著偏差，需要用Boltzmann方程处理。
     </p>
-  </ThinkingBox>
+  </div>
 
   <h3>Einstein振动模型</h3>
   <p>
@@ -386,7 +379,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     C_V = 3Nk_B\left(\frac{\Theta_E}{T}\right)^2 \frac{e^{\Theta_E/T}}{(e^{\Theta_E/T} - 1)^2}
   $$
 
-  <Derivation title="Einstein比热的极限行为">
+  <details class="derivation-block"><summary class="derivation-toggle">Einstein比热的极限行为</summary><div class="derivation-content">
     <p><strong>高温极限</strong>（$T \gg \Theta_E$，即 $x = \Theta_E/T \ll 1$）：</p>
     $$
       e^x \approx 1 + x + x^2/2, \quad \frac{x^2 e^x}{(e^x-1)^2} \approx \frac{x^2(1+x)}{x^2(1+x/2)^2} \to 1
@@ -397,7 +390,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       C_V \approx 3Nk_B\,x^2\,e^{-x} = 3Nk_B\left(\frac{\Theta_E}{T}\right)^2 e^{-\Theta_E/T}
     $$
     <p>比热以<strong>指数</strong>衰减趋于零，定性地解释了比热在低温下的冻结。但实验表明固体比热在低温下按 $T^3$（而非指数）衰减——这一差异由Debye模型通过引入声子色散关系（$\omega \propto k$）修正。</p>
-  </Derivation>
+  </div></details>
 
   <h3>顺磁性与Curie定律</h3>
   <p>
@@ -416,7 +409,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     M = N\langle\mu_z\rangle = N\mu_B\frac{e^{\beta\mu_B B} - e^{-\beta\mu_B B}}{e^{\beta\mu_B B} + e^{-\beta\mu_B B}} = N\mu_B\tanh(\beta\mu_B B)
   $$
 
-  <Derivation title="Curie定律的推导与推广到一般$J$">
+  <details class="derivation-block"><summary class="derivation-toggle">Curie定律的推导与推广到一般$J$</summary><div class="derivation-content">
     <p><strong>弱场/高温极限</strong>（$\mu_B B \ll k_BT$）：$\tanh x \approx x$ 对 $x \ll 1$，因此</p>
     $$
       M \approx \frac{N\mu_B^2 B}{k_BT}
@@ -443,21 +436,21 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       \chi = \frac{Ng^2\mu_B^2 J(J+1)}{3k_BT}
     $$
     <p>有效磁矩为 $\mu_{\text{eff}} = g\mu_B\sqrt{J(J+1)}$，而非 $g\mu_BJ$——这是量子力学效应。</p>
-  </Derivation>
+  </div></details>
 
-  <InsightBox title="Curie定律的物理图像">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Curie定律的物理图像</span></div>
     <p>
       顺磁性来源于热运动与磁场排列之间的竞争。在高温下（$k_BT \gg \mu B$），热涨落使磁矩几乎完全随机取向，仅有微弱的净磁化——$\chi \propto 1/T$。在低温下（$k_BT \ll \mu B$），几乎所有磁矩都沿磁场方向排列，达到饱和磁化 $M \to Ng\mu_BJ$。Curie定律的 $1/T$ 行为是实验鉴别顺磁性材料的标志性特征。注意：Curie定律假设磁矩之间<strong>无相互作用</strong>。当自旋间存在交换相互作用时，在低温下会发生铁磁或反铁磁相变，Curie定律被修正为Curie-Weiss定律 $\chi = C/(T - T_c)$，其中 $T_c$ 是Curie温度。
     </p>
-  </InsightBox>
+  </div>
 
-  <ThinkingBox title="配分函数作为"母函数"的力量">
+  <div class="thinking-box"><div class="box-header thinking-header"><span>深层思考</span></div>
     <p>
       回顾本章的所有应用，它们都遵循同一模式：(1) 写出Hamilton量；(2) 计算配分函数 $Z$（通常可以分解为单粒子配分函数的乘积）；(3) 对 $\ln Z$ 求导得到全部热力学量。配分函数就像概率论中的矩生成函数——它编码了系统的全部平衡态信息。正是这种统一的计算框架，使得正则系综成为平衡态统计力学中最核心的工具。从理想气体到量子振子，从顺磁体到黑体辐射，配分函数的计算范式覆盖了几乎所有可精确求解的模型。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 3.5, 3.7-3.9</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 7.5-7.7, 8.1</li>
@@ -465,6 +458,9 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;31, &sect;33, &sect;52, &sect;59</li>
       <li>A. Einstein, <em>Annalen der Physik</em>, <strong>22</strong>, 180 (1907) — Einstein固体模型</li>
     </ul>
-  </ReferenceBox>
+  </div>`;
+---
 
+<ChapterLayout title="第三章 正则系综" courseId="stat" chapterId="ch03">
+  <Fragment set:html={content} />
 </ChapterLayout>

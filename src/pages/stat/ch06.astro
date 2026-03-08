@@ -1,30 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const fermiEnergy = `$$\\varepsilon_F = \\frac{\\hbar^2}{2m}\\left(\\frac{6\\pi^2 n}{g_s}\\right)^{2/3}$$`;
-const zeroTempEnergy = `$$E_0 = \\frac{3}{5}N\\varepsilon_F$$`;
-const zeroTempPressure = `$$P_0 = \\frac{2E_0}{3V} = \\frac{2}{5}\\frac{N\\varepsilon_F}{V} = \\frac{(6\\pi^2)^{2/3}\\hbar^2}{5m}\\left(\\frac{n}{g_s}\\right)^{5/3}$$`;
-const densityOfStates3D = `$$g(\\varepsilon) = g_s \\cdot \\frac{V}{4\\pi^2}\\left(\\frac{2m}{\\hbar^2}\\right)^{3/2}\\varepsilon^{1/2} \\equiv \\frac{3N}{2\\varepsilon_F}\\left(\\frac{\\varepsilon}{\\varepsilon_F}\\right)^{1/2}$$`;
-const sommerfeldIntegral = `$$I = \\int_0^{\\infty} \\phi(\\varepsilon)\\,f(\\varepsilon)\\,d\\varepsilon = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varepsilon + \\frac{\\pi^2}{6}(k_BT)^2\\,\\phi'(\\mu) + \\frac{7\\pi^4}{360}(k_BT)^4\\,\\phi''(\\mu) + \\cdots$$`;
-const muCorrection = `$$\\mu(T) = \\varepsilon_F\\!\\left[1 - \\frac{\\pi^2}{12}\\left(\\frac{T}{T_F}\\right)^{\\!2} - \\frac{\\pi^4}{80}\\left(\\frac{T}{T_F}\\right)^{\\!4} + \\cdots\\right]$$`;
-const electronHeatCapacity = `$$C_V^{\\text{el}} = \\frac{\\pi^2}{2}Nk_B\\frac{T}{T_F} = \\gamma T$$`;
-const pauliSusceptibility = `$$\\chi_{\\text{Pauli}} = \\mu_0\\mu_B^2\\,g(\\varepsilon_F) = \\frac{3N\\mu_0\\mu_B^2}{2\\varepsilon_F}\\left[1 + O(T/T_F)^2\\right]$$`;
-const totalHeatCapacity = `$$C(T) = \\gamma T + \\alpha T^3$$`;
-const nonrelEOS = `$$P = K_{\\text{NR}}\\,n_e^{5/3}, \\qquad K_{\\text{NR}} = \\frac{(3\\pi^2)^{2/3}\\hbar^2}{5m_e}$$`;
-const relatEOS = `$$P = K_{\\text{UR}}\\,n_e^{4/3}, \\qquad K_{\\text{UR}} = \\frac{(3\\pi^2)^{1/3}\\hbar c}{4}$$`;
-const chandrasekharMass = `$$M_{\\text{Ch}} = \\omega_3\\left(\\frac{\\hbar c}{G}\\right)^{3/2}\\frac{1}{(\\mu_e m_H)^2} \\approx 1.44\\,M_{\\odot}$$`;
-const sommerfeldDerivStep1 = `$$I = \\int_0^{\\infty}\\frac{\\phi(\\varepsilon)}{e^{\\beta(\\varepsilon-\\mu)}+1}\\,d\\varepsilon$$`;
-const sommerfeldDerivStep2 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varepsilon - \\int_0^{\\mu}\\phi(\\varepsilon)\\left[1 - f(\\varepsilon)\\right]d\\varepsilon + \\int_{\\mu}^{\\infty}\\phi(\\varepsilon)\\,f(\\varepsilon)\\,d\\varepsilon$$`;
-const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varepsilon + \\int_0^{\\infty}\\left[\\phi(\\mu+x k_BT) - \\phi(\\mu - x k_BT)\\right]\\frac{dx}{e^x+1}$$`;
----
-
-<ChapterLayout title="第六章 理想费米气体" courseId="stat" chapterId="ch06">
-
-  <h1>第六章 理想费米气体</h1>
+const content = String.raw`<h1>第六章 理想费米气体</h1>
 
   <p>
     上一章建立了量子统计的一般框架，推导了Fermi-Dirac分布。本章将系统地研究理想费米气体——这一遵循Pauli不相容原理的量子多体系统——的完整热力学。我们将从零温基态（费米球和费米面）出发，通过Sommerfeld展开处理有限温度修正，揭示金属电子的反常低比热和Pauli顺磁性的微观起源。最后，我们将展示费米简并压如何在天体物理中对抗引力坍缩，导致白矮星的稳定和Chandrasekhar极限质量的出现。
@@ -86,7 +63,7 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
     E_0 = \int_0^{\varepsilon_F} \varepsilon\,g(\varepsilon)\,d\varepsilon
   $$
 
-  <Derivation title="零温能量和压强的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">零温能量和压强的推导</summary><div class="derivation-content">
     <p>将 $g(\varepsilon) \propto \varepsilon^{1/2}$ 代入：</p>
     $$
       E_0 = C\int_0^{\varepsilon_F} \varepsilon^{3/2}\,d\varepsilon = C\cdot\frac{2}{5}\varepsilon_F^{5/2}
@@ -105,34 +82,34 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
       P_0 = \frac{2E_0}{3V} = \frac{2}{5}\frac{N\varepsilon_F}{V}
     $$
     <p>将 $\varepsilon_F$ 用 $n = N/V$ 表示，得 $P_0 \propto n^{5/3}$。</p>
-  </Derivation>
+  </div></details>
 
   <Fragment set:html={zeroTempEnergy} />
   <Fragment set:html={zeroTempPressure} />
 
-  <InsightBox title="简并压的物理本质">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>简并压的物理本质</span></div>
     <p>
       零温费米气体的压强 $P_0$ 完全来自于Pauli不相容原理的动力学效应——它迫使费米子分布在不同的量子态上，使得即使在 $T = 0$ 时粒子也具有巨大的动能。这个压强不依赖于温度，纯粹是量子统计的结果。对于金属中的传导电子，$P_0 \sim 10^{10}\;\text{Pa}$（约 $10^5$ atm），远大于经典理想气体在室温的压强。这个巨大的内压被晶格离子的库仑吸引力所平衡。在白矮星中，电子简并压平衡引力，支撑起整颗恒星。
     </p>
-  </InsightBox>
+  </div>
 
-  <ThinkingBox title="为何零温能量不为零？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>为何零温能量不为零？</span></div>
     <p>
       经典理想气体在 $T = 0$ 时所有粒子静止，$E = 0$。但费米气体中，Pauli原理禁止所有粒子同时占据基态（$\varepsilon = 0$），迫使它们"堆叠"在更高能级上。零温总能量 $E_0 = \frac{3}{5}N\varepsilon_F$ 可以理解为量子力学不确定性原理的宏观体现：将 $N$ 个费米子限制在体积 $V$ 中，位置的约束通过不确定性原理 $\Delta p \sim \hbar/\Delta x$ 产生了最小动量，而Pauli原理进一步要求每个粒子占据不同的动量态，将费米面推到更高的能量。
     </p>
     <p>
       一个有趣的对比：$N$ 个经典粒子在体积 $V$ 中的零温能量为 $0$，$N$ 个全同玻色子的零温能量也为 $0$（所有粒子凝聚到基态），但 $N$ 个费米子的零温能量为 $\frac{3}{5}N\varepsilon_F \propto N^{5/3}/V^{2/3}$——随粒子数的增加比线性增长更快。这就是为什么费米简并压能够支撑白矮星对抗引力坍缩。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 8.1-8.2</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 11.1-11.3</li>
       <li>汪志诚,《热力学·统计物理》, 第6版, &sect;11.1-11.2</li>
       <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;57</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="sommerfeld">6.2 Sommerfeld展开</h2>
@@ -147,7 +124,7 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
     的积分，其中 $\phi(\varepsilon)$ 是某个光滑函数。当 $k_BT \ll \mu$ 时，Fermi函数接近阶梯函数，可以对积分进行系统的低温展开——这就是<strong>Sommerfeld展开</strong>。
   </p>
 
-  <Derivation title="Sommerfeld展开的严格推导">
+  <details class="derivation-block"><summary class="derivation-toggle">Sommerfeld展开的严格推导</summary><div class="derivation-content">
     <p>将积分分拆为零温贡献和有限温修正：</p>
     <Fragment set:html={sommerfeldDerivStep2} />
     <p>第二项中 $1 - f(\varepsilon) = 1/(e^{\beta(\mu-\varepsilon)}+1)$，在 $\varepsilon < \mu$ 时是一个以 $\mu$ 为中心、宽度 $\sim k_BT$ 的窗口函数。在第二项中令 $\varepsilon = \mu - xk_BT$，在第三项中令 $\varepsilon = \mu + xk_BT$，两项合并为</p>
@@ -165,7 +142,7 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
       I = \int_0^{\mu}\phi(\varepsilon)\,d\varepsilon + \frac{\pi^2}{6}(k_BT)^2\,\phi'(\mu) + \frac{7\pi^4}{360}(k_BT)^4\,\phi'''(\mu) + \cdots
     $$
     <p>这就是<strong>Sommerfeld展开公式</strong>。展开的小参数是 $(k_BT/\mu)^2 \sim (T/T_F)^2$，因此在 $T \ll T_F$ 时收敛极快。</p>
-  </Derivation>
+  </div></details>
 
   <p>
     Sommerfeld展开的核心结果为
@@ -180,7 +157,7 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
     将 $\phi(\varepsilon) = g(\varepsilon) \propto \varepsilon^{1/2}$ 代入Sommerfeld展开，由粒子数守恒 $N = \int_0^{\infty} g(\varepsilon) f(\varepsilon)\,d\varepsilon$ 确定 $\mu(T)$：
   </p>
 
-  <Derivation title="化学势温度修正的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">化学势温度修正的推导</summary><div class="derivation-content">
     <p>由Sommerfeld展开，粒子数为</p>
     $$
       N = \int_0^{\mu}g(\varepsilon)\,d\varepsilon + \frac{\pi^2}{6}(k_BT)^2\,g'(\mu) + \cdots
@@ -202,7 +179,7 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
       \mu(T) = \varepsilon_F - \frac{\pi^2}{12}\frac{(k_BT)^2}{\varepsilon_F} + \cdots = \varepsilon_F\left[1 - \frac{\pi^2}{12}\left(\frac{T}{T_F}\right)^{2} + \cdots\right]
     $$
     <p>化学势随温度升高而<strong>下降</strong>。</p>
-  </Derivation>
+  </div></details>
 
   <Fragment set:html={muCorrection} />
   <p>
@@ -214,7 +191,7 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
     将 $\phi(\varepsilon) = \varepsilon\,g(\varepsilon)$ 代入Sommerfeld展开计算能量 $E(T)$，再对 $T$ 求导得热容。保留到 $(T/T_F)^2$ 的最低阶贡献：
   </p>
 
-  <Derivation title="电子热容的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">电子热容的推导</summary><div class="derivation-content">
     <p>总能量的Sommerfeld展开为</p>
     $$
       E = \int_0^{\mu}\varepsilon\,g(\varepsilon)\,d\varepsilon + \frac{\pi^2}{6}(k_BT)^2\left[\varepsilon\,g(\varepsilon)\right]'_{\varepsilon=\mu} + \cdots
@@ -232,7 +209,7 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
       C_V = \frac{\pi^2}{2}Nk_B\frac{T}{T_F} = \gamma T
     $$
     <p>其中Sommerfeld系数 $\gamma = \pi^2 Nk_B/(2T_F) = \pi^2 k_B^2 g(\varepsilon_F)/3$。</p>
-  </Derivation>
+  </div></details>
 
   <Fragment set:html={electronHeatCapacity} />
   <p>
@@ -244,11 +221,11 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
     <li><strong>物理机制</strong>：在温度 $T$ 下，只有费米面附近 $\sim k_BT$ 能量窗口内的 $\sim N(T/T_F)$ 个电子能够被热激发，每个电子贡献 $\sim k_B$ 的比热，因此 $C_V \sim N(T/T_F) \cdot k_B$。深层费米海中的电子被Pauli原理"冻结"——它们的能量无法改变，因为附近的态已被占据。</li>
   </ul>
 
-  <InsightBox title="Sommerfeld理论解决了经典电子论的比热困难">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Sommerfeld理论解决了经典电子论的比热困难</span></div>
     <p>
       Drude的经典电子理论（1900）成功解释了金属的电导率和Wiedemann-Franz定律，但却预言每个传导电子贡献 $\frac{3}{2}k_B$ 的比热——这将使金属的总比热远超实验值。这个"比热困难"困扰了物理学界近三十年。Sommerfeld（1928）将Fermi-Dirac统计引入电子论，揭示了只有费米面附近 $\sim T/T_F$ 比例的电子对比热有贡献，从而优雅地解决了这一困难。这是量子统计对凝聚态物理的第一个重大胜利。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>金属的低温比热</h3>
   <p>
@@ -274,7 +251,7 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
     Pauli磁化率的显著特征是<strong>几乎与温度无关</strong>——这与经典Curie顺磁 $\chi \propto 1/T$ 形成鲜明对比。物理原因与比热相同：只有费米面附近的电子能够响应磁场翻转自旋，深层费米海中的电子被Pauli原理冻结。Pauli磁化率比经典Curie值小 $\sim T/T_F$ 的因子。
   </p>
 
-  <ThinkingBox title="为何Pauli磁化率不依赖于温度？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>为何Pauli磁化率不依赖于温度？</span></div>
     <p>
       在经典Curie理论中，每个磁矩都可以自由响应磁场，$\chi \propto N\mu_B^2/(k_BT)$。但在费米气体中，只有费米面附近 $\sim k_BT$ 能量窗口内的 $\sim g(\varepsilon_F)\cdot k_BT$ 个电子能够被磁场极化，每个贡献 $\sim \mu_B^2/(k_BT)$。两个因子中的 $T$ 恰好抵消：
     </p>
@@ -284,9 +261,9 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
     <p>
       这个"$T$ 的抵消"并非巧合——它是Sommerfeld展开中线性温度项的普遍结果。准确地说，$\chi_{\text{Pauli}}$ 也有 $O(T/T_F)^2$ 的小修正，但在典型实验温度范围内可以忽略。实际金属中还需要考虑Landau抗磁性（轨道磁效应），对自由电子气体 $\chi_{\text{Landau}} = -\frac{1}{3}\chi_{\text{Pauli}}$。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 8.1-8.3</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 11.4-11.6</li>
@@ -295,7 +272,7 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
       <li>N.W. Ashcroft & N.D. Mermin, <em>Solid State Physics</em>, Ch. 2 — Sommerfeld理论</li>
       <li>A. Sommerfeld, <em>Z. Phys.</em> <strong>47</strong>, 1 (1928) — 金属自由电子理论</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="white-dwarf">6.3 白矮星与Chandrasekhar极限</h2>
@@ -333,7 +310,7 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
     注意关键的变化：指数从 $5/3$ 降为 $4/3$。这一变化具有决定性的物理后果。
   </p>
 
-  <Derivation title="临界质量的标度论分析">
+  <details class="derivation-block"><summary class="derivation-toggle">临界质量的标度论分析</summary><div class="derivation-content">
     <p>考虑半径为 $R$、质量为 $M$ 的均匀密度白矮星的能量。引力能为</p>
     $$
       E_{\text{grav}} \sim -\frac{GM^2}{R}
@@ -352,7 +329,7 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
       E(R) \sim \frac{N^{4/3}}{R} - \frac{GM^2}{R} = \frac{1}{R}\left(N^{4/3} - \text{const}\cdot GM^2\right)
     $$
     <p>动能和引力能<strong>具有相同的 $R$ 依赖关系</strong>（$\propto 1/R$），因此它们的竞争不依赖于半径——没有稳定的平衡！当 $M$ 足够大使得引力项超过动能项时，$E(R)$ 对所有 $R$ 单调递减，星体将无限坍缩。<strong>临界质量</strong>恰好是两项系数相等时的质量——这就是Chandrasekhar极限。</p>
-  </Derivation>
+  </div></details>
 
   <p>
     精确的数值计算（求解相对论简并电子的Lane-Emden方程）给出
@@ -362,13 +339,13 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
     其中 $\omega_3 \approx 2.018$ 是Lane-Emden函数的数值常数，$\mu_e = A/Z$ 是每个电子对应的平均核子数（对 $^{12}$C 和 $^{16}$O，$\mu_e = 2$），$m_H$ 是氢原子质量。代入数值得 $M_{\text{Ch}} \approx 1.44\,M_\odot$。
   </p>
 
-  <InsightBox title="Chandrasekhar极限的根本物理原因">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Chandrasekhar极限的根本物理原因</span></div>
     <p>
       Chandrasekhar极限的出现可以归结为一个简洁的物理论证：非相对论简并压 $P \propto n^{5/3}$ 比引力压 $\propto n^{4/3}$ 增长更快（作为密度的函数），因此无论多大的引力都可以被简并压平衡。但相对论效应将指数从 $5/3$ 降为 $4/3$，使得简并压恰好和引力具有相同的密度依赖性——竞争的结果不再取决于密度（或半径），而仅取决于总质量。指数的微小变化（$5/3 \to 4/3$）导致了质的飞跃：从"对任意质量都稳定"变为"存在临界质量"。超过此极限质量的恒星核心将继续坍缩，形成中子星或黑洞。Chandrasekhar因此项工作获得了1983年诺贝尔物理学奖。
     </p>
-  </InsightBox>
+  </div>
 
-  <ThinkingBox title="从量子统计到天体物理">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>从量子统计到天体物理</span></div>
     <p>
       Chandrasekhar极限的推导仅用到三个基本物理常数：$\hbar$（量子力学）、$c$（相对论）、$G$（引力）。质量标度由
     </p>
@@ -381,9 +358,9 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
     <p>
       白矮星的质量上限 $\approx 1.44\,M_\odot$ 直接决定了Ia型超新星的"标准烛光"亮度——当白矮星通过吸积伴星物质达到Chandrasekhar极限时发生热核爆炸。Ia型超新星的亮度均匀性使其成为宇宙学距离测量的关键工具，正是通过它们发现了宇宙的加速膨胀（1998年，2011年诺贝尔物理学奖）。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 8.4</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 11.7</li>
@@ -393,6 +370,9 @@ const sommerfeldDerivStep3 = `$$I = \\int_0^{\\mu}\\phi(\\varepsilon)\\,d\\varep
       <li>S. Chandrasekhar, <em>Astrophys. J.</em> <strong>74</strong>, 81 (1931) — 原始论文</li>
       <li>S.L. Shapiro & S.A. Teukolsky, <em>Black Holes, White Dwarfs, and Neutron Stars</em>, Ch. 3</li>
     </ul>
-  </ReferenceBox>
+  </div>`;
+---
 
+<ChapterLayout title="第六章 理想费米气体" courseId="stat" chapterId="ch06">
+  <Fragment set:html={content} />
 </ChapterLayout>

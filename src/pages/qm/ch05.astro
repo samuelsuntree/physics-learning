@@ -1,150 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const defined = {
-  /* ── helpers: every LaTeX snippet that contains { or } lives here ── */
-
-  /* §5.1 对称化与反对称化 */
-  psi12: String.raw`$\Psi(\mathbf{r}_1, \mathbf{r}_2)$`,
-  psi21: String.raw`$\Psi(\mathbf{r}_2, \mathbf{r}_1)$`,
-  P12def: String.raw`$$\hat{P}_{12}\,\Psi(\mathbf{r}_1, \mathbf{r}_2) = \Psi(\mathbf{r}_2, \mathbf{r}_1)$$`,
-  P12sq: String.raw`$$\hat{P}_{12}^2 = \hat{I}$$`,
-  P12eigen: String.raw`$\hat{P}_{12}\,\Psi = \pm\Psi$`,
-  P12hermitian: String.raw`$\hat{P}_{12}^\dagger = \hat{P}_{12}$`,
-  P12unitary: String.raw`$\hat{P}_{12}^\dagger = \hat{P}_{12}^{-1} = \hat{P}_{12}$`,
-  P12commH: String.raw`$[\hat{H}, \hat{P}_{12}] = 0$`,
-  symmState: String.raw`$\hat{P}_{12}\,\Psi_S = +\Psi_S$`,
-  antiState: String.raw`$\hat{P}_{12}\,\Psi_A = -\Psi_A$`,
-  bosonSymm: String.raw`$$\Psi(\mathbf{r}_1, \mathbf{r}_2, \ldots, \mathbf{r}_N) = \Psi(\mathbf{r}_{P(1)}, \mathbf{r}_{P(2)}, \ldots, \mathbf{r}_{P(N)})$$`,
-  fermionAnti: String.raw`$$\Psi(\mathbf{r}_1, \mathbf{r}_2, \ldots, \mathbf{r}_N) = (-1)^p\,\Psi(\mathbf{r}_{P(1)}, \mathbf{r}_{P(2)}, \ldots, \mathbf{r}_{P(N)})$$`,
-  symmOp: String.raw`$$\hat{S} = \frac{1}{N!}\sum_{P} \hat{P}$$`,
-  antiOp: String.raw`$$\hat{A} = \frac{1}{N!}\sum_{P} (-1)^p\,\hat{P}$$`,
-  Phat: String.raw`$\hat{P}$`,
-  minusOnePow: String.raw`$(-1)^p$`,
-
-  /* Slater 行列式 */
-  slater2: String.raw`$$\Psi_A(\mathbf{r}_1, \mathbf{r}_2) = \frac{1}{\sqrt{2}}\begin{vmatrix} \psi_\alpha(\mathbf{r}_1) & \psi_\beta(\mathbf{r}_1) \\ \psi_\alpha(\mathbf{r}_2) & \psi_\beta(\mathbf{r}_2) \end{vmatrix}$$`,
-  slater2expand: String.raw`$$= \frac{1}{\sqrt{2}}\bigl[\psi_\alpha(\mathbf{r}_1)\psi_\beta(\mathbf{r}_2) - \psi_\beta(\mathbf{r}_1)\psi_\alpha(\mathbf{r}_2)\bigr]$$`,
-  slaterN: String.raw`$$\Psi_A(\mathbf{r}_1, \ldots, \mathbf{r}_N) = \frac{1}{\sqrt{N!}}\begin{vmatrix} \psi_{\alpha_1}(\mathbf{r}_1) & \psi_{\alpha_2}(\mathbf{r}_1) & \cdots & \psi_{\alpha_N}(\mathbf{r}_1) \\ \psi_{\alpha_1}(\mathbf{r}_2) & \psi_{\alpha_2}(\mathbf{r}_2) & \cdots & \psi_{\alpha_N}(\mathbf{r}_2) \\ \vdots & \vdots & \ddots & \vdots \\ \psi_{\alpha_1}(\mathbf{r}_N) & \psi_{\alpha_2}(\mathbf{r}_N) & \cdots & \psi_{\alpha_N}(\mathbf{r}_N) \end{vmatrix}$$`,
-  slaterNorm: String.raw`$1/\sqrt{N!}$`,
-  pauliExcl: String.raw`$\alpha_i = \alpha_j$`,
-  pauliDet: String.raw`$\Psi_A = 0$`,
-
-  /* §5.1 推导用 */
-  P12sqDeriv1: String.raw`$$\hat{P}_{12}^2\,\Psi(\mathbf{r}_1, \mathbf{r}_2) = \hat{P}_{12}\,\Psi(\mathbf{r}_2, \mathbf{r}_1) = \Psi(\mathbf{r}_1, \mathbf{r}_2)$$`,
-  eigenEq: String.raw`$\hat{P}_{12}\,\Psi = \lambda\,\Psi$`,
-  lambdaSq: String.raw`$\lambda^2 = 1$`,
-  lambdaPM: String.raw`$\lambda = \pm 1$`,
-  projS: String.raw`$\Psi_S = \hat{S}\,\Psi = \frac{1}{2}(\Psi + \hat{P}_{12}\Psi)$`,
-  projA: String.raw`$\Psi_A = \hat{A}\,\Psi = \frac{1}{2}(\Psi - \hat{P}_{12}\Psi)$`,
-
-  /* §5.2 交换相互作用 */
-  psiTotal: String.raw`$\Psi(\mathbf{r}_1, \mathbf{r}_2) = \psi(\mathbf{r}_1, \mathbf{r}_2)\,\chi(s_1, s_2)$`,
-  orbitalSymm: String.raw`$$\psi_S(\mathbf{r}_1, \mathbf{r}_2) = \frac{1}{\sqrt{2}}\bigl[\psi_a(\mathbf{r}_1)\psi_b(\mathbf{r}_2) + \psi_b(\mathbf{r}_1)\psi_a(\mathbf{r}_2)\bigr]$$`,
-  orbitalAnti: String.raw`$$\psi_A(\mathbf{r}_1, \mathbf{r}_2) = \frac{1}{\sqrt{2}}\bigl[\psi_a(\mathbf{r}_1)\psi_b(\mathbf{r}_2) - \psi_b(\mathbf{r}_1)\psi_a(\mathbf{r}_2)\bigr]$$`,
-  spinSinglet: String.raw`$$\chi_{\text{singlet}} = \frac{1}{\sqrt{2}}\bigl(|\!\uparrow\downarrow\rangle - |\!\downarrow\uparrow\rangle\bigr), \quad S = 0$$`,
-  spinTriplet1: String.raw`$|\!\uparrow\uparrow\rangle$`,
-  spinTriplet0: String.raw`$\frac{1}{\sqrt{2}}(|\!\uparrow\downarrow\rangle + |\!\downarrow\uparrow\rangle)$`,
-  spinTripletM1: String.raw`$|\!\downarrow\downarrow\rangle$`,
-  singletConfig: String.raw`$\psi_S \cdot \chi_{\text{singlet}}$`,
-  tripletConfig: String.raw`$\psi_A \cdot \chi_{\text{triplet}}$`,
-
-  /* 直接积分与交换积分 */
-  HeHamiltonian: String.raw`$$\hat{H} = -\frac{\hbar^2}{2m}(\nabla_1^2 + \nabla_2^2) - \frac{Ze^2}{r_1} - \frac{Ze^2}{r_2} + \frac{e^2}{|\mathbf{r}_1 - \mathbf{r}_2|}$$`,
-  Epm: String.raw`$$E_\pm = E_a + E_b + K \pm J$$`,
-  directK: String.raw`$$K = \int d^3r_1\,d^3r_2\;|\psi_a(\mathbf{r}_1)|^2\,\frac{e^2}{|\mathbf{r}_1 - \mathbf{r}_2|}\,|\psi_b(\mathbf{r}_2)|^2$$`,
-  exchangeJ: String.raw`$$J = \int d^3r_1\,d^3r_2\;\psi_a^*(\mathbf{r}_1)\psi_b^*(\mathbf{r}_2)\,\frac{e^2}{|\mathbf{r}_1 - \mathbf{r}_2|}\,\psi_b(\mathbf{r}_1)\psi_a(\mathbf{r}_2)$$`,
-  Esinglet: String.raw`$E_{\text{singlet}} = E_a + E_b + K + J$`,
-  Etriplet: String.raw`$E_{\text{triplet}} = E_a + E_b + K - J$`,
-  JposResult: String.raw`$J > 0$`,
-  EtLessEs: String.raw`$E_{\text{triplet}} < E_{\text{singlet}}$`,
-  deltaE: String.raw`$\Delta E = 2J$`,
-  S1dotS2: String.raw`$\hat{\mathbf{S}}_1 \cdot \hat{\mathbf{S}}_2$`,
-  Heff: String.raw`$$\hat{H}_{\text{eff}} = \text{const} - 2J\,\hat{\mathbf{S}}_1 \cdot \hat{\mathbf{S}}_2$$`,
-  S1dotS2triplet: String.raw`$\langle\hat{\mathbf{S}}_1\cdot\hat{\mathbf{S}}_2\rangle_{S=1} = +\frac{\hbar^2}{4}$`,
-  S1dotS2singlet: String.raw`$\langle\hat{\mathbf{S}}_1\cdot\hat{\mathbf{S}}_2\rangle_{S=0} = -\frac{3\hbar^2}{4}$`,
-
-  /* 氦原子 */
-  HeGS: String.raw`$1s^2$`,
-  HeExcited: String.raw`$1s\,nl$`,
-  paraHe: String.raw`$S = 0$`,
-  orthoHe: String.raw`$S = 1$`,
-  HeGSconfig: String.raw`$$\Psi_{1s^2} = \psi_{1s}(\mathbf{r}_1)\,\psi_{1s}(\mathbf{r}_2)\,\chi_{\text{singlet}}$$`,
-  HeGSwf: String.raw`$\psi_{1s}(\mathbf{r}_1)\psi_{1s}(\mathbf{r}_2)$`,
-
-  /* §5.2 推导用 */
-  HabKJ: String.raw`$$\langle\psi_a\psi_b|\hat{V}|\psi_a\psi_b\rangle = K, \quad \langle\psi_a\psi_b|\hat{V}|\psi_b\psi_a\rangle = J$$`,
-  EpmDeriv1: String.raw`$$E_+ = \langle\psi_S|\hat{H}|\psi_S\rangle = E_a + E_b + \frac{1}{2}\bigl[(\langle ab| + \langle ba|)\hat{V}(|ab\rangle + |ba\rangle)\bigr]$$`,
-  EpmDeriv2: String.raw`$$= E_a + E_b + \frac{1}{2}(K + J + J + K) = E_a + E_b + K + J$$`,
-  EpmDeriv3: String.raw`$$E_- = E_a + E_b + \frac{1}{2}(K - J - J + K) = E_a + E_b + K - J$$`,
-  S1S2expand: String.raw`$$\hat{\mathbf{S}}_1 \cdot \hat{\mathbf{S}}_2 = \frac{1}{2}\bigl(\hat{S}^2 - \hat{S}_1^2 - \hat{S}_2^2\bigr)$$`,
-  S1S2singVal: String.raw`$\frac{1}{2}[0 - \frac{3}{4} - \frac{3}{4}]\hbar^2 = -\frac{3}{4}\hbar^2$`,
-  S1S2tripVal: String.raw`$\frac{1}{2}[2 - \frac{3}{4} - \frac{3}{4}]\hbar^2 = +\frac{1}{4}\hbar^2$`,
-
-  /* Hund 规则 */
-  hundRule: String.raw`$S$`,
-
-  /* §5.3 二次量子化初步 */
-  adagDef: String.raw`$\hat{a}_k^\dagger$`,
-  aDef: String.raw`$\hat{a}_k$`,
-  bosonComm: String.raw`$$[\hat{a}_k, \hat{a}_l^\dagger] = \delta_{kl}, \quad [\hat{a}_k, \hat{a}_l] = 0, \quad [\hat{a}_k^\dagger, \hat{a}_l^\dagger] = 0$$`,
-  fermionAnticomm: String.raw`$$\{\hat{a}_k, \hat{a}_l^\dagger\} = \delta_{kl}, \quad \{\hat{a}_k, \hat{a}_l\} = 0, \quad \{\hat{a}_k^\dagger, \hat{a}_l^\dagger\} = 0$$`,
-  nkDef: String.raw`$$\hat{n}_k = \hat{a}_k^\dagger\,\hat{a}_k$$`,
-  nkEigen: String.raw`$$\hat{n}_k|n_k\rangle = n_k|n_k\rangle$$`,
-  bosonNk: String.raw`$n_k = 0, 1, 2, \ldots$`,
-  fermionNk: String.raw`$n_k = 0, 1$`,
-  vacuum: String.raw`$|0\rangle$`,
-  akVac: String.raw`$\hat{a}_k|0\rangle = 0$`,
-  fockState: String.raw`$$|n_1, n_2, \ldots\rangle = \prod_k \frac{(\hat{a}_k^\dagger)^{n_k}}{\sqrt{n_k!}}\,|0\rangle$$`,
-  fockBasis: String.raw`$|n_1, n_2, \ldots\rangle$`,
-  totalN: String.raw`$$\hat{N} = \sum_k \hat{n}_k = \sum_k \hat{a}_k^\dagger\,\hat{a}_k$$`,
-
-  /* 单体算符与二体算符 */
-  oneBodyFirst: String.raw`$$\hat{F} = \sum_{i=1}^{N} \hat{f}(\mathbf{r}_i)$$`,
-  oneBodySecond: String.raw`$$\hat{F} = \sum_{k,l} \langle k|\hat{f}|l\rangle\,\hat{a}_k^\dagger\,\hat{a}_l$$`,
-  fMatElem: String.raw`$\langle k|\hat{f}|l\rangle = \int d^3r\;\phi_k^*(\mathbf{r})\,\hat{f}(\mathbf{r})\,\phi_l(\mathbf{r})$`,
-  twoBodyFirst: String.raw`$$\hat{G} = \frac{1}{2}\sum_{i \neq j} \hat{g}(\mathbf{r}_i, \mathbf{r}_j)$$`,
-  twoBodySecond: String.raw`$$\hat{G} = \frac{1}{2}\sum_{k,l,m,n} \langle kl|\hat{g}|mn\rangle\,\hat{a}_k^\dagger\,\hat{a}_l^\dagger\,\hat{a}_n\,\hat{a}_m$$`,
-  gMatElem: String.raw`$\langle kl|\hat{g}|mn\rangle = \int d^3r_1\,d^3r_2\;\phi_k^*(\mathbf{r}_1)\phi_l^*(\mathbf{r}_2)\,\hat{g}(\mathbf{r}_1, \mathbf{r}_2)\,\phi_m(\mathbf{r}_1)\phi_n(\mathbf{r}_2)$`,
-  normalOrder: String.raw`$\hat{a}_k^\dagger\hat{a}_l^\dagger\hat{a}_n\hat{a}_m$`,
-
-  /* 场算符 */
-  fieldOpDef: String.raw`$$\hat{\psi}(\mathbf{r}) = \sum_k \phi_k(\mathbf{r})\,\hat{a}_k$$`,
-  fieldOpDag: String.raw`$$\hat{\psi}^\dagger(\mathbf{r}) = \sum_k \phi_k^*(\mathbf{r})\,\hat{a}_k^\dagger$$`,
-  bosonFieldComm: String.raw`$$[\hat{\psi}(\mathbf{r}), \hat{\psi}^\dagger(\mathbf{r}')] = \delta^{(3)}(\mathbf{r} - \mathbf{r}')$$`,
-  fermionFieldAnti: String.raw`$$\{\hat{\psi}(\mathbf{r}), \hat{\psi}^\dagger(\mathbf{r}')\} = \delta^{(3)}(\mathbf{r} - \mathbf{r}')$$`,
-  oneBodyField: String.raw`$$\hat{F} = \int d^3r\;\hat{\psi}^\dagger(\mathbf{r})\,\hat{f}(\mathbf{r})\,\hat{\psi}(\mathbf{r})$$`,
-  twoBodyField: String.raw`$$\hat{G} = \frac{1}{2}\int d^3r_1\,d^3r_2\;\hat{\psi}^\dagger(\mathbf{r}_1)\hat{\psi}^\dagger(\mathbf{r}_2)\,\hat{g}(\mathbf{r}_1, \mathbf{r}_2)\,\hat{\psi}(\mathbf{r}_2)\hat{\psi}(\mathbf{r}_1)$$`,
-  Hfield: String.raw`$$\hat{H} = \int d^3r\;\hat{\psi}^\dagger(\mathbf{r})\left(-\frac{\hbar^2}{2m}\nabla^2 + V(\mathbf{r})\right)\hat{\psi}(\mathbf{r}) + \frac{1}{2}\int d^3r_1\,d^3r_2\;\hat{\psi}^\dagger(\mathbf{r}_1)\hat{\psi}^\dagger(\mathbf{r}_2)\,U(\mathbf{r}_1, \mathbf{r}_2)\,\hat{\psi}(\mathbf{r}_2)\hat{\psi}(\mathbf{r}_1)$$`,
-  phikr: String.raw`$\phi_k(\mathbf{r})$`,
-  completeness: String.raw`$\sum_k \phi_k^*(\mathbf{r})\phi_k(\mathbf{r}') = \delta^{(3)}(\mathbf{r} - \mathbf{r}')$`,
-
-  /* §5.3 推导用 */
-  bosonCommDeriv1: String.raw`$$\hat{a}_k|n_k\rangle = \sqrt{n_k}\,|n_k - 1\rangle$$`,
-  bosonCommDeriv2: String.raw`$$\hat{a}_k^\dagger|n_k\rangle = \sqrt{n_k + 1}\,|n_k + 1\rangle$$`,
-  fermionCreate: String.raw`$$\hat{a}_k^\dagger|0\rangle_k = |1\rangle_k, \quad \hat{a}_k^\dagger|1\rangle_k = 0$$`,
-  fermionAnnihil: String.raw`$$\hat{a}_k|1\rangle_k = |0\rangle_k, \quad \hat{a}_k|0\rangle_k = 0$$`,
-  fermionAntiSq: String.raw`$(\hat{a}_k^\dagger)^2 = 0$`,
-  fermionPauli: String.raw`$n_k = 0$ 或 $1$`,
-  fieldCommDeriv: String.raw`$$[\hat{\psi}(\mathbf{r}), \hat{\psi}^\dagger(\mathbf{r}')] = \sum_{k,l}\phi_k(\mathbf{r})\phi_l^*(\mathbf{r}')[\hat{a}_k, \hat{a}_l^\dagger] = \sum_k \phi_k(\mathbf{r})\phi_k^*(\mathbf{r}') = \delta^{(3)}(\mathbf{r} - \mathbf{r}')$$`,
-  oneBodyEquiv: String.raw`$$\hat{F} = \sum_{k,l}\langle k|\hat{f}|l\rangle\,\hat{a}_k^\dagger\hat{a}_l = \int d^3r\sum_{k,l}\phi_k^*(\mathbf{r})\hat{f}(\mathbf{r})\phi_l(\mathbf{r})\,\hat{a}_k^\dagger\hat{a}_l = \int d^3r\;\hat{\psi}^\dagger(\mathbf{r})\hat{f}(\mathbf{r})\hat{\psi}(\mathbf{r})$$`,
-
-  /* 通用 */
-  SN: String.raw`$S_N$`,
-  Nfact: String.raw`$N!$`,
-  halfInt: String.raw`$s = 0, 1, 2, \ldots$`,
-  halfIntFermi: String.raw`$s = 1/2, 3/2, 5/2, \ldots$`,
-  spinStatThm: String.raw`自旋-统计定理`,
-};
----
-
-<ChapterLayout title="第五章 全同粒子" courseId="qm" chapterId="ch05">
-
-  <h1>第五章 全同粒子</h1>
+const content = String.raw`<h1>第五章 全同粒子</h1>
 
   <p>
     当一个量子体系包含多个相同种类的粒子时，量子力学的数学框架中出现了一个深刻的新原理：
@@ -155,7 +12,7 @@ const defined = {
     从白矮星的简并压到超流与超导现象。
   </p>
 
-  <InsightBox title="全同性是量子力学的本质特征">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>全同性是量子力学的本质特征</span></div>
     <p>
       在经典力学中，两个质量和电荷完全相同的粒子仍可通过它们的轨迹加以区分——我们可以说
       "粒子 1 沿这条路径运动，粒子 2 沿那条路径运动"。但在量子力学中，粒子没有确定的轨迹。
@@ -163,7 +20,7 @@ const defined = {
       因此，全同粒子的不可分辨性不是认识论上的困难，而是量子力学的<strong>本体论特征</strong>。
       正如 Feynman 所言："世界上所有的电子都是完全一样的。"
     </p>
-  </InsightBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 5.1 对称化与反对称化 -->
@@ -180,14 +37,14 @@ const defined = {
   </p>
 
   <p>
-    用数学语言表述：设 <Fragment set:html={defined.psi12} /> 是两个全同粒子的波函数（这里 $\mathbf r$ 泛指一切坐标），
+    用数学语言表述：设 $\Psi(\mathbf{r}_1, \mathbf{r}_2)$ 是两个全同粒子的波函数（这里 $\mathbf r$ 泛指一切坐标），
     则交换粒子后的概率密度不变：
   </p>
 
   $$|\Psi(\mathbf r_1, \mathbf r_2)|^2 = |\Psi(\mathbf r_2, \mathbf r_1)|^2$$
 
   <p>
-    这意味着 <Fragment set:html={defined.psi12} /> 与 <Fragment set:html={defined.psi21} /> 至多相差一个相位因子。
+    这意味着 $\Psi(\mathbf{r}_1, \mathbf{r}_2)$ 与 $\Psi(\mathbf{r}_2, \mathbf{r}_1)$ 至多相差一个相位因子。
     下面我们将证明，这个相位因子只能是 $+1$ 或 $-1$。
   </p>
 
@@ -197,47 +54,47 @@ const defined = {
     定义<strong>交换算符</strong>（permutation operator）$\hat P_{12}$：
   </p>
 
-  <Fragment set:html={defined.P12def} />
+  $$\hat{P}_{12}\,\Psi(\mathbf{r}_1, \mathbf{r}_2) = \Psi(\mathbf{r}_2, \mathbf{r}_1)$$
 
   <p>显然，交换两次后回到原来的态，因此：</p>
 
-  <Fragment set:html={defined.P12sq} />
+  $$\hat{P}_{12}^2 = \hat{I}$$
 
-  <Derivation title="推导交换算符的本征值">
+  <details class="derivation-block"><summary class="derivation-toggle">推导交换算符的本征值</summary><div class="derivation-content">
     <p>
       将 $\hat P_{12}$ 连续作用两次：
     </p>
-    <p><Fragment set:html={defined.P12sqDeriv1} /></p>
+    <p>$$\hat{P}_{12}^2\,\Psi(\mathbf{r}_1, \mathbf{r}_2) = \hat{P}_{12}\,\Psi(\mathbf{r}_2, \mathbf{r}_1) = \Psi(\mathbf{r}_1, \mathbf{r}_2)$$</p>
     <p>
-      因此 <Fragment set:html={defined.P12sq} />，即 $\hat P_{12}$ 是<strong>对合算符</strong>（involution）。
+      因此 $$\hat{P}_{12}^2 = \hat{I}$$，即 $\hat P_{12}$ 是<strong>对合算符</strong>（involution）。
     </p>
     <p>
-      设 <Fragment set:html={defined.eigenEq} />，则 $\hat P_{12}^2\Psi = \lambda^2\Psi = \Psi$，
-      因此 <Fragment set:html={defined.lambdaSq} />，即 <Fragment set:html={defined.lambdaPM} />。
+      设 $\hat{P}_{12}\,\Psi = \lambda\,\Psi$，则 $\hat P_{12}^2\Psi = \lambda^2\Psi = \Psi$，
+      因此 $\lambda^2 = 1$，即 $\lambda = \pm 1$。
     </p>
     <p>
-      此外，$\hat P_{12}$ 是 Hermite 算符且是幺正算符：<Fragment set:html={defined.P12unitary} />。
-      对于全同粒子，Hamilton 量在交换粒子下不变，因此 <Fragment set:html={defined.P12commH} />，
+      此外，$\hat P_{12}$ 是 Hermite 算符且是幺正算符：$\hat{P}_{12}^\dagger = \hat{P}_{12}^{-1} = \hat{P}_{12}$。
+      对于全同粒子，Hamilton 量在交换粒子下不变，因此 $[\hat{H}, \hat{P}_{12}] = 0$，
       交换对称性是运动常量——若初态具有确定的交换对称性（$+1$ 或 $-1$），
       该对称性在时间演化中保持不变。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
-    本征值 $+1$ 对应<strong>对称态</strong>：<Fragment set:html={defined.symmState} />。
-    本征值 $-1$ 对应<strong>反对称态</strong>：<Fragment set:html={defined.antiState} />。
+    本征值 $+1$ 对应<strong>对称态</strong>：$\hat{P}_{12}\,\Psi_S = +\Psi_S$。
+    本征值 $-1$ 对应<strong>反对称态</strong>：$\hat{P}_{12}\,\Psi_A = -\Psi_A$。
   </p>
 
   <h3>玻色子与费米子</h3>
 
   <p>
-    自然界中一切全同粒子严格遵守以下规则（<Fragment set:html={defined.spinStatThm} />）：
+    自然界中一切全同粒子严格遵守以下规则（自旋-统计定理）：
   </p>
 
   <ul>
-    <li><strong>玻色子</strong>（Boson）：自旋为整数（<Fragment set:html={defined.halfInt} />）的粒子，
+    <li><strong>玻色子</strong>（Boson）：自旋为整数（$s = 0, 1, 2, \ldots$）的粒子，
       波函数在交换任意两个粒子时<strong>对称</strong>。例如：光子（$s = 1$）、$\pi$ 介子（$s = 0$）、$^4\text{He}$ 原子。</li>
-    <li><strong>费米子</strong>（Fermion）：自旋为半整数（<Fragment set:html={defined.halfIntFermi} />）的粒子，
+    <li><strong>费米子</strong>（Fermion）：自旋为半整数（$s = 1/2, 3/2, 5/2, \ldots$）的粒子，
       波函数在交换任意两个粒子时<strong>反对称</strong>。例如：电子（$s = 1/2$）、质子、中子、夸克。</li>
   </ul>
 
@@ -245,19 +102,19 @@ const defined = {
     对于 $N$ 个全同玻色子，波函数在任意置换下完全对称：
   </p>
 
-  <Fragment set:html={defined.bosonSymm} />
+  $$\Psi(\mathbf{r}_1, \mathbf{r}_2, \ldots, \mathbf{r}_N) = \Psi(\mathbf{r}_{P(1)}, \mathbf{r}_{P(2)}, \ldots, \mathbf{r}_{P(N)})$$
 
   <p>
     对于 $N$ 个全同费米子，波函数在任意置换下具有置换的奇偶性：
   </p>
 
-  <Fragment set:html={defined.fermionAnti} />
+  $$\Psi(\mathbf{r}_1, \mathbf{r}_2, \ldots, \mathbf{r}_N) = (-1)^p\,\Psi(\mathbf{r}_{P(1)}, \mathbf{r}_{P(2)}, \ldots, \mathbf{r}_{P(N)})$$
 
   <p>
-    其中 <Fragment set:html={defined.minusOnePow} /> 是置换 $P$ 的<strong>符号</strong>（偶置换为 $+1$，奇置换为 $-1$）。
+    其中 $(-1)^p$ 是置换 $P$ 的<strong>符号</strong>（偶置换为 $+1$，奇置换为 $-1$）。
   </p>
 
-  <ThinkingBox title="自旋-统计定理的深刻性">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>自旋-统计定理的深刻性</span></div>
     <p>
       自旋与统计性质之间的联系——整数自旋对应玻色统计，半整数自旋对应费米统计——在非相对论量子力学中
       只能作为公设引入，无法证明。其严格证明需要<strong>相对论性量子场论</strong>，
@@ -267,7 +124,7 @@ const defined = {
       会违反微观因果性（类空间隔处的场算符不对易）。因此自旋-统计联系是相对论和量子力学
       的共同要求，是自然界最深刻的定理之一。
     </p>
-  </ThinkingBox>
+  </div>
 
   <h3>对称化算符与反对称化算符</h3>
 
@@ -276,11 +133,11 @@ const defined = {
     <strong>反对称化算符</strong> $\hat A$ 构造具有确定对称性的波函数：
   </p>
 
-  <Fragment set:html={defined.symmOp} />
-  <Fragment set:html={defined.antiOp} />
+  $$\hat{S} = \frac{1}{N!}\sum_{P} \hat{P}$$
+  $$\hat{A} = \frac{1}{N!}\sum_{P} (-1)^p\,\hat{P}$$
 
   <p>
-    其中求和遍历 $N$ 个粒子的全部 <Fragment set:html={defined.Nfact} /> 个置换 <Fragment set:html={defined.Phat} />，
+    其中求和遍历 $N$ 个粒子的全部 $N!$ 个置换 $\hat{P}$，
     $p$ 是置换的逆序数。
   </p>
 
@@ -289,10 +146,10 @@ const defined = {
   </p>
 
   <p>
-    对称化：<Fragment set:html={defined.projS} />
+    对称化：$\Psi_S = \hat{S}\,\Psi = \frac{1}{2}(\Psi + \hat{P}_{12}\Psi)$
   </p>
   <p>
-    反对称化：<Fragment set:html={defined.projA} />
+    反对称化：$\Psi_A = \hat{A}\,\Psi = \frac{1}{2}(\Psi - \hat{P}_{12}\Psi)$
   </p>
 
   <h3>Slater 行列式</h3>
@@ -303,14 +160,14 @@ const defined = {
     则反对称化的 $N$ 体波函数为：
   </p>
 
-  <Fragment set:html={defined.slaterN} />
+  $$\Psi_A(\mathbf{r}_1, \ldots, \mathbf{r}_N) = \frac{1}{\sqrt{N!}}\begin{vmatrix} \psi_{\alpha_1}(\mathbf{r}_1) & \psi_{\alpha_2}(\mathbf{r}_1) & \cdots & \psi_{\alpha_N}(\mathbf{r}_1) \\ \psi_{\alpha_1}(\mathbf{r}_2) & \psi_{\alpha_2}(\mathbf{r}_2) & \cdots & \psi_{\alpha_N}(\mathbf{r}_2) \\ \vdots & \vdots & \ddots & \vdots \\ \psi_{\alpha_1}(\mathbf{r}_N) & \psi_{\alpha_2}(\mathbf{r}_N) & \cdots & \psi_{\alpha_N}(\mathbf{r}_N) \end{vmatrix}$$
 
   <p>
-    其中 <Fragment set:html={defined.slaterNorm} /> 为归一化因子。对于两粒子情形：
+    其中 $1/\sqrt{N!}$ 为归一化因子。对于两粒子情形：
   </p>
 
-  <Fragment set:html={defined.slater2} />
-  <Fragment set:html={defined.slater2expand} />
+  $$\Psi_A(\mathbf{r}_1, \mathbf{r}_2) = \frac{1}{\sqrt{2}}\begin{vmatrix} \psi_\alpha(\mathbf{r}_1) & \psi_\beta(\mathbf{r}_1) \\ \psi_\alpha(\mathbf{r}_2) & \psi_\beta(\mathbf{r}_2) \end{vmatrix}$$
+  $$= \frac{1}{\sqrt{2}}\bigl[\psi_\alpha(\mathbf{r}_1)\psi_\beta(\mathbf{r}_2) - \psi_\beta(\mathbf{r}_1)\psi_\alpha(\mathbf{r}_2)\bigr]$$
 
   <p>
     Slater 行列式的数学结构自动保证了反对称性：交换两行（即交换两个粒子的坐标）
@@ -321,15 +178,15 @@ const defined = {
 
   <p>
     <strong>Pauli 不相容原理</strong>是反对称性的直接推论：若两个费米子占据同一单粒子态
-    （<Fragment set:html={defined.pauliExcl} />），则 Slater 行列式有两列相同，
-    <Fragment set:html={defined.pauliDet} />——波函数恒为零，这意味着该态不存在。
+    （$\alpha_i = \alpha_j$），则 Slater 行列式有两列相同，
+    $\Psi_A = 0$——波函数恒为零，这意味着该态不存在。
   </p>
 
   <p>
     换言之：<strong>不可能有两个全同费米子处于完全相同的量子态</strong>。
   </p>
 
-  <InsightBox title="Pauli 原理的物理后果">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Pauli 原理的物理后果</span></div>
     <p>
       Pauli 不相容原理是理解物质结构最重要的原理之一。它决定了：
     </p>
@@ -339,15 +196,15 @@ const defined = {
       <li><strong>金属的导电性</strong>：自由电子在费米能以下逐级填充能级，形成费米海。只有费米面附近的电子才参与输运过程。</li>
       <li><strong>物质的稳定性</strong>：正是 Pauli 原理阻止了原子的坍缩——若电子是玻色子，所有电子将凝聚到最低能级，化学不复存在。</li>
     </ul>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.7.1-7.2：全同粒子与对称化公设</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.5.1：全同粒子</li>
       <li>曾谨言,《量子力学》卷I, 第八章 &sect;8.1-8.2：全同粒子与对称化原理</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 5.2 交换相互作用 -->
@@ -360,15 +217,15 @@ const defined = {
     考虑两个电子的体系。当自旋-轨道耦合可忽略时，总波函数可以近似分解为轨道部分与自旋部分的乘积：
   </p>
 
-  <p><Fragment set:html={defined.psiTotal} /></p>
+  <p>$\Psi(\mathbf{r}_1, \mathbf{r}_2) = \psi(\mathbf{r}_1, \mathbf{r}_2)\,\chi(s_1, s_2)$</p>
 
   <p>
     由于电子是费米子，总波函数必须在交换两个电子时反对称。这意味着只有两种允许的组合：
   </p>
 
   <ol>
-    <li><strong>轨道对称 + 自旋反对称</strong>（<Fragment set:html={defined.singletConfig} />）</li>
-    <li><strong>轨道反对称 + 自旋对称</strong>（<Fragment set:html={defined.tripletConfig} />）</li>
+    <li><strong>轨道对称 + 自旋反对称</strong>（$\psi_S \cdot \chi_{\text{singlet}}$）</li>
+    <li><strong>轨道反对称 + 自旋对称</strong>（$\psi_A \cdot \chi_{\text{triplet}}$）</li>
   </ol>
 
   <h3>自旋单态与三重态</h3>
@@ -378,21 +235,21 @@ const defined = {
     对称和反对称的轨道波函数分别为：
   </p>
 
-  <Fragment set:html={defined.orbitalSymm} />
-  <Fragment set:html={defined.orbitalAnti} />
+  $$\psi_S(\mathbf{r}_1, \mathbf{r}_2) = \frac{1}{\sqrt{2}}\bigl[\psi_a(\mathbf{r}_1)\psi_b(\mathbf{r}_2) + \psi_b(\mathbf{r}_1)\psi_a(\mathbf{r}_2)\bigr]$$
+  $$\psi_A(\mathbf{r}_1, \mathbf{r}_2) = \frac{1}{\sqrt{2}}\bigl[\psi_a(\mathbf{r}_1)\psi_b(\mathbf{r}_2) - \psi_b(\mathbf{r}_1)\psi_a(\mathbf{r}_2)\bigr]$$
 
   <p>
     自旋部分有如下组合（利用第四章的结果）：
   </p>
 
   <p><strong>自旋单态</strong>（$S = 0$，反对称）：</p>
-  <Fragment set:html={defined.spinSinglet} />
+  $$\chi_{\text{singlet}} = \frac{1}{\sqrt{2}}\bigl(|\!\uparrow\downarrow\rangle - |\!\downarrow\uparrow\rangle\bigr), \quad S = 0$$
 
   <p><strong>自旋三重态</strong>（$S = 1$，对称），三个 $m_S$ 分量为：</p>
   <ul>
-    <li>$m_S = +1$：<Fragment set:html={defined.spinTriplet1} /></li>
-    <li>$m_S = 0$：<Fragment set:html={defined.spinTriplet0} /></li>
-    <li>$m_S = -1$：<Fragment set:html={defined.spinTripletM1} /></li>
+    <li>$m_S = +1$：$|\!\uparrow\uparrow\rangle$</li>
+    <li>$m_S = 0$：$\frac{1}{\sqrt{2}}(|\!\uparrow\downarrow\rangle + |\!\downarrow\uparrow\rangle)$</li>
+    <li>$m_S = -1$：$|\!\downarrow\downarrow\rangle$</li>
   </ul>
 
   <p>
@@ -408,31 +265,31 @@ const defined = {
     在单态和三重态下，该排斥能的期望值分别为：
   </p>
 
-  <Fragment set:html={defined.Epm} />
+  $$E_\pm = E_a + E_b + K \pm J$$
 
   <p>其中 $E_a$, $E_b$ 是单粒子能量，两个关键积分为：</p>
 
   <p><strong>直接积分</strong>（Coulomb integral）：</p>
-  <Fragment set:html={defined.directK} />
+  $$K = \int d^3r_1\,d^3r_2\;|\psi_a(\mathbf{r}_1)|^2\,\frac{e^2}{|\mathbf{r}_1 - \mathbf{r}_2|}\,|\psi_b(\mathbf{r}_2)|^2$$
 
   <p><strong>交换积分</strong>（exchange integral）：</p>
-  <Fragment set:html={defined.exchangeJ} />
+  $$J = \int d^3r_1\,d^3r_2\;\psi_a^*(\mathbf{r}_1)\psi_b^*(\mathbf{r}_2)\,\frac{e^2}{|\mathbf{r}_1 - \mathbf{r}_2|}\,\psi_b(\mathbf{r}_1)\psi_a(\mathbf{r}_2)$$
 
-  <Derivation title="推导直接积分与交换积分">
+  <details class="derivation-block"><summary class="derivation-toggle">推导直接积分与交换积分</summary><div class="derivation-content">
     <p>
       以对称轨道波函数 $\psi_S$ 为例（对应单态），计算 Coulomb 排斥能的期望值：
     </p>
-    <p><Fragment set:html={defined.EpmDeriv1} /></p>
+    <p>$$E_+ = \langle\psi_S|\hat{H}|\psi_S\rangle = E_a + E_b + \frac{1}{2}\bigl[(\langle ab| + \langle ba|)\hat{V}(|ab\rangle + |ba\rangle)\bigr]$$</p>
     <p>
-      利用 <Fragment set:html={defined.HabKJ} />，展开得：
+      利用 $$\langle\psi_a\psi_b|\hat{V}|\psi_a\psi_b\rangle = K, \quad \langle\psi_a\psi_b|\hat{V}|\psi_b\psi_a\rangle = J$$，展开得：
     </p>
-    <p><Fragment set:html={defined.EpmDeriv2} /></p>
+    <p>$$= E_a + E_b + \frac{1}{2}(K + J + J + K) = E_a + E_b + K + J$$</p>
     <p>
       类似地，反对称轨道波函数 $\psi_A$（对应三重态）给出：
     </p>
-    <p><Fragment set:html={defined.EpmDeriv3} /></p>
+    <p>$$E_- = E_a + E_b + \frac{1}{2}(K - J - J + K) = E_a + E_b + K - J$$</p>
     <p>
-      因此 <Fragment set:html={defined.Esinglet} />，<Fragment set:html={defined.Etriplet} />。
+      因此 $E_{\text{singlet}} = E_a + E_b + K + J$，$E_{\text{triplet}} = E_a + E_b + K - J$。
     </p>
     <p>
       <strong>直接积分</strong> $K$ 的物理意义是两个电子电荷分布
@@ -440,16 +297,16 @@ const defined = {
       <strong>交换积分</strong> $J$ 则没有经典对应，它源于量子力学的全同性要求，
       涉及两个单粒子波函数的"交叉"重叠。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
-    关键结论：单态与三重态的能量差为 <Fragment set:html={defined.deltaE} />。
-    对于 Coulomb 排斥，可以证明交换积分 <Fragment set:html={defined.JposResult} />
-    （这对 Coulomb 势可以严格证明），因此 <Fragment set:html={defined.EtLessEs} />——
+    关键结论：单态与三重态的能量差为 $\Delta E = 2J$。
+    对于 Coulomb 排斥，可以证明交换积分 $J > 0$
+    （这对 Coulomb 势可以严格证明），因此 $E_{\text{triplet}} < E_{\text{singlet}}$——
     三重态能量更低。
   </p>
 
-  <ThinkingBox title="交换积分的本质">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>交换积分的本质</span></div>
     <p>
       交换积分 $J$ 常被误解为一种新的"交换力"。实际上，体系中只有 Coulomb 相互作用，
       并没有新的力。能级劈裂 $2J$ 完全源于<strong>对称性约束</strong>对波函数空间部分的影响：
@@ -459,7 +316,7 @@ const defined = {
       两电子平均距离更近，排斥能更高。因此三重态（反对称轨道）能量更低。
       "交换相互作用"本质上是<strong>对称性对空间关联的约束</strong>通过 Coulomb 相互作用产生的间接效应。
     </p>
-  </ThinkingBox>
+  </div>
 
   <h3>氦原子能级：仲氦与正氦</h3>
 
@@ -467,29 +324,29 @@ const defined = {
     氦原子有两个电子，其 Hamilton 量为：
   </p>
 
-  <Fragment set:html={defined.HeHamiltonian} />
+  $$\hat{H} = -\frac{\hbar^2}{2m}(\nabla_1^2 + \nabla_2^2) - \frac{Ze^2}{r_1} - \frac{Ze^2}{r_2} + \frac{e^2}{|\mathbf{r}_1 - \mathbf{r}_2|}$$
 
   <p>
-    其中 $Z = 2$。氦原子的基态构型为 <Fragment set:html={defined.HeGS} />——
+    其中 $Z = 2$。氦原子的基态构型为 $1s^2$——
     两个电子都处于 $1s$ 轨道。由于两个电子占据相同的空间态 $\psi_{1s}$，
-    轨道部分 <Fragment set:html={defined.HeGSwf} /> 自动对称，
+    轨道部分 $\psi_{1s}(\mathbf{r}_1)\psi_{1s}(\mathbf{r}_2)$ 自动对称，
     因此自旋部分必须反对称（单态，$S = 0$）：
   </p>
 
-  <Fragment set:html={defined.HeGSconfig} />
+  $$\Psi_{1s^2} = \psi_{1s}(\mathbf{r}_1)\,\psi_{1s}(\mathbf{r}_2)\,\chi_{\text{singlet}}$$
 
   <p>
-    对于<strong>激发态</strong>（构型 <Fragment set:html={defined.HeExcited} />，其中一个电子被激发到 $nl$ 轨道），
+    对于<strong>激发态</strong>（构型 $1s\,nl$，其中一个电子被激发到 $nl$ 轨道），
     两个单粒子态不同，因此存在单态和三重态两种可能：
   </p>
 
   <ul>
-    <li><strong>仲氦</strong>（para-helium）：自旋单态 <Fragment set:html={defined.paraHe} />，轨道对称，能量 $= E_{1s} + E_{nl} + K + J$</li>
-    <li><strong>正氦</strong>（ortho-helium）：自旋三重态 <Fragment set:html={defined.orthoHe} />，轨道反对称，能量 $= E_{1s} + E_{nl} + K - J$</li>
+    <li><strong>仲氦</strong>（para-helium）：自旋单态 $S = 0$，轨道对称，能量 $= E_{1s} + E_{nl} + K + J$</li>
+    <li><strong>正氦</strong>（ortho-helium）：自旋三重态 $S = 1$，轨道反对称，能量 $= E_{1s} + E_{nl} + K - J$</li>
   </ul>
 
   <p>
-    由于 <Fragment set:html={defined.JposResult} />，同一构型下正氦能级总是低于仲氦。
+    由于 $J > 0$，同一构型下正氦能级总是低于仲氦。
     这一能级分裂在光谱中清晰可辨——历史上正氦和仲氦曾被误认为是两种不同的元素。
     两者之间的电偶极跃迁被禁止（选择定则 $\Delta S = 0$），所以正氦态是亚稳态，寿命很长。
   </p>
@@ -498,7 +355,7 @@ const defined = {
 
   <p>
     上述分析解释了原子物理中 <strong>Hund 第一规则</strong>的物理起源：
-    <em>在给定电子构型下，总自旋 <Fragment set:html={defined.hundRule} /> 最大的能级最低</em>。
+    <em>在给定电子构型下，总自旋 $S$ 最大的能级最低</em>。
   </p>
 
   <p>
@@ -506,28 +363,28 @@ const defined = {
     电子间的平均距离越大，Coulomb 排斥能越低。形式上可以将交换效应写成等效的自旋-自旋相互作用：
   </p>
 
-  <Fragment set:html={defined.Heff} />
+  $$\hat{H}_{\text{eff}} = \text{const} - 2J\,\hat{\mathbf{S}}_1 \cdot \hat{\mathbf{S}}_2$$
 
-  <Derivation title="推导等效自旋 Hamilton 量">
+  <details class="derivation-block"><summary class="derivation-toggle">推导等效自旋 Hamilton 量</summary><div class="derivation-content">
     <p>
       利用恒等式：
     </p>
-    <p><Fragment set:html={defined.S1S2expand} /></p>
+    <p>$$\hat{\mathbf{S}}_1 \cdot \hat{\mathbf{S}}_2 = \frac{1}{2}\bigl(\hat{S}^2 - \hat{S}_1^2 - \hat{S}_2^2\bigr)$$</p>
     <p>
       其中 $\hat S^2 = (\hat{\mathbf S}_1 + \hat{\mathbf S}_2)^2$。
       对于两个自旋-1/2 粒子，$\hat S_1^2 = \hat S_2^2 = \frac{3}{4}\hbar^2$，因此：
     </p>
     <p>
-      单态（$S = 0$）：<Fragment set:html={defined.S1dotS2singlet} />
+      单态（$S = 0$）：$\langle\hat{\mathbf{S}}_1\cdot\hat{\mathbf{S}}_2\rangle_{S=0} = -\frac{3\hbar^2}{4}$
     </p>
     <p>
-      三重态（$S = 1$）：<Fragment set:html={defined.S1dotS2triplet} />
+      三重态（$S = 1$）：$\langle\hat{\mathbf{S}}_1\cdot\hat{\mathbf{S}}_2\rangle_{S=1} = +\frac{\hbar^2}{4}$
     </p>
     <p>
       能级差 $E_{\text{singlet}} - E_{\text{triplet}} = 2J$。
       注意到 $\langle\hat{\mathbf S}_1\cdot\hat{\mathbf S}_2\rangle$ 在单态与三重态之间的差为
       $\frac{1}{4}\hbar^2 - (-\frac{3}{4}\hbar^2) = \hbar^2$，
-      因此可以构造等效 Hamilton 量 <Fragment set:html={defined.Heff} />（取 $\hbar = 1$），
+      因此可以构造等效 Hamilton 量 $$\hat{H}_{\text{eff}} = \text{const} - 2J\,\hat{\mathbf{S}}_1 \cdot \hat{\mathbf{S}}_2$$（取 $\hbar = 1$），
       它在两个自旋态上给出正确的能量差。
     </p>
     <p>
@@ -536,27 +393,27 @@ const defined = {
       倾向于<strong>铁磁序</strong>；当 $J < 0$ 时，自旋反平行能量最低，
       倾向于<strong>反铁磁序</strong>。
     </p>
-  </Derivation>
+  </div></details>
 
-  <InsightBox title="从原子到固体：交换相互作用的广泛应用">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>从原子到固体：交换相互作用的广泛应用</span></div>
     <p>
       交换相互作用的概念远超原子物理范畴。在凝聚态物理中，
       相邻原子上电子的交换积分决定了磁性材料的基态——Heisenberg 模型
-      <Fragment set:html={defined.Heff} /> 是理解铁磁体、反铁磁体和自旋液体的出发点。
+      $$\hat{H}_{\text{eff}} = \text{const} - 2J\,\hat{\mathbf{S}}_1 \cdot \hat{\mathbf{S}}_2$$ 是理解铁磁体、反铁磁体和自旋液体的出发点。
       在量子化学中，共价键的形成本质上也是交换效应的体现——
       两个氢原子的电子形成自旋单态（键合态），其轨道对称波函数
       使电子密度集中在两核之间，产生化学键。
       因此可以说：<strong>交换相互作用是化学的量子力学基础</strong>。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.7.3-7.4：两电子体系与交换相互作用</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.5.2：原子（氦原子与交换力）</li>
       <li>曾谨言,《量子力学》卷I, 第八章 &sect;8.3-8.4：氦原子与交换积分</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 5.3 二次量子化初步 -->
@@ -583,8 +440,8 @@ const defined = {
 
   <p>
     选取一组完备正交归一的单粒子态 $\lbrace\phi_k\rbrace$（例如谐振子本征态、平面波等）。
-    定义作用于单粒子态 $\phi_k$ 的<strong>产生算符</strong> <Fragment set:html={defined.adagDef} /> 和
-    <strong>湮灭算符</strong> <Fragment set:html={defined.aDef} />，
+    定义作用于单粒子态 $\phi_k$ 的<strong>产生算符</strong> $\hat{a}_k^\dagger$ 和
+    <strong>湮灭算符</strong> $\hat{a}_k$，
     分别在态 $k$ 上增加或减少一个粒子。
   </p>
 
@@ -592,47 +449,47 @@ const defined = {
     <strong>玻色子</strong>的产生湮灭算符满足<strong>对易关系</strong>：
   </p>
 
-  <Fragment set:html={defined.bosonComm} />
+  $$[\hat{a}_k, \hat{a}_l^\dagger] = \delta_{kl}, \quad [\hat{a}_k, \hat{a}_l] = 0, \quad [\hat{a}_k^\dagger, \hat{a}_l^\dagger] = 0$$
 
   <p>
     <strong>费米子</strong>的产生湮灭算符满足<strong>反对易关系</strong>：
   </p>
 
-  <Fragment set:html={defined.fermionAnticomm} />
+  $$\{\hat{a}_k, \hat{a}_l^\dagger\} = \delta_{kl}, \quad \{\hat{a}_k, \hat{a}_l\} = 0, \quad \{\hat{a}_k^\dagger, \hat{a}_l^\dagger\} = 0$$
 
   <p>
     其中对易子 $[A, B] = AB - BA$，反对易子 $\lbrace A, B\rbrace = AB + BA$。
     两种代数关系的差异正是全同粒子对称性（玻色 vs. 费米）的代数体现。
   </p>
 
-  <Derivation title="从反对易关系推导 Pauli 不相容原理">
+  <details class="derivation-block"><summary class="derivation-toggle">从反对易关系推导 Pauli 不相容原理</summary><div class="derivation-content">
     <p>
       对于费米子，反对易关系 $\lbrace\hat a_k, \hat a_l^\dagger\rbrace = \delta_{kl}$ 的一个直接推论是：
     </p>
-    <p><Fragment set:html={defined.fermionAntiSq} /></p>
+    <p>$(\hat{a}_k^\dagger)^2 = 0$</p>
     <p>
       这是因为 $\lbrace\hat a_k^\dagger, \hat a_k^\dagger\rbrace = 2(\hat a_k^\dagger)^2 = 0$。
     </p>
     <p>
       物理意义：不能在同一单粒子态 $k$ 上产生两个费米子。
-      因此每个态的占据数只能为 <Fragment set:html={defined.fermionPauli} />——
+      因此每个态的占据数只能为 $n_k = 0$ 或 $1$——
       这正是 <strong>Pauli 不相容原理</strong>。
     </p>
     <p>
       产生和湮灭算符的具体作用为：
     </p>
-    <p><Fragment set:html={defined.fermionCreate} /></p>
-    <p><Fragment set:html={defined.fermionAnnihil} /></p>
+    <p>$$\hat{a}_k^\dagger|0\rangle_k = |1\rangle_k, \quad \hat{a}_k^\dagger|1\rangle_k = 0$$</p>
+    <p>$$\hat{a}_k|1\rangle_k = |0\rangle_k, \quad \hat{a}_k|0\rangle_k = 0$$</p>
     <p>
       对比玻色子：
     </p>
-    <p><Fragment set:html={defined.bosonCommDeriv1} /></p>
-    <p><Fragment set:html={defined.bosonCommDeriv2} /></p>
+    <p>$$\hat{a}_k|n_k\rangle = \sqrt{n_k}\,|n_k - 1\rangle$$</p>
+    <p>$$\hat{a}_k^\dagger|n_k\rangle = \sqrt{n_k + 1}\,|n_k + 1\rangle$$</p>
     <p>
-      玻色子的占据数可以是任意非负整数 <Fragment set:html={defined.bosonNk} />，
+      玻色子的占据数可以是任意非负整数 $n_k = 0, 1, 2, \ldots$，
       不受 Pauli 原理的限制。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>Fock 空间与粒子数表象</h3>
 
@@ -640,24 +497,24 @@ const defined = {
     定义<strong>粒子数算符</strong>：
   </p>
 
-  <Fragment set:html={defined.nkDef} />
+  $$\hat{n}_k = \hat{a}_k^\dagger\,\hat{a}_k$$
 
-  <p>其本征方程为 <Fragment set:html={defined.nkEigen} />。
-    对于玻色子，<Fragment set:html={defined.bosonNk} />；
-    对于费米子，<Fragment set:html={defined.fermionNk} />。
+  <p>其本征方程为 $$\hat{n}_k|n_k\rangle = n_k|n_k\rangle$$。
+    对于玻色子，$n_k = 0, 1, 2, \ldots$；
+    对于费米子，$n_k = 0, 1$。
   </p>
 
   <p>
-    <strong>真空态</strong> <Fragment set:html={defined.vacuum} /> 定义为所有单粒子态都没有粒子的态：
-    对所有 $k$，<Fragment set:html={defined.akVac} />。
+    <strong>真空态</strong> $|0\rangle$ 定义为所有单粒子态都没有粒子的态：
+    对所有 $k$，$\hat{a}_k|0\rangle = 0$。
     从真空态出发，用产生算符可以构造任意的多粒子态：
   </p>
 
-  <Fragment set:html={defined.fockState} />
+  $$|n_1, n_2, \ldots\rangle = \prod_k \frac{(\hat{a}_k^\dagger)^{n_k}}{\sqrt{n_k!}}\,|0\rangle$$
 
   <p>
     全体这样的态（包括不同粒子数的态）张成的 Hilbert 空间称为 <strong>Fock 空间</strong>。
-    以粒子数 <Fragment set:html={defined.fockBasis} /> 为基的表象称为<strong>粒子数表象</strong>
+    以粒子数 $|n_1, n_2, \ldots\rangle$ 为基的表象称为<strong>粒子数表象</strong>
     （occupation number representation）。
   </p>
 
@@ -665,7 +522,7 @@ const defined = {
     Fock 空间的总粒子数算符为：
   </p>
 
-  <Fragment set:html={defined.totalN} />
+  $$\hat{N} = \sum_k \hat{n}_k = \sum_k \hat{a}_k^\dagger\,\hat{a}_k$$
 
   <p>
     Fock 空间的强大之处在于：它天然地包含不同粒子数的子空间，
@@ -679,41 +536,41 @@ const defined = {
     在第一量子化中，一个<strong>单体算符</strong>（作用于每个粒子独立）的形式为：
   </p>
 
-  <Fragment set:html={defined.oneBodyFirst} />
+  $$\hat{F} = \sum_{i=1}^{N} \hat{f}(\mathbf{r}_i)$$
 
   <p>
     在二次量子化中，它表示为：
   </p>
 
-  <Fragment set:html={defined.oneBodySecond} />
+  $$\hat{F} = \sum_{k,l} \langle k|\hat{f}|l\rangle\,\hat{a}_k^\dagger\,\hat{a}_l$$
 
   <p>
-    其中矩阵元 <Fragment set:html={defined.fMatElem} />。
+    其中矩阵元 $\langle k|\hat{f}|l\rangle = \int d^3r\;\phi_k^*(\mathbf{r})\,\hat{f}(\mathbf{r})\,\phi_l(\mathbf{r})$。
   </p>
 
   <p>
     类似地，<strong>二体算符</strong>（描述粒子间两两相互作用）在第一量子化中为：
   </p>
 
-  <Fragment set:html={defined.twoBodyFirst} />
+  $$\hat{G} = \frac{1}{2}\sum_{i \neq j} \hat{g}(\mathbf{r}_i, \mathbf{r}_j)$$
 
   <p>
     在二次量子化中表示为：
   </p>
 
-  <Fragment set:html={defined.twoBodySecond} />
+  $$\hat{G} = \frac{1}{2}\sum_{k,l,m,n} \langle kl|\hat{g}|mn\rangle\,\hat{a}_k^\dagger\,\hat{a}_l^\dagger\,\hat{a}_n\,\hat{a}_m$$
 
   <p>
-    其中矩阵元 <Fragment set:html={defined.gMatElem} />。
-    注意二体算符中湮灭算符的顺序 <Fragment set:html={defined.normalOrder} />——
+    其中矩阵元 $\langle kl|\hat{g}|mn\rangle = \int d^3r_1\,d^3r_2\;\phi_k^*(\mathbf{r}_1)\phi_l^*(\mathbf{r}_2)\,\hat{g}(\mathbf{r}_1, \mathbf{r}_2)\,\phi_m(\mathbf{r}_1)\phi_n(\mathbf{r}_2)$。
+    注意二体算符中湮灭算符的顺序 $\hat{a}_k^\dagger\hat{a}_l^\dagger\hat{a}_n\hat{a}_m$——
     湮灭算符的排列顺序 $\hat a_n\hat a_m$（而非 $\hat a_m\hat a_n$）
     保证了<strong>正规序</strong>（normal ordering），避免了粒子"与自己相互作用"的非物理项。
   </p>
 
-  <Derivation title="单体算符二次量子化形式的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">单体算符二次量子化形式的推导</summary><div class="derivation-content">
     <p>
       在第一量子化中，$N$ 粒子的单体算符为 $\hat F = \sum_i \hat f(\mathbf r_i)$。
-      将单粒子态 <Fragment set:html={defined.phikr} /> 作为完备基插入，
+      将单粒子态 $\phi_k(\mathbf{r})$ 作为完备基插入，
       对第 $i$ 个粒子的矩阵元为 $\langle k|\hat f|l\rangle$。
     </p>
     <p>
@@ -726,7 +583,7 @@ const defined = {
       可以严格验证，二次量子化形式在任意粒子数 $N$ 的 Fock 空间子空间上，
       其矩阵元与第一量子化的结果完全一致。这保证了两种形式的等价性。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>场算符</h3>
 
@@ -734,11 +591,11 @@ const defined = {
     定义<strong>场算符</strong>（field operator）：
   </p>
 
-  <Fragment set:html={defined.fieldOpDef} />
-  <Fragment set:html={defined.fieldOpDag} />
+  $$\hat{\psi}(\mathbf{r}) = \sum_k \phi_k(\mathbf{r})\,\hat{a}_k$$
+  $$\hat{\psi}^\dagger(\mathbf{r}) = \sum_k \phi_k^*(\mathbf{r})\,\hat{a}_k^\dagger$$
 
   <p>
-    其中 <Fragment set:html={defined.phikr} /> 是完备正交归一的单粒子基函数。
+    其中 $\phi_k(\mathbf{r})$ 是完备正交归一的单粒子基函数。
     场算符 $\hat\psi^\dagger(\mathbf r)$ 的物理意义是在位置 $\mathbf r$ 处产生一个粒子，
     $\hat\psi(\mathbf r)$ 是在位置 $\mathbf r$ 处湮灭一个粒子。
   </p>
@@ -746,46 +603,46 @@ const defined = {
   <p>场算符满足的（反）对易关系为：</p>
 
   <p>玻色子：</p>
-  <Fragment set:html={defined.bosonFieldComm} />
+  $$[\hat{\psi}(\mathbf{r}), \hat{\psi}^\dagger(\mathbf{r}')] = \delta^{(3)}(\mathbf{r} - \mathbf{r}')$$
 
   <p>费米子：</p>
-  <Fragment set:html={defined.fermionFieldAnti} />
+  $$\{\hat{\psi}(\mathbf{r}), \hat{\psi}^\dagger(\mathbf{r}')\} = \delta^{(3)}(\mathbf{r} - \mathbf{r}')$$
 
-  <Derivation title="场算符对易关系的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">场算符对易关系的推导</summary><div class="derivation-content">
     <p>
       以玻色子为例，利用场算符的定义和产生湮灭算符的对易关系：
     </p>
-    <p><Fragment set:html={defined.fieldCommDeriv} /></p>
+    <p>$$[\hat{\psi}(\mathbf{r}), \hat{\psi}^\dagger(\mathbf{r}')] = \sum_{k,l}\phi_k(\mathbf{r})\phi_l^*(\mathbf{r}')[\hat{a}_k, \hat{a}_l^\dagger] = \sum_k \phi_k(\mathbf{r})\phi_k^*(\mathbf{r}') = \delta^{(3)}(\mathbf{r} - \mathbf{r}')$$</p>
     <p>
-      最后一步利用了单粒子基函数的完备性关系 <Fragment set:html={defined.completeness} />。
+      最后一步利用了单粒子基函数的完备性关系 $\sum_k \phi_k^*(\mathbf{r})\phi_k(\mathbf{r}') = \delta^{(3)}(\mathbf{r} - \mathbf{r}')$。
       费米子的情形完全类似，只需将对易子替换为反对易子。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
     用场算符，单体算符和二体算符有特别简洁的表达：
   </p>
 
-  <Fragment set:html={defined.oneBodyField} />
-  <Fragment set:html={defined.twoBodyField} />
+  $$\hat{F} = \int d^3r\;\hat{\psi}^\dagger(\mathbf{r})\,\hat{f}(\mathbf{r})\,\hat{\psi}(\mathbf{r})$$
+  $$\hat{G} = \frac{1}{2}\int d^3r_1\,d^3r_2\;\hat{\psi}^\dagger(\mathbf{r}_1)\hat{\psi}^\dagger(\mathbf{r}_2)\,\hat{g}(\mathbf{r}_1, \mathbf{r}_2)\,\hat{\psi}(\mathbf{r}_2)\hat{\psi}(\mathbf{r}_1)$$
 
-  <Derivation title="验证场算符形式与离散形式的等价">
+  <details class="derivation-block"><summary class="derivation-toggle">验证场算符形式与离散形式的等价</summary><div class="derivation-content">
     <p>
       将场算符 $\hat\psi(\mathbf r) = \sum_k\phi_k(\mathbf r)\hat a_k$ 代入单体算符的场算符形式：
     </p>
-    <p><Fragment set:html={defined.oneBodyEquiv} /></p>
+    <p>$$\hat{F} = \sum_{k,l}\langle k|\hat{f}|l\rangle\,\hat{a}_k^\dagger\hat{a}_l = \int d^3r\sum_{k,l}\phi_k^*(\mathbf{r})\hat{f}(\mathbf{r})\phi_l(\mathbf{r})\,\hat{a}_k^\dagger\hat{a}_l = \int d^3r\;\hat{\psi}^\dagger(\mathbf{r})\hat{f}(\mathbf{r})\hat{\psi}(\mathbf{r})$$</p>
     <p>
       最后一步将 $\sum_k \phi_k^*(\mathbf r)\hat a_k^\dagger = \hat\psi^\dagger(\mathbf r)$ 和
       $\sum_l \phi_l(\mathbf r)\hat a_l = \hat\psi(\mathbf r)$ 代回，即得场算符形式。
       二体算符的验证类似，但需要注意算符的正规序排列。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
     体系的完整 Hamilton 量用场算符可以写成紧凑的形式：
   </p>
 
-  <Fragment set:html={defined.Hfield} />
+  $$\hat{H} = \int d^3r\;\hat{\psi}^\dagger(\mathbf{r})\left(-\frac{\hbar^2}{2m}\nabla^2 + V(\mathbf{r})\right)\hat{\psi}(\mathbf{r}) + \frac{1}{2}\int d^3r_1\,d^3r_2\;\hat{\psi}^\dagger(\mathbf{r}_1)\hat{\psi}^\dagger(\mathbf{r}_2)\,U(\mathbf{r}_1, \mathbf{r}_2)\,\hat{\psi}(\mathbf{r}_2)\hat{\psi}(\mathbf{r}_1)$$
 
   <p>
     其中第一项是单体部分（动能 + 外势），第二项是两体相互作用 $U(\mathbf r_1, \mathbf r_2)$。
@@ -817,7 +674,7 @@ const defined = {
     <li><strong>通向量子场论</strong>：将场算符视为基本自由度，是相对论性量子场论的出发点。</li>
   </ul>
 
-  <ThinkingBox title="从量子力学到量子场论">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>从量子力学到量子场论</span></div>
     <p>
       在非相对论量子力学中，二次量子化只是第一量子化的等价改写。
       但当我们转向相对论性理论时，情况发生了根本变化。
@@ -832,9 +689,9 @@ const defined = {
       粒子是场的激发态。这一观念转变是从量子力学走向量子场论的关键一步：
       我们不再"量子化粒子"，而是"量子化场"。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <InsightBox title="二次量子化的应用广度">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>二次量子化的应用广度</span></div>
     <p>
       二次量子化是现代物理学中使用最广泛的形式语言之一：
     </p>
@@ -844,16 +701,16 @@ const defined = {
       <li><strong>核物理</strong>：壳模型中的准粒子、核子配对等。</li>
       <li><strong>量子场论</strong>：将场本身作为算符处理，粒子是场的量子化激发。标准模型就建立在量子场论的框架之上。</li>
     </ul>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.7.5：二次量子化</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.5.4（附录）：二次量子化简介</li>
       <li>曾谨言,《量子力学》卷II, 第十一章：二次量子化方法</li>
       <li>A. L. Fetter & J. D. Walecka, <em>Quantum Theory of Many-Particle Systems</em>, Ch.1-2：二次量子化的系统处理</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 章末总结 -->
@@ -894,7 +751,7 @@ const defined = {
     在后续课程中，微扰论、变分法等近似方法将在全同粒子体系上得到广泛应用。
   </p>
 
-  <ThinkingBox title="全同性与量子信息">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>全同性与量子信息</span></div>
     <p>
       全同粒子的量子统计性质在量子信息中也扮演重要角色。
       玻色子倾向于"聚集"在同一量子态（玻色增强），这是激光工作的原理，
@@ -905,6 +762,9 @@ const defined = {
       此外，全同粒子的纠缠概念（如何定义和量化全同粒子间的纠缠）
       本身就是量子信息理论中尚在活跃研究的前沿课题。
     </p>
-  </ThinkingBox>
+  </div>`;
+---
 
+<ChapterLayout title="第五章 全同粒子" courseId="qm" chapterId="ch05">
+  <Fragment set:html={content} />
 </ChapterLayout>

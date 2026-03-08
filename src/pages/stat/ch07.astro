@@ -1,34 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const criticalTemp = `$$T_c = \\frac{2\\pi\\hbar^2}{mk_B}\\left(\\frac{n}{\\zeta(3/2)}\\right)^{\\!2/3}$$`;
-const condensateFraction = `$$\\frac{N_0}{N} = 1 - \\left(\\frac{T}{T_c}\\right)^{\\!3/2}$$`;
-const becPressure = `$$P(T) = \\frac{\\zeta(5/2)}{\\lambda_T^3}\\,k_BT \\qquad (T < T_c)$$`;
-const becCv = `$$C_V = \\frac{15}{4}\\frac{\\zeta(5/2)}{\\zeta(3/2)}\\,Nk_B\\left(\\frac{T}{T_c}\\right)^{\\!3/2} \\approx 1.926\\,Nk_B\\left(\\frac{T}{T_c}\\right)^{\\!3/2} \\qquad (T < T_c)$$`;
-const becCvAbove = `$$C_V\\big|_{T_c^+} = \\frac{15}{4}\\frac{\\zeta(5/2)}{\\zeta(3/2)}\\,Nk_B \\approx 1.926\\,Nk_B$$`;
-const planckDistribution = `$$u(\\nu, T) = \\frac{8\\pi h\\nu^3}{c^3}\\cdot\\frac{1}{e^{h\\nu/k_BT}-1}$$`;
-const stefanBoltzmann = `$$u = \\int_0^{\\infty}u(\\nu,T)\\,d\\nu = \\frac{8\\pi^5 k_B^4}{15h^3c^3}\\,T^4 = aT^4$$`;
-const stefanBoltzmannFlux = `$$j = \\sigma T^4, \\qquad \\sigma = \\frac{ac}{4} = \\frac{2\\pi^5 k_B^4}{15h^3c^2} \\approx 5.67\\times 10^{-8}\\;\\text{W\\,m}^{-2}\\text{K}^{-4}$$`;
-const wienDisplacement = `$$\\lambda_{\\max} T = b, \\qquad b = \\frac{hc}{4.965\\,k_B} \\approx 2.898\\times 10^{-3}\\;\\text{m}\\cdot\\text{K}$$`;
-const radiationEntropy = `$$S = \\frac{4}{3}aT^3 V$$`;
-const radiationPressure = `$$P = \\frac{u}{3} = \\frac{a}{3}T^4$$`;
-const debyeHeatCapacity = `$$C_V = 9Nk_B\\left(\\frac{T}{\\Theta_D}\\right)^{\\!3}\\int_0^{\\Theta_D/T}\\frac{x^4 e^x}{(e^x - 1)^2}\\,dx$$`;
-const debyeT3 = `$$C_V \\approx \\frac{12\\pi^4}{5}Nk_B\\left(\\frac{T}{\\Theta_D}\\right)^{\\!3} \\qquad (T \\ll \\Theta_D)$$`;
-const debyeHighT = `$$C_V \\to 3Nk_B \\qquad (T \\gg \\Theta_D)$$`;
-const debyeTemp = `$$\\Theta_D = \\frac{\\hbar\\omega_D}{k_B} = \\frac{\\hbar v_s}{k_B}\\left(\\frac{6\\pi^2 N}{V}\\right)^{\\!1/3}$$`;
-const boseFunction = `$$g_n(z) = \\frac{1}{\\Gamma(n)}\\int_0^{\\infty}\\frac{x^{n-1}}{z^{-1}e^x - 1}\\,dx = \\sum_{l=1}^{\\infty}\\frac{z^l}{l^n}$$`;
-const particleNumberBEC = `$$\\frac{N}{V} = \\frac{g_{3/2}(z)}{\\lambda_T^3}$$`;
-const nExcited = `$$N_{\\text{ex}} = \\frac{V}{\\lambda_T^3}\\,\\zeta(3/2) = N\\left(\\frac{T}{T_c}\\right)^{\\!3/2} \\qquad (T \\leq T_c)$$`;
-const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\right)^{\\!2}\\frac{e^{\\Theta_E/T}}{(e^{\\Theta_E/T}-1)^2}$$`;
----
-
-<ChapterLayout title="第七章 理想玻色气体" courseId="stat" chapterId="ch07">
-
-  <h1>第七章 理想玻色气体</h1>
+const content = String.raw`<h1>第七章 理想玻色气体</h1>
 
   <p>
     玻色子不受Pauli不相容原理的限制——任意数目的玻色子可以同时占据同一个量子态。这一基本差异使得理想玻色气体展现出与费米气体截然不同的低温行为：当温度降至临界温度以下时，宏观数目的粒子"凝聚"到基态，发生<strong>Bose-Einstein凝聚</strong>（BEC）。本章将系统研究三个重要的玻色系统：有质量粒子的BEC、光子气体（黑体辐射）和声子气体（固体比热的Debye理论）。它们虽然物理实现不同，但统一在Bose-Einstein统计的框架之下。
@@ -72,7 +45,7 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
     这意味着BEC发生在粒子间距 $n^{-1/3}$ 与热de Broglie波长 $\lambda_T$ 可比时——量子波包开始显著重叠，全同性效应（对称波函数的聚束倾向）驱动宏观凝聚。
   </p>
 
-  <Derivation title="BEC临界温度的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">BEC临界温度的推导</summary><div class="derivation-content">
     <p>在热力学极限下，将单粒子态求和转化为积分时，基态（$\varepsilon = 0$）的贡献被态密度 $g(\varepsilon) \propto \varepsilon^{1/2}$ 压低为零（因为 $g(0) = 0$）。因此需要单独处理基态：</p>
     $$
       N = N_0 + N_{\text{ex}} = \frac{z}{1-z} + \frac{V}{\lambda_T^3}\,g_{3/2}(z)
@@ -88,7 +61,7 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
       N_{\text{ex}} = \frac{V}{\lambda_T^3}\,\zeta(3/2) = N\left(\frac{T}{T_c}\right)^{3/2}
     $$
     <p>因此凝聚到基态的粒子数为 $N_0 = N - N_{\text{ex}} = N[1 - (T/T_c)^{3/2}]$。</p>
-  </Derivation>
+  </div></details>
 
   <h3>凝聚分数</h3>
   <p>
@@ -103,11 +76,11 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
     在 $T = 0$ 时，$N_0/N = 1$——所有粒子凝聚在基态；在 $T = T_c$ 时，$N_0/N = 0$——凝聚消失。凝聚分数随温度连续变化，$T_c$ 处没有不连续性。
   </p>
 
-  <InsightBox title="BEC的本质——单一量子态的宏观占据">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>BEC的本质——单一量子态的宏观占据</span></div>
     <p>
       BEC是一个纯粹的量子统计现象——它发生在理想（无相互作用）气体中，不需要任何粒子间吸引力。在经典统计中不会出现BEC，因为经典粒子可分辨，没有"占据同一态"的概念。BEC的深层物理是：玻色子的交换对称性使得多粒子波函数中"所有粒子在同一态"的构型相对于"粒子分散在不同态"的构型具有统计增强——当温度足够低时（$\lambda_T \gtrsim n^{-1/3}$），这种增强变得压倒性的，导致宏观数目的粒子自发地占据基态。凝聚体的所有粒子由<strong>同一个波函数</strong>描述，$\Psi(\mathbf{r}) = \sqrt{N_0/V}$——这是宏观量子相干的起源。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>BEC的热力学</h3>
   <p>
@@ -133,7 +106,7 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
     而在 $T \to T_c^+$ 时（从高温侧趋近），$C_V$ 趋于同一值 $\approx 1.926\,Nk_B$。因此 $C_V$ 本身在 $T = T_c$ 处<strong>连续</strong>，但其导数 $\partial C_V/\partial T$ 不连续——$C_V(T)$ 曲线在 $T_c$ 处出现一个<strong>折角</strong>（cusp）。从Ehrenfest分类看，理想BEC是一个<strong>三级相变</strong>（Gibbs自由能的三阶导数不连续）；但按更现代的分类，它属于连续相变的一种退化情形。
   </p>
 
-  <ThinkingBox title="二维系统为何没有BEC？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>二维系统为何没有BEC？</span></div>
     <p>
       BEC的发生条件是激发态容纳的粒子数有上限。在 $d$ 维空间中，$N_{\text{ex}}^{\max} \propto \int_0^\infty \frac{\varepsilon^{d/2-1}}{e^{\beta\varepsilon}-1}\,d\varepsilon$。这个积分在 $\varepsilon \to 0$ 处的收敛性取决于被积函数的行为：$\varepsilon^{d/2-1}/(e^{\beta\varepsilon}-1) \sim \varepsilon^{d/2-2}/\beta$ 当 $\varepsilon \to 0$。
     </p>
@@ -148,9 +121,9 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
     <p>
       值得注意的是：如果二维系统中有谐振子势阱 $V(\mathbf{r}) \propto r^2$（而非均匀的盒子），态密度被修改，BEC<strong>可以</strong>发生——1995年以来的冷原子BEC实验中就是这种情况。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 7.1-7.2</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 12.1-12.3</li>
@@ -160,7 +133,7 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
       <li>M.H. Anderson et al., <em>Science</em> <strong>269</strong>, 198 (1995) — $^{87}$Rb原子BEC</li>
       <li>C.J. Pethick & H. Smith, <em>Bose-Einstein Condensation in Dilute Gases</em>, 2nd ed.</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="blackbody">7.2 黑体辐射</h2>
@@ -186,11 +159,11 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
     即<strong>Planck分布</strong>。
   </p>
 
-  <InsightBox title="为什么光子的化学势为零？">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>为什么光子的化学势为零？</span></div>
     <p>
       $\mu = 0$ 并非假设，而是热力学平衡的推论。对于粒子数守恒的系统（如 $^4$He 原子），$\mu$ 是一个独立的热力学变量，由 $N$ 的约束确定。但光子可以被腔壁自由产生和吸收（$\gamma \leftrightarrow$ 腔壁激发），因此 $N$ 不是约束，$\mu$ 不是独立变量。平衡条件要求总自由能对 $N$ 取极值，即 $\mu = \partial F/\partial N = 0$。类似地，声子（晶格振动的量子）也有 $\mu = 0$。更一般地，任何数目不守恒的准粒子（磁振子、声子、光子、虚拟粒子等）都有 $\mu = 0$。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>Planck分布与能量密度谱</h3>
   <p>
@@ -204,7 +177,7 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
   </p>
   <Fragment set:html={planckDistribution} />
 
-  <Derivation title="Planck分布的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">Planck分布的推导</summary><div class="derivation-content">
     <p>在体积 $V$ 的立方腔中（周期性边界条件），光子的波矢量为 $\mathbf{k} = 2\pi\mathbf{n}/L$（$\mathbf{n}$ 为整数矢量）。频率为 $\nu = ck/(2\pi)$，频率在 $[\nu, \nu+d\nu]$ 间的模式数为</p>
     $$
       dN_{\text{modes}} = 2 \cdot \frac{V}{(2\pi)^3}\cdot 4\pi k^2\,dk = 2 \cdot \frac{V}{(2\pi)^3}\cdot 4\pi\left(\frac{2\pi\nu}{c}\right)^2\cdot\frac{2\pi\,d\nu}{c} = \frac{8\pi V\nu^2}{c^3}\,d\nu
@@ -214,7 +187,7 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
       u(\nu,T) = \frac{8\pi h\nu^3}{c^3}\cdot\frac{1}{e^{h\nu/k_BT}-1}
     $$
     <p>这就是<strong>Planck辐射公式</strong>（1900年）。</p>
-  </Derivation>
+  </div></details>
 
   <h3>Stefan-Boltzmann定律</h3>
   <p>
@@ -253,14 +226,14 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
     <li><strong>高频极限</strong>（$h\nu \gg k_BT$）：$e^{h\nu/k_BT} \gg 1$，Planck公式退化为 $u(\nu) \approx (8\pi h\nu^3/c^3)e^{-h\nu/k_BT}$——<strong>Wien公式</strong>。指数截断抑制了高频贡献，消除了紫外灾变。</li>
   </ul>
 
-  <ThinkingBox title="紫外灾变与量子力学的诞生">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>紫外灾变与量子力学的诞生</span></div>
     <p>
       紫外灾变的本质在于：经典统计力学的能量均分定理赋予电磁场的<strong>每个</strong>模式相同的平均能量 $k_BT$，而高频模式的数目 $\propto \nu^2$ 无穷多，导致总能量发散。Planck（1900）的天才之举是假设每个频率为 $\nu$ 的振荡模式的能量只能取 $E = nh\nu$（$n = 0, 1, 2, \ldots$）的离散值。对于 $h\nu \gg k_BT$ 的高频模式，能量量子 $h\nu$ 远大于热能 $k_BT$，该模式几乎不被激发（$\langle n\rangle \approx e^{-h\nu/k_BT} \approx 0$），从而自然地截断了高频贡献。
     </p>
     <p>
       用现代语言，这就是Bose-Einstein统计：每个模式是一个量子谐振子，其占据数服从Bose分布 $\langle n\rangle = 1/(e^{\beta h\nu}-1)$。经典均分定理 $\langle E\rangle = k_BT$ 仅在 $k_BT \gg h\nu$ 时成立；当 $k_BT \ll h\nu$ 时，量子效应冻结了该模式的激发。Planck对黑体辐射的分析开启了量子力学的大门——$h$（Planck常数）首次出现在物理学中。
     </p>
-  </ThinkingBox>
+  </div>
 
   <h3>辐射热力学</h3>
   <p>
@@ -278,7 +251,7 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
     注意 $S \propto VT^3 \propto N_\gamma$（$N_\gamma \propto VT^3$ 为光子数），即每个光子携带大约 $\sim k_B$ 量级的熵。辐射的绝热过程满足 $VT^3 = \text{const}$，与理想气体的 $VT^{3/2} = \text{const}$ 不同（指数差异来自色散关系的不同）。
   </p>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 7.3</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 12.4</li>
@@ -287,7 +260,7 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
       <li>M. Planck, <em>Annalen der Physik</em> <strong>4</strong>, 553 (1901) — Planck辐射公式</li>
       <li>J.C. Mather et al., <em>Astrophys. J.</em> <strong>420</strong>, 439 (1994) — COBE/FIRAS对CMB谱的精密测量</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="debye">7.3 声子气体：Debye模型</h2>
@@ -332,7 +305,7 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
   </p>
   <Fragment set:html={debyeTemp} />
 
-  <Derivation title="Debye热容公式的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">Debye热容公式的推导</summary><div class="derivation-content">
     <p>固体总能量（忽略零点能，因其不贡献热容）为</p>
     $$
       E = \int_0^{\omega_D} \frac{\hbar\omega}{e^{\beta\hbar\omega}-1}\,D(\omega)\,d\omega = \frac{9N}{\omega_D^3}\int_0^{\omega_D}\frac{\hbar\omega^3}{e^{\beta\hbar\omega}-1}\,d\omega
@@ -346,7 +319,7 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
       C_V = 9Nk_B\left(\frac{T}{\Theta_D}\right)^3\int_0^{\Theta_D/T}\frac{x^4 e^x}{(e^x-1)^2}\,dx
     $$
     <p>这就是Debye热容公式，是 $T/\Theta_D$ 的普适函数。</p>
-  </Derivation>
+  </div></details>
 
   <Fragment set:html={debyeHeatCapacity} />
 
@@ -365,11 +338,11 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
     这就是著名的<strong>Debye $T^3$ 律</strong>。它与实验吻合极好，是固体物理中最成功的理论预言之一。$T^3$ 行为的物理原因是：在低温下只有长波长（低频）声子被热激发，这些声子的色散关系近似线性（$\omega \propto k$），等效于一个三维"声子光子"气体。声子态密度 $D(\omega) \propto \omega^2$，给出 $E \propto T^4$（与Stefan-Boltzmann定律的 $T^4$ 律完全类比），因此 $C_V \propto T^3$。
   </p>
 
-  <InsightBox title="Debye T³律与黑体辐射的深层联系">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Debye T³律与黑体辐射的深层联系</span></div>
     <p>
       低温固体比热的 $T^3$ 律和黑体辐射的 $T^4$ 能量密度在物理上完全同源：两者都是三维空间中线性色散（$\omega = v\,k$）玻色准粒子（$\mu = 0$）的热力学。声子和光子的唯一区别在于：(1) 光子有2个偏振，声子有3个极化方向（1个纵波+2个横波）；(2) 光子频谱无上限，声子有Debye截止 $\omega_D$（因为晶格的离散性限制了最短波长 $\lambda_{\min} \sim$ 晶格常数）。在 $T \ll \Theta_D$ 时截止不重要，两者的物理完全等价。将 $C_V^{\text{Debye}}(T \ll \Theta_D) = (12\pi^4/5)Nk_B(T/\Theta_D)^3$ 与辐射比热 $C_V^{\text{rad}} = 4aT^3 V$ 对比，结构完全相同。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>高温 Dulong-Petit 极限</h3>
   <p>
@@ -391,7 +364,7 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
     <li><strong>熔化判据</strong>：Lindemann准则指出，当原子的均方根热振动位移达到晶格常数的某个固定比例（$\sim 10\%$）时，固体熔化。这给出 $T_m \propto \Theta_D^2$，即Debye温度高的材料更难熔化。</li>
   </ul>
 
-  <ThinkingBox title="Einstein模型 vs Debye模型的本质区别">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>Einstein模型 vs Debye模型的本质区别</span></div>
     <p>
       两个模型的根本差异在于频率谱的低频行为：
     </p>
@@ -405,9 +378,9 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
     <p>
       值得一提的是，真实晶体的声子色散关系在Brillouin区边界处偏离线性（出现van Hove奇异性），Debye模型在中间温度区域的精确性有限。但其低温极限（$T^3$ 律）是严格正确的，因为低温行为仅由长波声子决定，而长波声子的线性色散是弹性理论的精确结果。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 7.4</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 12.5</li>
@@ -417,6 +390,9 @@ const einsteinCv = `$$C_V^{\\text{Ein}} = 3Nk_B\\left(\\frac{\\Theta_E}{T}\\righ
       <li>P. Debye, <em>Annalen der Physik</em> <strong>39</strong>, 789 (1912) — Debye模型</li>
       <li>N.W. Ashcroft & N.D. Mermin, <em>Solid State Physics</em>, Ch. 23 — 声子与晶格比热</li>
     </ul>
-  </ReferenceBox>
+  </div>`;
+---
 
+<ChapterLayout title="第七章 理想玻色气体" courseId="stat" chapterId="ch07">
+  <Fragment set:html={content} />
 </ChapterLayout>

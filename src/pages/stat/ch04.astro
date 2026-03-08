@@ -1,20 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const grandPartitionDef = `$$\\Xi(T,V,\\mu) = \\sum_{N=0}^{\\infty} e^{\\beta\\mu N} Z(T,V,N) = \\sum_{N=0}^{\\infty} z^N Z_N$$`;
-const grandPotentialDef = `$$\\Phi(T,V,\\mu) = -k_BT \\ln \\Xi = F - \\mu N = -PV$$`;
-const fluctuationResult = `$$\\langle (\\Delta N)^2 \\rangle = k_BT \\left(\\frac{\\partial \\langle N\\rangle}{\\partial \\mu}\\right)_{T,V} = k_BT \\cdot V \\cdot \\frac{\\kappa_T}{v^2}$$`;
-const xiProductForm = `$$\\Xi = \\sum_{N=0}^{\\infty} z^N \\frac{1}{N!} \\left(\\frac{V}{\\lambda_T^3}\\right)^N = \\exp\\!\\left(\\frac{zV}{\\lambda_T^3}\\right)$$`;
-const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
----
-
-<ChapterLayout title="第四章 巨正则系综" courseId="stat" chapterId="ch04">
-
-  <h1>第四章 巨正则系综</h1>
+const content = String.raw`<h1>第四章 巨正则系综</h1>
 
   <p>
     正则系综固定了粒子数 $N$，这在处理化学反应、开放系统、量子统计中带来本质困难——因为这些情况下粒子数本身就是一个涨落的动力学变量。<strong>巨正则系综</strong>（grand canonical ensemble）通过引入<strong>化学势</strong> $\mu$ 作为控制参数，允许粒子数在系统与粒子库之间自由交换，极大地扩展了统计力学的计算能力。特别地，巨正则系综是处理量子统计（Bose-Einstein与Fermi-Dirac分布）的天然框架——这一点将在第五章充分体现。本章将严格建立巨正则系综，推导巨配分函数与巨势的关系，分析粒子数涨落，并讨论系综等价性。
@@ -47,11 +34,11 @@ const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
     其中 $n = N/V$ 是粒子数密度，$\lambda_T = h/\sqrt{2\pi mk_BT}$ 是热de Broglie波长。在经典极限下 $n\lambda_T^3 \ll 1$，因此 $\mu &lt; 0$。随着温度降低或密度增大，$n\lambda_T^3 \to 1$ 时经典近似失效，需要使用量子统计。
   </p>
 
-  <InsightBox title="化学势的直觉理解">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>化学势的直觉理解</span></div>
     <p>
       化学势是粒子的"价格"——它衡量了向系统中添加一个粒子在热力学意义上的代价。在两个可以交换粒子的系统之间，粒子会从化学势高的一侧流向化学势低的一侧，直到 $\mu_1 = \mu_2$ 达到化学平衡。这与热量从高温流向低温（$T_1 = T_2$ 达到热平衡）完全类比。对于多组分系统，每种粒子有各自的化学势 $\mu_i$，化学反应平衡的条件就是 $\sum_i \nu_i \mu_i = 0$（$\nu_i$ 为化学计量系数）。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>从正则到巨正则的严格推导</h3>
   <p>
@@ -61,7 +48,7 @@ const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
     P_{i,N} \propto \Omega_R(E_0 - E_i^{(N)},\; N_0 - N)
   $$
 
-  <Derivation title="巨正则分布的严格推导">
+  <details class="derivation-block"><summary class="derivation-toggle">巨正则分布的严格推导</summary><div class="derivation-content">
     <p>对热库的熵在 $(E_0, N_0)$ 处做二元Taylor展开（热库远大于系统）：</p>
     $$
       S_R(E_0 - E_i^{(N)},\; N_0 - N) \approx S_R(E_0, N_0) - E_i^{(N)}\frac{\partial S_R}{\partial E_R} - N\frac{\partial S_R}{\partial N_R}
@@ -83,7 +70,7 @@ const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
       \Xi(T,V,\mu) = \sum_{N=0}^{\infty}\sum_i e^{-\beta(E_i^{(N)} - \mu N)} = \sum_{N=0}^{\infty} e^{\beta\mu N} Z(T,V,N)
     $$
     <p>推导中的关键假设：(1) 总系统处于微正则系综；(2) 热库足够大使展开到一阶有效；(3) 系统与热库可以交换能量<strong>和</strong>粒子。</p>
-  </Derivation>
+  </div></details>
 
   <h3>巨配分函数与逸度</h3>
   <p>
@@ -118,7 +105,7 @@ const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
     \langle N\rangle = -\left(\frac{\partial\Phi}{\partial\mu}\right)_{T,V}
   $$
 
-  <Derivation title="$\Phi = -PV$ 的证明">
+  <details class="derivation-block"><summary class="derivation-toggle">$\Phi = -PV$ 的证明</summary><div class="derivation-content">
     <p>由Euler关系，对于广延量齐次的系统：</p>
     $$
       E = TS - PV + \mu N
@@ -129,7 +116,7 @@ const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
     $$
     <p>这一关系也可从 $\Phi = -k_BT\ln\Xi$ 直接验证。对理想气体，$\ln\Xi = PV/(k_BT)$，因此 $\Phi = -PV$。</p>
     <p>注意 $\Phi = -PV$ 要求系统满足广延性（Euler齐次关系）。对于有限尺寸系统（表面效应不可忽略）或长程相互作用系统，$\Phi = -PV$ 可能需要修正。</p>
-  </Derivation>
+  </div></details>
 
   <h3>平均粒子数与平均能量</h3>
   <p>
@@ -180,7 +167,7 @@ const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
     恢复理想气体状态方程 $PV = Nk_BT$。
   </p>
 
-  <ThinkingBox title="巨正则系综 vs 正则系综：何时选用？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>巨正则系综 vs 正则系综：何时选用？</span></div>
     <p>
       在实际计算中选择哪种系综，主要取决于数学上的方便性：
     </p>
@@ -191,16 +178,16 @@ const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
     <p>
       核心优势在于巨配分函数的<strong>分解性质</strong>：对于独立粒子系统，$\Xi$ 可以按<strong>单粒子态</strong>分解为乘积（而非按粒子分解），这完全避免了正则系综中因全同粒子不可分辨性带来的组合计数困难。这一点在第五章量子统计中将充分体现。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 4.1-4.3</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 8.1-8.3</li>
       <li>汪志诚,《热力学·统计物理》, 第6版, &sect;9.1-9.3</li>
       <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;35-36</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="particle-fluctuations">4.2 粒子数涨落与系综等价性</h2>
@@ -211,7 +198,7 @@ const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
     巨正则系综中，粒子数 $N$ 是一个随机变量。其平均值已由上节给出：$\langle N\rangle = z\,\partial\ln\Xi/\partial z$。下面推导粒子数的方差。
   </p>
 
-  <Derivation title="粒子数涨落的完整推导">
+  <details class="derivation-block"><summary class="derivation-toggle">粒子数涨落的完整推导</summary><div class="derivation-content">
     <p>粒子数的二阶矩为</p>
     $$
       \langle N^2\rangle = \frac{1}{\Xi}\sum_{N=0}^{\infty} N^2\,z^N Z_N = \frac{1}{\Xi}\left(z\frac{\partial}{\partial z}\right)^2 \Xi
@@ -229,7 +216,7 @@ const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
       \langle(\Delta N)^2\rangle = z\frac{\partial\langle N\rangle}{\partial z} = \frac{1}{\beta}\frac{\partial\langle N\rangle}{\partial\mu}\bigg|_{T,V} = k_BT\left(\frac{\partial\langle N\rangle}{\partial\mu}\right)_{T,V}
     $$
     <p>这是<strong>涨落-响应关系</strong>的又一例子：粒子数涨落正比于系统对化学势变化的响应 $\partial N/\partial\mu$。</p>
-  </Derivation>
+  </div></details>
 
   <p>
     将粒子数涨落与可测量的热力学量联系起来。利用热力学恒等式
@@ -275,7 +262,7 @@ const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
     <li><strong>系统远离临界点</strong>：在临界点处 $\kappa_T \to \infty$，粒子数涨落不再是 $O(\sqrt{N})$，等价性可能破缺。</li>
   </ul>
 
-  <Derivation title="系综等价性的严格论证（鞍点近似）">
+  <details class="derivation-block"><summary class="derivation-toggle">系综等价性的严格论证（鞍点近似）</summary><div class="derivation-content">
     <p>巨配分函数与正则配分函数的关系为</p>
     $$
       \Xi = \sum_{N=0}^{\infty} z^N Z_N = \sum_N \exp\!\left[N\beta\mu + \ln Z_N\right]
@@ -297,7 +284,7 @@ const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
       \ln\Xi = \phi(N^*) + \frac{1}{2}\ln\left(\frac{2\pi}{|\phi''|}\right)
     $$
     <p>第一项为 $O(N)$，第二项为 $O(\ln N)$——在热力学极限下可忽略。这严格证明了 $\Phi = -k_BT\ln\Xi = F(T,V,N^*) - \mu N^*$，即巨正则系综的热力学与正则系综等价。</p>
-  </Derivation>
+  </div></details>
 
   <h3>临界点处涨落发散与临界乳光</h3>
   <p>
@@ -316,19 +303,19 @@ const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
     其中 $\nu$ 是关联长度临界指数（3D Ising普适类中 $\nu \approx 0.630$）。当 $\xi$ 达到可见光波长量级时，光在临界点附近的流体中发生强烈散射——这就是<strong>临界乳光</strong>（critical opalescence）。Andrews（1869年）在CO$_2$临界点附近首先观察到这一现象，Einstein（1910年）给出了基于密度涨落的定量理论。
   </p>
 
-  <InsightBox title="涨落发散与标度律">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>涨落发散与标度律</span></div>
     <p>
       临界点处涨落发散是<strong>连续相变</strong>的标志性特征。Ornstein-Zernike理论给出散射强度 $I(q) \propto 1/(q^2 + \xi^{-2})$，在 $q\xi \ll 1$ 时 $I \propto \xi^2 \propto \kappa_T$，解释了临界乳光。压缩率的发散还通过压缩率求和规则与结构因子联系：$k_BT\kappa_T/v = S(0) = 1 + n\int[g(r)-1]\,d^3r$，其中 $g(r)$ 是径向分布函数。在临界点，$g(r) - 1$ 的积分发散，反映了长程关联的建立。van der Waals方程给出 $\kappa_T \sim |T-T_c|^{-1}$（平均场指数 $\gamma = 1$），而真实流体和3D Ising模型给出 $\gamma \approx 1.237$——这一偏差反映了平均场理论忽略涨落关联的不足。
     </p>
-  </InsightBox>
+  </div>
 
-  <ThinkingBox title="系综不等价的深刻例子">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>系综不等价的深刻例子</span></div>
     <p>
       对于<strong>长程相互作用系统</strong>（如自引力系统、非中性等离子体、某些自旋模型），热力学量可能不是广延的，此时系综等价性可能失效。最著名的例子是自引力系统（恒星、球状星团）：微正则系综给出负的比热 $C_V &lt; 0$（系统失去能量后温度反而升高），而正则系综中 $C_V = \langle(\Delta E)^2\rangle/(k_BT^2) \geq 0$ 恒成立。这意味着两种系综给出的热力学<strong>本质不同</strong>——对于自引力系统，正则系综甚至不存在稳定的平衡态（配分函数发散），只有微正则系综才能正确描述。类似地，在一级相变的亚稳区域，巨正则系综与正则系综也可以给出不同的结果——正则系综呈现Maxwell等面积构造（相共存），而巨正则系综可能允许均匀的亚稳态。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 4.4-4.5</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 8.4-8.5</li>
@@ -337,6 +324,9 @@ const grandPotentialThermo = `$$d\\Phi = -SdT - PdV - Nd\\mu$$`;
       <li>A. Einstein, <em>Annalen der Physik</em>, <strong>33</strong>, 1275 (1910) — 临界乳光理论</li>
       <li>T. Padmanabhan, <em>Physics Reports</em>, <strong>188</strong>, 285 (1990) — 自引力系统的统计力学</li>
     </ul>
-  </ReferenceBox>
+  </div>`;
+---
 
+<ChapterLayout title="第四章 巨正则系综" courseId="stat" chapterId="ch04">
+  <Fragment set:html={content} />
 </ChapterLayout>

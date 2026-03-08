@@ -1,208 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const defined = {
-  /* ── helpers: every LaTeX snippet that contains { or } lives here ── */
-
-  /* §3.1 自由粒子与波包 */
-  planeWave: String.raw`$$\psi_k(x) = \frac{1}{\sqrt{2\pi}}\,e^{ikx}$$`,
-  planeWaveInline: String.raw`$\psi_k(x) = e^{ikx}/\sqrt{2\pi}$`,
-  dispersion: String.raw`$$\omega = \frac{\hbar k^2}{2m}$$`,
-  wavePacket: String.raw`$$\psi(x, t) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} \phi(k)\,e^{i(kx - \omega t)}\,dk$$`,
-  phiK: String.raw`$\phi(k)$`,
-  groupVelocity: String.raw`$$v_g = \frac{d\omega}{dk} = \frac{\hbar k}{m} = \frac{p}{m}$$`,
-  phaseVelocity: String.raw`$$v_p = \frac{\omega}{k} = \frac{\hbar k}{2m} = \frac{p}{2m} = \frac{v_g}{2}$$`,
-  gaussPhi: String.raw`$$\phi(k) = \left(\frac{2d^2}{\pi}\right)^{1/4} \exp\!\bigl[-(k - k_0)^2 d^2\bigr]$$`,
-  gaussPsi0: String.raw`$$\psi(x, 0) = \left(\frac{1}{2\pi d^2}\right)^{1/4} \exp\!\left(-\frac{x^2}{4d^2} + ik_0 x\right)$$`,
-  gaussPsiT: String.raw`$$\psi(x, t) = \left(\frac{1}{2\pi d^2}\right)^{1/4} \frac{1}{\sqrt{1 + i\hbar t/(2md^2)}} \exp\!\left(-\frac{(x - v_g t)^2}{4d^2\bigl(1 + i\hbar t/(2md^2)\bigr)} + i(k_0 x - \omega_0 t)\right)$$`,
-  spreadWidth: String.raw`$$\Delta x(t) = d\,\sqrt{1 + \left(\frac{\hbar t}{2md^2}\right)^2}$$`,
-  spreadTime: String.raw`$$\tau = \frac{2md^2}{\hbar}$$`,
-  spreadLimit: String.raw`$\Delta x(t) \approx \frac{\hbar t}{2md}$`,
-  tiseGeneral: String.raw`$$-\frac{\hbar^2}{2m}\frac{d^2\psi}{dx^2} + V(x)\,\psi = E\,\psi$$`,
-  freeSchrodinger: String.raw`$$i\hbar\frac{\partial\psi}{\partial t} = -\frac{\hbar^2}{2m}\frac{\partial^2\psi}{\partial x^2}$$`,
-  deltaXdeltaP: String.raw`$\Delta x \cdot \Delta p \geq \hbar/2$`,
-  deltaX0: String.raw`$\Delta x(0) = d$`,
-  deltaP0: String.raw`$\Delta p = \hbar/(2d)$`,
-  orthoNorm: String.raw`$\langle k'|k\rangle = \delta(k' - k)$`,
-  freeTimeSol: String.raw`$\psi_k(x,t) = e^{i(kx - \omega t)}/\sqrt{2\pi}$`,
-  energyFree: String.raw`$E = \hbar^2 k^2/(2m)$`,
-
-  /* §3.1 derivation helpers */
-  derivExpand: String.raw`$$i(kx - \omega t) = i\!\left[(q + k_0)x - \frac{\hbar(q + k_0)^2}{2m}t\right]$$`,
-  derivQuadratic: String.raw`$$-q^2\!\left(d^2 + \frac{i\hbar t}{2m}\right) + iq(x - v_g t)$$`,
-  derivGaussInt: String.raw`$\int e^{-\alpha q^2 + \beta q}\,dq = \sqrt{\pi/\alpha}\,e^{\beta^2/(4\alpha)}$`,
-  derivAlpha: String.raw`$\alpha = d^2 + i\hbar t/(2m)$`,
-  macroMass: String.raw`$m \sim 1\,\text{kg}$`,
-  macroSize: String.raw`$d \sim 10^{-10}\,\text{m}$`,
-  macroTau: String.raw`$\tau \sim 2md^2/\hbar \sim 10^{17}\,\text{s}$`,
-
-  /* §3.2 谐振子：代数方法 */
-  aOp: String.raw`$$\hat{a} = \sqrt{\frac{m\omega}{2\hbar}}\left(\hat{x} + \frac{i\hat{p}}{m\omega}\right)$$`,
-  aDaggerOp: String.raw`$$\hat{a}^\dagger = \sqrt{\frac{m\omega}{2\hbar}}\left(\hat{x} - \frac{i\hat{p}}{m\omega}\right)$$`,
-  commAA: String.raw`$$[\hat{a}, \hat{a}^\dagger] = 1$$`,
-  commAAproof: String.raw`$$[\hat{a}, \hat{a}^\dagger] = \frac{m\omega}{2\hbar}\left[\hat{x} + \frac{i\hat{p}}{m\omega},\;\hat{x} - \frac{i\hat{p}}{m\omega}\right] = \frac{m\omega}{2\hbar}\left(-\frac{2i}{m\omega}\right)[\hat{x}, \hat{p}] = \frac{m\omega}{2\hbar}\cdot\frac{2\hbar}{m\omega} = 1$$`,
-  Nhat: String.raw`$\hat{N} = \hat{a}^\dagger\hat{a}$`,
-  NhatDef: String.raw`$$\hat{N} = \hat{a}^\dagger\hat{a}$$`,
-  hamiltonianHO: String.raw`$$\hat{H} = \hbar\omega\!\left(\hat{a}^\dagger\hat{a} + \frac{1}{2}\right) = \hbar\omega\!\left(\hat{N} + \frac{1}{2}\right)$$`,
-  hamiltonianHOclassic: String.raw`$$\hat{H} = \frac{\hat{p}^2}{2m} + \frac{1}{2}m\omega^2\hat{x}^2$$`,
-  HfromAA: String.raw`$$\hat{a}^\dagger\hat{a} = \frac{m\omega}{2\hbar}\left(\hat{x}^2 + \frac{\hat{p}^2}{m^2\omega^2} + \frac{i}{m\omega}[\hat{x}, \hat{p}]\right) = \frac{m\omega}{2\hbar}\left(\hat{x}^2 + \frac{\hat{p}^2}{m^2\omega^2}\right) - \frac{1}{2}$$`,
-  HfromAAverify: String.raw`$$\hbar\omega\!\left(\hat{a}^\dagger\hat{a} + \frac{1}{2}\right) = \hbar\omega\!\left[\frac{m\omega}{2\hbar}\!\left(\hat{x}^2 + \frac{\hat{p}^2}{m^2\omega^2}\right) - \frac{1}{2} + \frac{1}{2}\right] = \frac{1}{2}m\omega^2\hat{x}^2 + \frac{\hat{p}^2}{2m} = \hat{H}$$`,
-  energySpectrum: String.raw`$$E_n = \hbar\omega\!\left(n + \frac{1}{2}\right), \quad n = 0, 1, 2, \ldots$$`,
-  commNA: String.raw`$$[\hat{N}, \hat{a}] = -\hat{a}, \qquad [\hat{N}, \hat{a}^\dagger] = \hat{a}^\dagger$$`,
-  commNAproof: String.raw`$[\hat{a}^\dagger\hat{a}, \hat{a}] = \hat{a}^\dagger[\hat{a}, \hat{a}] + [\hat{a}^\dagger, \hat{a}]\hat{a} = -\hat{a}$`,
-  commNAdproof: String.raw`$[\hat{a}^\dagger\hat{a}, \hat{a}^\dagger] = \hat{a}^\dagger[\hat{a}, \hat{a}^\dagger] + [\hat{a}^\dagger, \hat{a}^\dagger]\hat{a} = \hat{a}^\dagger$`,
-  aRaise: String.raw`$$\hat{a}^\dagger|n\rangle = \sqrt{n+1}\,|n+1\rangle$$`,
-  aLower: String.raw`$$\hat{a}|n\rangle = \sqrt{n}\,|n-1\rangle$$`,
-  aLowerProof: String.raw`$\hat{N}(\hat{a}|n\rangle) = (\hat{a}\hat{N} - \hat{a})|n\rangle = (n-1)\hat{a}|n\rangle$`,
-  aRaiseProof: String.raw`$\hat{N}(\hat{a}^\dagger|n\rangle) = (\hat{a}^\dagger\hat{N} + \hat{a}^\dagger)|n\rangle = (n+1)\hat{a}^\dagger|n\rangle$`,
-  normLower: String.raw`$\langle n|\hat{a}^\dagger\hat{a}|n\rangle = n \geq 0$`,
-  aGround: String.raw`$$\hat{a}|0\rangle = 0$$`,
-  nFromGround: String.raw`$$|n\rangle = \frac{(\hat{a}^\dagger)^n}{\sqrt{n!}}\,|0\rangle$$`,
-  zeroPointEnergy: String.raw`$E_0 = \frac{1}{2}\hbar\omega$`,
-  xFromA: String.raw`$$\hat{x} = \sqrt{\frac{\hbar}{2m\omega}}\,(\hat{a} + \hat{a}^\dagger)$$`,
-  pFromA: String.raw`$$\hat{p} = i\sqrt{\frac{m\omega\hbar}{2}}\,(\hat{a}^\dagger - \hat{a})$$`,
-  xMatElem: String.raw`$\langle m|\hat{x}|n\rangle = \sqrt{\frac{\hbar}{2m\omega}}(\sqrt{n}\,\delta_{m,n-1} + \sqrt{n+1}\,\delta_{m,n+1})$`,
-  nKet: String.raw`$|n\rangle$`,
-  zeroKet: String.raw`$|0\rangle$`,
-  zpUncert: String.raw`$$\frac{1}{2}m\omega^2(\Delta x)^2 = \frac{1}{2}\cdot\frac{1}{2}\hbar\omega, \quad \frac{(\Delta p)^2}{2m} = \frac{1}{2}\cdot\frac{1}{2}\hbar\omega$$`,
-  zpDxDp: String.raw`$\Delta x \cdot \Delta p = \hbar/2$`,
-  zpEqual: String.raw`$\langle V\rangle = \langle T\rangle = E_0/2$`,
-  commXP: String.raw`$[\hat{x}, \hat{p}] = i\hbar$`,
-  commXXPP: String.raw`$[\hat{x}, \hat{x}] = [\hat{p}, \hat{p}] = 0$`,
-  commABC: String.raw`$[AB, C] = A[B, C] + [A, C]B$`,
-  NnKet: String.raw`$\hat{N}|n\rangle = n|n\rangle$`,
-  adaggerNKet: String.raw`$\hat{a}^\dagger|n\rangle$`,
-  aNKet: String.raw`$\hat{a}|n\rangle$`,
-
-  /* §3.2 derivation: normalization constants */
-  normSetup: String.raw`$\hat{a}|n\rangle = c_n|n-1\rangle$`,
-  normCalc: String.raw`$$|c_n|^2 = \langle n|\hat{a}^\dagger\hat{a}|n\rangle = \langle n|\hat{N}|n\rangle = n$$`,
-  normCn: String.raw`$c_n = \sqrt{n}$`,
-  normDnSetup: String.raw`$\hat{a}^\dagger|n\rangle = d_n|n+1\rangle$`,
-  normDnCalc: String.raw`$$|d_n|^2 = \langle n|\hat{a}\,\hat{a}^\dagger|n\rangle = \langle n|(\hat{a}^\dagger\hat{a} + 1)|n\rangle = n + 1$$`,
-  normDn: String.raw`$d_n = \sqrt{n+1}$`,
-
-  /* §3.3 谐振子：解析方法 */
-  dimlessVar: String.raw`$$\xi = \sqrt{\frac{m\omega}{\hbar}}\,x$$`,
-  dimlessSE: String.raw`$$\frac{d^2\psi}{d\xi^2} + (\varepsilon - \xi^2)\psi = 0$$`,
-  epsdef: String.raw`$\varepsilon = 2E/(\hbar\omega)$`,
-  asymptoticBehav: String.raw`$\psi \sim e^{-\xi^2/2}$`,
-  asymptoticGrow: String.raw`$e^{+\xi^2/2}$`,
-  substituteForm: String.raw`$$\psi(\xi) = H(\xi)\,e^{-\xi^2/2}$$`,
-  hermiteODE: String.raw`$$H'' - 2\xi H' + (\varepsilon - 1)H = 0$$`,
-  powerSeries: String.raw`$$H(\xi) = \sum_{j=0}^{\infty} a_j \xi^j$$`,
-  recurrence: String.raw`$$a_{j+2} = \frac{2j + 1 - \varepsilon}{(j+1)(j+2)}\,a_j$$`,
-  recurrenceLimit: String.raw`$a_{j+2}/a_j \to 2/j$`,
-  quantizationCond: String.raw`$$\varepsilon = 2n + 1, \quad n = 0, 1, 2, \ldots$$`,
-  energyFromEps: String.raw`$$E_n = \hbar\omega\!\left(n + \frac{1}{2}\right)$$`,
-  hermiteRodrigues: String.raw`$$H_n(\xi) = (-1)^n e^{\xi^2}\frac{d^n}{d\xi^n}e^{-\xi^2}$$`,
-  hermiteExamples: String.raw`$$H_0 = 1, \quad H_1 = 2\xi, \quad H_2 = 4\xi^2 - 2, \quad H_3 = 8\xi^3 - 12\xi$$`,
-  fullWavefunction: String.raw`$$\psi_n(x) = \left(\frac{m\omega}{\pi\hbar}\right)^{1/4} \frac{1}{\sqrt{2^n\,n!}}\,H_n(\xi)\,e^{-\xi^2/2}$$`,
-  normInt: String.raw`$$\int_{-\infty}^{\infty} H_m(\xi)\,H_n(\xi)\,e^{-\xi^2}\,d\xi = \sqrt{\pi}\,2^n\,n!\,\delta_{mn}$$`,
-  hermiteRecurr: String.raw`$$H_{n+1}(\xi) = 2\xi H_n(\xi) - 2n H_{n-1}(\xi)$$`,
-  genFunc: String.raw`$$e^{2\xi t - t^2} = \sum_{n=0}^{\infty} \frac{H_n(\xi)}{n!}\,t^n$$`,
-  classicalTurning: String.raw`$x_n = \pm\sqrt{(2n+1)\hbar/(m\omega)}$`,
-  tunnelProb: String.raw`$|\psi_n(x)|^2$`,
-  xiFromX: String.raw`$\xi = \sqrt{m\omega/\hbar}\,x$`,
-
-  /* §3.3 derivation helpers */
-  derivSubst: String.raw`$H = \sum a_j \xi^j$`,
-  derivHpp: String.raw`$H'' = \sum (j+2)(j+1)a_{j+2}\xi^j$`,
-  derivXiHp: String.raw`$2\xi H' = \sum 2ja_j\xi^j$`,
-  derivSumEq: String.raw`$$\sum_{j=0}^{\infty} \bigl[(j+2)(j+1)a_{j+2} - 2ja_j + (\varepsilon - 1)a_j\bigr]\xi^j = 0$$`,
-  derivCoeffEq: String.raw`$$(j+2)(j+1)a_{j+2} = (2j + 1 - \varepsilon)a_j$$`,
-  divergeH: String.raw`$H(\xi) \sim e^{\xi^2}$`,
-  divergePsi: String.raw`$\psi = H e^{-\xi^2/2} \sim e^{\xi^2/2}$`,
-  truncateN: String.raw`$a_{n+2} = 0$`,
-  suAlgebra: String.raw`$\mathfrak{su}(1,1)$`,
-  aZeroGround: String.raw`$\hat{a}|0\rangle = 0$`,
-  xiDeriv: String.raw`$\xi - d/d\xi$`,
-
-  /* §3.3 基态推导 */
-  groundODE: String.raw`$$\left(\xi + \frac{d}{d\xi}\right)\psi_0(\xi) = 0$$`,
-  groundSol: String.raw`$\psi_0 \propto e^{-\xi^2/2}$`,
-  groundNorm: String.raw`$$\psi_0(x) = \left(\frac{m\omega}{\pi\hbar}\right)^{1/4} e^{-m\omega x^2/(2\hbar)}$$`,
-
-  /* §3.4 有限深方势阱 */
-  wellPotential: String.raw`$$V(x) = \begin{cases} -V_0 & |x| \leq a \\ 0 & |x| > a \end{cases}$$`,
-  wellInside: String.raw`$$\frac{d^2\psi}{dx^2} = -k^2\psi, \quad k = \frac{\sqrt{2m(V_0 + E)}}{\hbar}$$`,
-  wellOutside: String.raw`$$\frac{d^2\psi}{dx^2} = \kappa^2\psi, \quad \kappa = \frac{\sqrt{-2mE}}{\hbar}$$`,
-  wellInsideSol: String.raw`$\psi = A\cos(kx) + B\sin(kx)$`,
-  wellOutsideSol: String.raw`$\psi = Ce^{-\kappa|x|}$`,
-  evenSol: String.raw`$\psi = A\cos(kx)$`,
-  oddSol: String.raw`$\psi = B\sin(kx)$`,
-  evenTranscendental: String.raw`$$k\tan(ka) = \kappa$$`,
-  oddTranscendental: String.raw`$$-k\cot(ka) = \kappa$$`,
-  dimlessZ: String.raw`$z = ka$`,
-  dimlessZ0: String.raw`$z_0 = a\sqrt{2mV_0}/\hbar$`,
-  circleEq: String.raw`$$z^2 + (\kappa a)^2 = z_0^2$$`,
-  evenGraphical: String.raw`$$z\tan z = \sqrt{z_0^2 - z^2}$$`,
-  oddGraphical: String.raw`$$-z\cot z = \sqrt{z_0^2 - z^2}$$`,
-  nBound: String.raw`$$N = \left\lfloor\frac{z_0}{\pi/2}\right\rfloor + 1$$`,
-  atLeastOneBound: String.raw`$z_0 > 0$`,
-  infiniteWellEn: String.raw`$$E_n^{(\infty)} = \frac{n^2\pi^2\hbar^2}{2m(2a)^2} - V_0$$`,
-  kkrelation: String.raw`$k^2 + \kappa^2 = 2mV_0/\hbar^2$`,
-  expDecayInline: String.raw`$e^{-\kappa|x|}$`,
-  penetrationDepth: String.raw`$\delta = 1/\kappa = \hbar/\sqrt{-2mE}$`,
-
-  /* §3.4 derivation helpers */
-  derivEvenPsi: String.raw`$$\psi(x) = \begin{cases} A\cos(kx), & 0 \leq x \leq a \\ Ce^{-\kappa x}, & x > a \end{cases}$$`,
-  derivMatch1: String.raw`$$A\cos(ka) = Ce^{-\kappa a}$$`,
-  derivMatch2: String.raw`$$-kA\sin(ka) = -\kappa Ce^{-\kappa a}$$`,
-  graphicalPlane: String.raw`$z$-$\sqrt{z_0^2 - z^2}$`,
-
-  /* §3.5 隧穿效应 */
-  barrierPotential: String.raw`$$V(x) = \begin{cases} V_0 & 0 \leq x \leq a \\ 0 & \text{otherwise} \end{cases}$$`,
-  regionI: String.raw`$\psi_I = e^{ikx} + Re^{-ikx}$`,
-  regionII: String.raw`$\psi_{II} = Ce^{\kappa x} + De^{-\kappa x}$`,
-  regionIII: String.raw`$\psi_{III} = Te^{ikx}$`,
-  kBarrier: String.raw`$k = \sqrt{2mE}/\hbar$`,
-  kappaBarrier: String.raw`$\kappa = \sqrt{2m(V_0 - E)}/\hbar$`,
-  transmCoeff: String.raw`$$T = |t|^2 = \frac{1}{1 + \frac{V_0^2}{4E(V_0 - E)}\sinh^2(\kappa a)}$$`,
-  transmApprox: String.raw`$$T \approx \frac{16E(V_0 - E)}{V_0^2}\,e^{-2\kappa a}, \quad \kappa a \gg 1$$`,
-  reflCoeff: String.raw`$R + T = 1$`,
-  wkbTunnel: String.raw`$$T \approx \exp\!\left(-\frac{2}{\hbar}\int_{x_1}^{x_2}\sqrt{2m\bigl(V(x) - E\bigr)}\,dx\right)$$`,
-  gamowFactor: String.raw`$$\Gamma \propto \exp\!\left(-\frac{2}{\hbar}\int_{R}^{b}\sqrt{2m\!\left(\frac{Ze^2}{4\pi\epsilon_0 r} - E\right)}\,dr\right)$$`,
-  gamowResult: String.raw`$$\ln\Gamma \propto -\frac{Z}{\sqrt{E}}$$`,
-  tunnelCurrentSTM: String.raw`$I \propto e^{-2\kappa d}$`,
-  sinhDef: String.raw`$\sinh(\kappa a) \approx \frac{1}{2}e^{\kappa a}$`,
-  overBarrier: String.raw`$E > V_0$`,
-  overBarrierT: String.raw`$$T = \frac{1}{1 + \frac{V_0^2}{4E(E - V_0)}\sin^2(k'a)}$$`,
-  kPrime: String.raw`$k' = \sqrt{2m(E - V_0)}/\hbar$`,
-  resonanceCond: String.raw`$k'a = n\pi$`,
-  resonanceT: String.raw`$T = 1$`,
-  kappaA: String.raw`$\kappa a$`,
-  wkbExpFactor: String.raw`$e^{-2\kappa a}$`,
-  decayLifetime: String.raw`$10^{20}$`,
-  stmDistance: String.raw`$0.1\,\text{nm}$`,
-
-  /* §3.5 derivation helpers */
-  derivBound1a: String.raw`$$1 + R = C + D$$`,
-  derivBound1b: String.raw`$$ik(1 - R) = \kappa(C - D)$$`,
-  derivBound2a: String.raw`$$Ce^{\kappa a} + De^{-\kappa a} = Te^{ika}$$`,
-  derivBound2b: String.raw`$$\kappa(Ce^{\kappa a} - De^{-\kappa a}) = ikTe^{ika}$$`,
-  derivCD: String.raw`$$C = \frac{T}{2}e^{ika}\left(1 + \frac{ik}{\kappa}\right)e^{-\kappa a}, \quad D = \frac{T}{2}e^{ika}\left(1 - \frac{ik}{\kappa}\right)e^{\kappa a}$$`,
-  derivCombine: String.raw`$$\frac{2ik}{T e^{ika}} = (ik + \kappa)\frac{e^{-\kappa a}}{2} + (ik - \kappa)\frac{e^{\kappa a}}{2} \cdot \frac{(ik + \kappa)}{(ik - \kappa)} \cdot \frac{(ik - \kappa)}{(ik + \kappa)}$$`,
-  derivTinv: String.raw`$$T^{-1} = e^{ika}\left[\cosh(\kappa a) + \frac{i}{2}\left(\frac{\kappa}{k} - \frac{k}{\kappa}\right)\sinh(\kappa a)\right]$$`,
-  derivTinvSq: String.raw`$$|T|^{-2} = \cosh^2(\kappa a) + \frac{1}{4}\left(\frac{\kappa}{k} - \frac{k}{\kappa}\right)^2\sinh^2(\kappa a)$$`,
-  derivIdentity: String.raw`$\left(\frac{\kappa}{k} - \frac{k}{\kappa}\right)^2 = \frac{(\kappa^2 - k^2)^2}{\kappa^2 k^2} = \frac{(\kappa^2 + k^2)^2}{\kappa^2 k^2} - 4$`,
-  derivTresult: String.raw`$$|T|^2 = \frac{1}{1 + \frac{(\kappa^2 + k^2)^2}{4\kappa^2 k^2}\sinh^2(\kappa a)} = \frac{1}{1 + \frac{V_0^2}{4E(V_0 - E)}\sinh^2(\kappa a)}$$`,
-  derivKrel1: String.raw`$\kappa^2 + k^2 = 2mV_0/\hbar^2$`,
-  derivKrel2: String.raw`$\kappa^2 k^2 = 4m^2 E(V_0 - E)/\hbar^4$`,
-
-  /* 总结 & 展望 */
-  sumEnergy: String.raw`$E_n = \hbar\omega(n + 1/2)$`,
-  radialEq: String.raw`$u''(r) + [k^2 - l(l+1)/r^2 - U(r)]u = 0$`,
-};
----
-
-<ChapterLayout title="第三章 一维问题" courseId="qm" chapterId="ch03">
-
-  <h1>第三章 一维问题</h1>
+const content = String.raw`<h1>第三章 一维问题</h1>
 
   <p>
     在建立了量子力学的公设体系之后，我们转向具体的物理问题。本章讨论一维势场中的
@@ -215,20 +14,20 @@ const defined = {
     一维定态 Schr&ouml;dinger 方程的一般形式为：
   </p>
 
-  <Fragment set:html={defined.tiseGeneral} />
+  $$-\frac{\hbar^2}{2m}\frac{d^2\psi}{dx^2} + V(x)\,\psi = E\,\psi$$
 
   <p>
     我们将从最简单的自由粒子出发，逐步处理谐振子势、有限深方势阱和势垒隧穿等经典问题。
   </p>
 
-  <InsightBox title="一维问题的一般性质">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>一维问题的一般性质</span></div>
     <p>
       一维束缚态有几个重要的一般性质，对任意势 $V(x)$ 成立：（1）一维束缚态能谱是非简并的
       （可由 Wronskian 论证证明）；（2）若势函数具有空间反射对称性 $V(-x) = V(x)$，
       则能量本征态具有确定的宇称；（3）波函数 $\psi_n(x)$ 的节点数恰好为 $n$
       （节点定理），基态无节点。这些性质为理解具体问题提供了有力的定性指导。
     </p>
-  </InsightBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 3.1 自由粒子与波包 -->
@@ -241,37 +40,37 @@ const defined = {
     自由粒子（$V(x) = 0$）的定态 Schr&ouml;dinger 方程为：
   </p>
 
-  <Fragment set:html={defined.freeSchrodinger} />
+  $$i\hbar\frac{\partial\psi}{\partial t} = -\frac{\hbar^2}{2m}\frac{\partial^2\psi}{\partial x^2}$$
 
   <p>
     分离变量后，空间部分的解为平面波：
   </p>
 
-  <Fragment set:html={defined.planeWave} />
+  $$\psi_k(x) = \frac{1}{\sqrt{2\pi}}\,e^{ikx}$$
 
   <p>
-    其中波矢 $k$ 可取一切实数值，对应能量 <Fragment set:html={defined.energyFree} />。
-    平面波满足 Dirac 正交归一化 <Fragment set:html={defined.orthoNorm} />。
+    其中波矢 $k$ 可取一切实数值，对应能量 $E = \hbar^2 k^2/(2m)$。
+    平面波满足 Dirac 正交归一化 $\langle k'|k\rangle = \delta(k' - k)$。
     这些平面波构成动量算符 $\hat p$ 的广义本征态，本征值 $p = \hbar k$。
   </p>
 
   <h3>色散关系</h3>
 
   <p>
-    自由粒子含时间的完整解为 <Fragment set:html={defined.freeTimeSol} />，
+    自由粒子含时间的完整解为 $\psi_k(x,t) = e^{i(kx - \omega t)}/\sqrt{2\pi}$，
     其中角频率与波矢的关系——即<strong>色散关系</strong>为：
   </p>
 
-  <Fragment set:html={defined.dispersion} />
+  $$\omega = \frac{\hbar k^2}{2m}$$
 
   <p>
     这是一个<strong>色散</strong>关系（$\omega$ 不正比于 $k$），因此不同 $k$ 分量以
     不同速度传播，导致波包的形状随时间改变（扩散）。相速度和群速度分别为：
   </p>
 
-  <Fragment set:html={defined.phaseVelocity} />
+  $$v_p = \frac{\omega}{k} = \frac{\hbar k}{2m} = \frac{p}{2m} = \frac{v_g}{2}$$
 
-  <Fragment set:html={defined.groupVelocity} />
+  $$v_g = \frac{d\omega}{dk} = \frac{\hbar k}{m} = \frac{p}{m}$$
 
   <p>
     群速度 $v_g = p/m$ 恰好等于经典粒子的速度，这是物质波与经典粒子对应的关键。
@@ -285,10 +84,10 @@ const defined = {
     不同波矢的平面波的叠加——<strong>波包</strong>：
   </p>
 
-  <Fragment set:html={defined.wavePacket} />
+  $$\psi(x, t) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{\infty} \phi(k)\,e^{i(kx - \omega t)}\,dk$$
 
   <p>
-    其中 <Fragment set:html={defined.phiK} /> 是波矢空间中的振幅分布（即初始波函数的 Fourier 变换）。
+    其中 $\phi(k)$ 是波矢空间中的振幅分布（即初始波函数的 Fourier 变换）。
     波包可以描述空间中局域化的粒子，其中心以群速度 $v_g$ 运动。
   </p>
 
@@ -298,77 +97,77 @@ const defined = {
     以初始宽度为 $d$ 的 Gauss 波包为例。取中心波矢为 $k_0$，动量空间振幅为：
   </p>
 
-  <Fragment set:html={defined.gaussPhi} />
+  $$\phi(k) = \left(\frac{2d^2}{\pi}\right)^{1/4} \exp\!\bigl[-(k - k_0)^2 d^2\bigr]$$
 
   <p>
     对应初始时刻的坐标空间波函数为（中心在原点）：
   </p>
 
-  <Fragment set:html={defined.gaussPsi0} />
+  $$\psi(x, 0) = \left(\frac{1}{2\pi d^2}\right)^{1/4} \exp\!\left(-\frac{x^2}{4d^2} + ik_0 x\right)$$
 
   <p>
     经过时间 $t$ 的自由演化，波函数变为：
   </p>
 
-  <Fragment set:html={defined.gaussPsiT} />
+  $$\psi(x, t) = \left(\frac{1}{2\pi d^2}\right)^{1/4} \frac{1}{\sqrt{1 + i\hbar t/(2md^2)}} \exp\!\left(-\frac{(x - v_g t)^2}{4d^2\bigl(1 + i\hbar t/(2md^2)\bigr)} + i(k_0 x - \omega_0 t)\right)$$
 
-  <Derivation title="Gauss 波包自由演化的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">Gauss 波包自由演化的推导</summary><div class="derivation-content">
     <p>
-      将 <Fragment set:html={defined.phiK} /> 代入波包积分，
+      将 $\phi(k)$ 代入波包积分，
       令 $q = k - k_0$，指数部分为：
     </p>
     <p>
-      <Fragment set:html={defined.derivExpand} />
+      $$i(kx - \omega t) = i\!\left[(q + k_0)x - \frac{\hbar(q + k_0)^2}{2m}t\right]$$
     </p>
     <p>
       展开并分离关于 $q$ 的二次型，指数中 $q$ 的部分为：
     </p>
     <p>
-      <Fragment set:html={defined.derivQuadratic} />
+      $$-q^2\!\left(d^2 + \frac{i\hbar t}{2m}\right) + iq(x - v_g t)$$
     </p>
     <p>
       其中 $v_g = \hbar k_0/m$。这是标准的 Gauss 积分
-      <Fragment set:html={defined.derivGaussInt} />，
-      其中 <Fragment set:html={defined.derivAlpha} />，$\beta = i(x - v_g t)$。
+      $\int e^{-\alpha q^2 + \beta q}\,dq = \sqrt{\pi/\alpha}\,e^{\beta^2/(4\alpha)}$，
+      其中 $\alpha = d^2 + i\hbar t/(2m)$，$\beta = i(x - v_g t)$。
       代入并整理即得最终结果。关键点在于复数宽度参数 $\alpha$ 包含了
       波包扩散的全部信息。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
     波包的空间宽度随时间增长：
   </p>
 
-  <Fragment set:html={defined.spreadWidth} />
+  $$\Delta x(t) = d\,\sqrt{1 + \left(\frac{\hbar t}{2md^2}\right)^2}$$
 
   <p>
-    定义<strong>扩散时间尺度</strong> <Fragment set:html={defined.spreadTime} />，
+    定义<strong>扩散时间尺度</strong> $$\tau = \frac{2md^2}{\hbar}$$，
     则在 $t \ll \tau$ 时波包宽度几乎不变，而 $t \gg \tau$ 时
-    <Fragment set:html={defined.spreadLimit} />，波包线性扩散。
+    $\Delta x(t) \approx \frac{\hbar t}{2md}$，波包线性扩散。
   </p>
 
-  <ThinkingBox title="波包扩散与不确定性关系">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>波包扩散与不确定性关系</span></div>
     <p>
-      波包扩散是量子力学的本质特征。初始宽度 <Fragment set:html={defined.deltaX0} /> 对应
-      动量展宽 <Fragment set:html={defined.deltaP0} />（恰好满足
-      <Fragment set:html={defined.deltaXdeltaP} /> 取等号）。正是动量的不确定性
+      波包扩散是量子力学的本质特征。初始宽度 $\Delta x(0) = d$ 对应
+      动量展宽 $\Delta p = \hbar/(2d)$（恰好满足
+      $\Delta x \cdot \Delta p \geq \hbar/2$ 取等号）。正是动量的不确定性
       导致了波包各部分以不同速度运动，从而使波包逐渐展宽。波包越窄，
       动量展宽越大，扩散越快——这正是不确定性关系的动力学体现。
     </p>
     <p>
-      对于宏观物体（<Fragment set:html={defined.macroMass} />，<Fragment set:html={defined.macroSize} />），
-      扩散时间 <Fragment set:html={defined.macroTau} />，远超宇宙年龄，
+      对于宏观物体（$m \sim 1\,\text{kg}$，$d \sim 10^{-10}\,\text{m}$），
+      扩散时间 $\tau \sim 2md^2/\hbar \sim 10^{17}\,\text{s}$，远超宇宙年龄，
       因此宏观物体的波包扩散完全可以忽略。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.2.4：自由粒子与波包</li>
       <li>曾谨言,《量子力学》卷I, 第三章 &sect;3.2：自由粒子的波函数与波包</li>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.2.5-2.6：波包传播与色散</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 3.2 谐振子：代数方法 -->
@@ -381,7 +180,7 @@ const defined = {
     构成了量子场论的基础。谐振子的 Hamilton 量为：
   </p>
 
-  <Fragment set:html={defined.hamiltonianHOclassic} />
+  $$\hat{H} = \frac{\hat{p}^2}{2m} + \frac{1}{2}m\omega^2\hat{x}^2$$
 
   <h3>产生算符与湮灭算符</h3>
 
@@ -391,163 +190,163 @@ const defined = {
     <strong>产生算符</strong>（creation operator）$\hat a^\dagger$：
   </p>
 
-  <Fragment set:html={defined.aOp} />
+  $$\hat{a} = \sqrt{\frac{m\omega}{2\hbar}}\left(\hat{x} + \frac{i\hat{p}}{m\omega}\right)$$
 
-  <Fragment set:html={defined.aDaggerOp} />
+  $$\hat{a}^\dagger = \sqrt{\frac{m\omega}{2\hbar}}\left(\hat{x} - \frac{i\hat{p}}{m\omega}\right)$$
 
   <p>
     反解得位置和动量算符的表达式：
   </p>
 
-  <Fragment set:html={defined.xFromA} />
-  <Fragment set:html={defined.pFromA} />
+  $$\hat{x} = \sqrt{\frac{\hbar}{2m\omega}}\,(\hat{a} + \hat{a}^\dagger)$$
+  $$\hat{p} = i\sqrt{\frac{m\omega\hbar}{2}}\,(\hat{a}^\dagger - \hat{a})$$
 
   <h3>对易关系与 Hamilton 量</h3>
 
   <p>
-    利用正则对易关系 <Fragment set:html={defined.commXP} />，可以证明：
+    利用正则对易关系 $[\hat{x}, \hat{p}] = i\hbar$，可以证明：
   </p>
 
-  <Fragment set:html={defined.commAA} />
+  $$[\hat{a}, \hat{a}^\dagger] = 1$$
 
-  <Derivation title="对易关系 [a, a†] = 1 的证明">
+  <details class="derivation-block"><summary class="derivation-toggle">对易关系 [a, a†] = 1 的证明</summary><div class="derivation-content">
     <p>
       直接计算：
     </p>
     <p>
-      <Fragment set:html={defined.commAAproof} />
+      $$[\hat{a}, \hat{a}^\dagger] = \frac{m\omega}{2\hbar}\left[\hat{x} + \frac{i\hat{p}}{m\omega},\;\hat{x} - \frac{i\hat{p}}{m\omega}\right] = \frac{m\omega}{2\hbar}\left(-\frac{2i}{m\omega}\right)[\hat{x}, \hat{p}] = \frac{m\omega}{2\hbar}\cdot\frac{2\hbar}{m\omega} = 1$$
     </p>
     <p>
-      其中用到了 <Fragment set:html={defined.commXP} /> 以及
-      <Fragment set:html={defined.commXXPP} />。
+      其中用到了 $[\hat{x}, \hat{p}] = i\hbar$ 以及
+      $[\hat{x}, \hat{x}] = [\hat{p}, \hat{p}] = 0$。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
     Hamilton 量用阶梯算符表达为：
   </p>
 
-  <Fragment set:html={defined.hamiltonianHO} />
+  $$\hat{H} = \hbar\omega\!\left(\hat{a}^\dagger\hat{a} + \frac{1}{2}\right) = \hbar\omega\!\left(\hat{N} + \frac{1}{2}\right)$$
 
-  <Derivation title="Hamilton 量的阶梯算符表示">
+  <details class="derivation-block"><summary class="derivation-toggle">Hamilton 量的阶梯算符表示</summary><div class="derivation-content">
     <p>
-      计算 <Fragment set:html={defined.Nhat} />：
+      计算 $\hat{N} = \hat{a}^\dagger\hat{a}$：
     </p>
     <p>
-      <Fragment set:html={defined.HfromAA} />
+      $$\hat{a}^\dagger\hat{a} = \frac{m\omega}{2\hbar}\left(\hat{x}^2 + \frac{\hat{p}^2}{m^2\omega^2} + \frac{i}{m\omega}[\hat{x}, \hat{p}]\right) = \frac{m\omega}{2\hbar}\left(\hat{x}^2 + \frac{\hat{p}^2}{m^2\omega^2}\right) - \frac{1}{2}$$
     </p>
     <p>
       因此：
     </p>
     <p>
-      <Fragment set:html={defined.HfromAAverify} />
+      $$\hbar\omega\!\left(\hat{a}^\dagger\hat{a} + \frac{1}{2}\right) = \hbar\omega\!\left[\frac{m\omega}{2\hbar}\!\left(\hat{x}^2 + \frac{\hat{p}^2}{m^2\omega^2}\right) - \frac{1}{2} + \frac{1}{2}\right] = \frac{1}{2}m\omega^2\hat{x}^2 + \frac{\hat{p}^2}{2m} = \hat{H}$$
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>粒子数算符与能谱</h3>
 
   <p>
-    定义<strong>粒子数算符</strong> <Fragment set:html={defined.NhatDef} />。
+    定义<strong>粒子数算符</strong> $$\hat{N} = \hat{a}^\dagger\hat{a}$$。
     $\hat N$ 与 $\hat a$、$\hat a^\dagger$ 的对易关系为：
   </p>
 
-  <Fragment set:html={defined.commNA} />
+  $$[\hat{N}, \hat{a}] = -\hat{a}, \qquad [\hat{N}, \hat{a}^\dagger] = \hat{a}^\dagger$$
 
-  <Derivation title="[N, a] 和 [N, a†] 的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">[N, a] 和 [N, a†] 的推导</summary><div class="derivation-content">
     <p>
-      利用恒等式 <Fragment set:html={defined.commABC} />：
+      利用恒等式 $[AB, C] = A[B, C] + [A, C]B$：
     </p>
     <p>
-      <Fragment set:html={defined.commNAproof} />
+      $[\hat{a}^\dagger\hat{a}, \hat{a}] = \hat{a}^\dagger[\hat{a}, \hat{a}] + [\hat{a}^\dagger, \hat{a}]\hat{a} = -\hat{a}$
     </p>
     <p>
       类似地：
     </p>
     <p>
-      <Fragment set:html={defined.commNAdproof} />
+      $[\hat{a}^\dagger\hat{a}, \hat{a}^\dagger] = \hat{a}^\dagger[\hat{a}, \hat{a}^\dagger] + [\hat{a}^\dagger, \hat{a}^\dagger]\hat{a} = \hat{a}^\dagger$
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
-    设 <Fragment set:html={defined.nKet} /> 是 $\hat N$ 的本征态，
-    本征值为 $n$，即 <Fragment set:html={defined.NnKet} />。
+    设 $|n\rangle$ 是 $\hat N$ 的本征态，
+    本征值为 $n$，即 $\hat{N}|n\rangle = n|n\rangle$。
     由对易关系可知：
   </p>
   <ul>
-    <li><Fragment set:html={defined.aRaiseProof} />，
-      因此 <Fragment set:html={defined.adaggerNKet} /> 是属于本征值 $n+1$ 的本征态。</li>
-    <li><Fragment set:html={defined.aLowerProof} />，
-      因此 <Fragment set:html={defined.aNKet} /> 是属于本征值 $n-1$ 的本征态。</li>
+    <li>$\hat{N}(\hat{a}^\dagger|n\rangle) = (\hat{a}^\dagger\hat{N} + \hat{a}^\dagger)|n\rangle = (n+1)\hat{a}^\dagger|n\rangle$，
+      因此 $\hat{a}^\dagger|n\rangle$ 是属于本征值 $n+1$ 的本征态。</li>
+    <li>$\hat{N}(\hat{a}|n\rangle) = (\hat{a}\hat{N} - \hat{a})|n\rangle = (n-1)\hat{a}|n\rangle$，
+      因此 $\hat{a}|n\rangle$ 是属于本征值 $n-1$ 的本征态。</li>
   </ul>
 
   <p>
     确定归一化常数后，得到<strong>阶梯算符的核心公式</strong>：
   </p>
 
-  <Fragment set:html={defined.aRaise} />
-  <Fragment set:html={defined.aLower} />
+  $$\hat{a}^\dagger|n\rangle = \sqrt{n+1}\,|n+1\rangle$$
+  $$\hat{a}|n\rangle = \sqrt{n}\,|n-1\rangle$$
 
-  <Derivation title="归一化常数的确定">
+  <details class="derivation-block"><summary class="derivation-toggle">归一化常数的确定</summary><div class="derivation-content">
     <p>
-      设 <Fragment set:html={defined.normSetup} />。取范数：
+      设 $\hat{a}|n\rangle = c_n|n-1\rangle$。取范数：
     </p>
     <p>
-      <Fragment set:html={defined.normCalc} />
+      $$|c_n|^2 = \langle n|\hat{a}^\dagger\hat{a}|n\rangle = \langle n|\hat{N}|n\rangle = n$$
     </p>
     <p>
-      取 <Fragment set:html={defined.normCn} />（选择实正的相位约定）。
-      类似地，设 <Fragment set:html={defined.normDnSetup} />：
+      取 $c_n = \sqrt{n}$（选择实正的相位约定）。
+      类似地，设 $\hat{a}^\dagger|n\rangle = d_n|n+1\rangle$：
     </p>
     <p>
-      <Fragment set:html={defined.normDnCalc} />
+      $$|d_n|^2 = \langle n|\hat{a}\,\hat{a}^\dagger|n\rangle = \langle n|(\hat{a}^\dagger\hat{a} + 1)|n\rangle = n + 1$$
     </p>
     <p>
-      取 <Fragment set:html={defined.normDn} />。
+      取 $d_n = \sqrt{n+1}$。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>能谱的下界与基态</h3>
 
   <p>
-    由 <Fragment set:html={defined.normLower} />，
+    由 $\langle n|\hat{a}^\dagger\hat{a}|n\rangle = n \geq 0$，
     本征值 $n$ 不能为负。反复作用 $\hat a$ 会使 $n$ 逐次减 1，
-    为避免出现负本征值，必须存在一个状态 <Fragment set:html={defined.zeroKet} /> 使得：
+    为避免出现负本征值，必须存在一个状态 $|0\rangle$ 使得：
   </p>
 
-  <Fragment set:html={defined.aGround} />
+  $$\hat{a}|0\rangle = 0$$
 
   <p>
     此即<strong>基态</strong>（真空态），对应 $n = 0$。全部能量本征态由基态出发，
     反复作用产生算符得到：
   </p>
 
-  <Fragment set:html={defined.nFromGround} />
+  $$|n\rangle = \frac{(\hat{a}^\dagger)^n}{\sqrt{n!}}\,|0\rangle$$
 
   <p>
     相应的<strong>能谱</strong>为：
   </p>
 
-  <Fragment set:html={defined.energySpectrum} />
+  $$E_n = \hbar\omega\!\left(n + \frac{1}{2}\right), \quad n = 0, 1, 2, \ldots$$
 
   <p>
-    能级间距均为 $\hbar\omega$，且基态能量 <Fragment set:html={defined.zeroPointEnergy} /> 不为零。
+    能级间距均为 $\hbar\omega$，且基态能量 $E_0 = \frac{1}{2}\hbar\omega$ 不为零。
   </p>
 
   <h3>零点能的物理意义</h3>
 
   <p>
-    基态能量 <Fragment set:html={defined.zeroPointEnergy} /> 称为<strong>零点能</strong>（zero-point energy）。
+    基态能量 $E_0 = \frac{1}{2}\hbar\omega$ 称为<strong>零点能</strong>（zero-point energy）。
     它的存在与不确定性关系密切相关。在基态中：
   </p>
 
-  <Fragment set:html={defined.zpUncert} />
+  $$\frac{1}{2}m\omega^2(\Delta x)^2 = \frac{1}{2}\cdot\frac{1}{2}\hbar\omega, \quad \frac{(\Delta p)^2}{2m} = \frac{1}{2}\cdot\frac{1}{2}\hbar\omega$$
 
   <p>
-    即动能和势能的期望值各贡献 $E_0$ 的一半（<Fragment set:html={defined.zpEqual} />），
-    且基态恰好是最小不确定态：<Fragment set:html={defined.zpDxDp} />。
+    即动能和势能的期望值各贡献 $E_0$ 的一半（$\langle V\rangle = \langle T\rangle = E_0/2$），
+    且基态恰好是最小不确定态：$\Delta x \cdot \Delta p = \hbar/2$。
   </p>
 
-  <InsightBox title="零点能不可消除">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>零点能不可消除</span></div>
     <p>
       零点能是量子力学的本质预言。如果粒子同时具有确定的位置（在势阱底部）
       和确定的动量（为零），则 $\Delta x = \Delta p = 0$，违反不确定性关系。
@@ -555,16 +354,16 @@ const defined = {
       零点能有可观测的物理效应：液氦在常压下直到绝对零度也不会凝固
       （零点运动阻止了晶格的形成）；Casimir 效应也源于电磁场的零点涨落。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.2.3：谐振子的代数解法</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.2.3.1：代数方法</li>
       <li>曾谨言,《量子力学》卷I, 第四章 &sect;4.1：一维谐振子的代数解法</li>
       <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, &sect;23：谐振子</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 3.3 谐振子：解析方法 -->
@@ -582,32 +381,32 @@ const defined = {
     引入无量纲坐标：
   </p>
 
-  <Fragment set:html={defined.dimlessVar} />
+  $$\xi = \sqrt{\frac{m\omega}{\hbar}}\,x$$
 
   <p>
-    以及无量纲能量 <Fragment set:html={defined.epsdef} />，
+    以及无量纲能量 $\varepsilon = 2E/(\hbar\omega)$，
     定态 Schr&ouml;dinger 方程化为：
   </p>
 
-  <Fragment set:html={defined.dimlessSE} />
+  $$\frac{d^2\psi}{d\xi^2} + (\varepsilon - \xi^2)\psi = 0$$
 
   <h3>渐近分析</h3>
 
   <p>
     当 $|\xi| \to \infty$ 时，$\xi^2$ 项主导，方程近似为
     $\psi'' \approx \xi^2\psi$，其渐近解为
-    <Fragment set:html={defined.asymptoticBehav} />
-    （取衰减解；增长解 <Fragment set:html={defined.asymptoticGrow} /> 不可归一化，必须舍去）。
+    $\psi \sim e^{-\xi^2/2}$
+    （取衰减解；增长解 $e^{+\xi^2/2}$ 不可归一化，必须舍去）。
     于是设：
   </p>
 
-  <Fragment set:html={defined.substituteForm} />
+  $$\psi(\xi) = H(\xi)\,e^{-\xi^2/2}$$
 
   <p>
     代入 Schr&ouml;dinger 方程，得 $H(\xi)$ 满足的方程：
   </p>
 
-  <Fragment set:html={defined.hermiteODE} />
+  $$H'' - 2\xi H' + (\varepsilon - 1)H = 0$$
 
   <p>
     这正是 <strong>Hermite 微分方程</strong>。
@@ -619,49 +418,49 @@ const defined = {
     将 $H(\xi)$ 展开为幂级数：
   </p>
 
-  <Fragment set:html={defined.powerSeries} />
+  $$H(\xi) = \sum_{j=0}^{\infty} a_j \xi^j$$
 
   <p>
     代入 Hermite 方程，比较同次幂的系数，得到递推关系：
   </p>
 
-  <Fragment set:html={defined.recurrence} />
+  $$a_{j+2} = \frac{2j + 1 - \varepsilon}{(j+1)(j+2)}\,a_j$$
 
-  <Derivation title="递推关系的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">递推关系的推导</summary><div class="derivation-content">
     <p>
-      将 <Fragment set:html={defined.derivSubst} /> 代入 $H'' - 2\xi H' + (\varepsilon - 1)H = 0$：
+      将 $H = \sum a_j \xi^j$ 代入 $H'' - 2\xi H' + (\varepsilon - 1)H = 0$：
     </p>
     <p>
-      <Fragment set:html={defined.derivSumEq} />
+      $$\sum_{j=0}^{\infty} \bigl[(j+2)(j+1)a_{j+2} - 2ja_j + (\varepsilon - 1)a_j\bigr]\xi^j = 0$$
     </p>
     <p>
-      其中 <Fragment set:html={defined.derivHpp} />，<Fragment set:html={defined.derivXiHp} />。
+      其中 $H'' = \sum (j+2)(j+1)a_{j+2}\xi^j$，$2\xi H' = \sum 2ja_j\xi^j$。
       各次幂的系数独立为零，即得：
     </p>
     <p>
-      <Fragment set:html={defined.derivCoeffEq} />
+      $$(j+2)(j+1)a_{j+2} = (2j + 1 - \varepsilon)a_j$$
     </p>
     <p>
       整理得递推关系。注意偶数阶系数 $a_0, a_2, a_4, \ldots$ 和奇数阶系数
       $a_1, a_3, a_5, \ldots$ 分别独立递推，对应偶宇称和奇宇称解。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
     关键的物理论证：当级数不截断时，高阶行为
-    <Fragment set:html={defined.recurrenceLimit} />，
-    这意味着 <Fragment set:html={defined.divergeH} />，使得 <Fragment set:html={defined.divergePsi} />
+    $a_{j+2}/a_j \to 2/j$，
+    这意味着 $H(\xi) \sim e^{\xi^2}$，使得 $\psi = H e^{-\xi^2/2} \sim e^{\xi^2/2}$
     在无穷远发散——不满足归一化条件。因此级数必须截断为多项式，
-    即存在某个 $n$ 使得 <Fragment set:html={defined.truncateN} />，要求：
+    即存在某个 $n$ 使得 $a_{n+2} = 0$，要求：
   </p>
 
-  <Fragment set:html={defined.quantizationCond} />
+  $$\varepsilon = 2n + 1, \quad n = 0, 1, 2, \ldots$$
 
   <p>
     由此得到能量的量子化：
   </p>
 
-  <Fragment set:html={defined.energyFromEps} />
+  $$E_n = \hbar\omega\!\left(n + \frac{1}{2}\right)$$
 
   <p>
     与代数方法的结果完全一致。
@@ -674,23 +473,23 @@ const defined = {
     其 Rodrigues 公式为：
   </p>
 
-  <Fragment set:html={defined.hermiteRodrigues} />
+  $$H_n(\xi) = (-1)^n e^{\xi^2}\frac{d^n}{d\xi^n}e^{-\xi^2}$$
 
   <p>
     前几个 Hermite 多项式为：
   </p>
 
-  <Fragment set:html={defined.hermiteExamples} />
+  $$H_0 = 1, \quad H_1 = 2\xi, \quad H_2 = 4\xi^2 - 2, \quad H_3 = 8\xi^3 - 12\xi$$
 
   <p>
     Hermite 多项式满足正交关系：
   </p>
 
-  <Fragment set:html={defined.normInt} />
+  $$\int_{-\infty}^{\infty} H_m(\xi)\,H_n(\xi)\,e^{-\xi^2}\,d\xi = \sqrt{\pi}\,2^n\,n!\,\delta_{mn}$$
 
   <p>
-    以及递推关系 <Fragment set:html={defined.hermiteRecurr} /> 和母函数
-    <Fragment set:html={defined.genFunc} />。
+    以及递推关系 $$H_{n+1}(\xi) = 2\xi H_n(\xi) - 2n H_{n-1}(\xi)$$ 和母函数
+    $$e^{2\xi t - t^2} = \sum_{n=0}^{\infty} \frac{H_n(\xi)}{n!}\,t^n$$。
   </p>
 
   <h3>归一化波函数</h3>
@@ -699,63 +498,63 @@ const defined = {
     综合渐近行为、Hermite 多项式和归一化条件，谐振子的完整归一化能量本征波函数为：
   </p>
 
-  <Fragment set:html={defined.fullWavefunction} />
+  $$\psi_n(x) = \left(\frac{m\omega}{\pi\hbar}\right)^{1/4} \frac{1}{\sqrt{2^n\,n!}}\,H_n(\xi)\,e^{-\xi^2/2}$$
 
   <p>
-    其中 <Fragment set:html={defined.xiFromX} />。基态波函数 $\psi_0(x)$ 是 Gauss 函数，
+    其中 $\xi = \sqrt{m\omega/\hbar}\,x$。基态波函数 $\psi_0(x)$ 是 Gauss 函数，
     激发态波函数在经典允许区域内振荡，在经典禁区（$|x|$ 超过经典转折点
-    <Fragment set:html={defined.classicalTurning} />）指数衰减。
+    $x_n = \pm\sqrt{(2n+1)\hbar/(m\omega)}$）指数衰减。
     波函数 $\psi_n(x)$ 恰好有 $n$ 个节点，与节点定理一致。
   </p>
 
-  <ThinkingBox title="两种方法的等价性与互补性">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>两种方法的等价性与互补性</span></div>
     <p>
       代数方法和解析方法给出完全相同的物理结果（能谱和波函数），但各有优势：
     </p>
     <ul>
-      <li><strong>代数方法</strong>直接揭示了谐振子的 Fock 空间结构和 <Fragment set:html={defined.suAlgebra} />
-        代数，使得矩阵元的计算（利用 <Fragment set:html={defined.xMatElem} />）
+      <li><strong>代数方法</strong>直接揭示了谐振子的 Fock 空间结构和 $\mathfrak{su}(1,1)$
+        代数，使得矩阵元的计算（利用 $\langle m|\hat{x}|n\rangle = \sqrt{\frac{\hbar}{2m\omega}}(\sqrt{n}\,\delta_{m,n-1} + \sqrt{n+1}\,\delta_{m,n+1})$）
         变得极为简洁，无需处理积分。这种代数结构直接推广到量子场论中的产生湮灭算符。</li>
       <li><strong>解析方法</strong>给出了坐标空间波函数的显式表达，使我们能够直观地
         看到波函数的节点结构、经典禁区的指数衰减等特征。解析方法中的渐近分析、
         级数截断等技术也是求解更一般微分方程的标准工具。</li>
     </ul>
     <p>
-      从代数方法出发也可以得到波函数：将 <Fragment set:html={defined.aZeroGround} /> 写成坐标表象的微分方程，
+      从代数方法出发也可以得到波函数：将 $\hat{a}|0\rangle = 0$ 写成坐标表象的微分方程，
       可以直接解出 $\psi_0(x)$（Gauss 函数），然后反复作用
-      $\hat a^\dagger$（坐标表象中为 <Fragment set:html={defined.xiDeriv} /> 的组合）即可生成所有 $\psi_n(x)$，
+      $\hat a^\dagger$（坐标表象中为 $\xi - d/d\xi$ 的组合）即可生成所有 $\psi_n(x)$，
       其结果正是 Hermite 多项式乘以 Gauss 函数。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <Derivation title="从基态条件直接求解 ψ₀(x)">
+  <details class="derivation-block"><summary class="derivation-toggle">从基态条件直接求解 ψ₀(x)</summary><div class="derivation-content">
     <p>
-      基态条件 <Fragment set:html={defined.aZeroGround} /> 在坐标表象中为：
+      基态条件 $\hat{a}|0\rangle = 0$ 在坐标表象中为：
     </p>
     <p>
-      <Fragment set:html={defined.groundODE} />
+      $$\left(\xi + \frac{d}{d\xi}\right)\psi_0(\xi) = 0$$
     </p>
     <p>
-      这是一阶线性 ODE，解为 <Fragment set:html={defined.groundSol} />。
+      这是一阶线性 ODE，解为 $\psi_0 \propto e^{-\xi^2/2}$。
       归一化后：
     </p>
     <p>
-      <Fragment set:html={defined.groundNorm} />
+      $$\psi_0(x) = \left(\frac{m\omega}{\pi\hbar}\right)^{1/4} e^{-m\omega x^2/(2\hbar)}$$
     </p>
     <p>
-      这正是 <Fragment set:html={defined.fullWavefunction} /> 在 $n = 0$ 时的结果
+      这正是 $$\psi_n(x) = \left(\frac{m\omega}{\pi\hbar}\right)^{1/4} \frac{1}{\sqrt{2^n\,n!}}\,H_n(\xi)\,e^{-\xi^2/2}$$ 在 $n = 0$ 时的结果
       （$H_0 = 1$）。
     </p>
-  </Derivation>
+  </div></details>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.2.3.2：级数解法与 Hermite 多项式</li>
       <li>曾谨言,《量子力学》卷I, 第四章 &sect;4.2：谐振子的解析解法</li>
       <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, &sect;23：谐振子波函数</li>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.2.3：两种方法的联系</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 3.4 有限深方势阱 -->
@@ -774,7 +573,7 @@ const defined = {
     考虑对称有限深方势阱：
   </p>
 
-  <Fragment set:html={defined.wellPotential} />
+  $$V(x) = \begin{cases} -V_0 & |x| \leq a \\ 0 & |x| > a \end{cases}$$
 
   <p>
     其中 $V_0 > 0$ 为势阱深度，$2a$ 为势阱宽度。
@@ -786,10 +585,10 @@ const defined = {
     Schr&ouml;dinger 方程为：
   </p>
 
-  <Fragment set:html={defined.wellInside} />
+  $$\frac{d^2\psi}{dx^2} = -k^2\psi, \quad k = \frac{\sqrt{2m(V_0 + E)}}{\hbar}$$
 
   <p>
-    解为振荡形式：<Fragment set:html={defined.wellInsideSol} />。
+    解为振荡形式：$\psi = A\cos(kx) + B\sin(kx)$。
   </p>
 
   <p>
@@ -797,11 +596,11 @@ const defined = {
     Schr&ouml;dinger 方程为：
   </p>
 
-  <Fragment set:html={defined.wellOutside} />
+  $$\frac{d^2\psi}{dx^2} = \kappa^2\psi, \quad \kappa = \frac{\sqrt{-2mE}}{\hbar}$$
 
   <p>
     物理上要求波函数在 $x \to \pm\infty$ 时趋于零，故解为衰减指数
-    <Fragment set:html={defined.wellOutsideSol} />。
+    $\psi = Ce^{-\kappa|x|}$。
   </p>
 
   <h3>利用对称性分类</h3>
@@ -809,9 +608,9 @@ const defined = {
   <p>
     由于势函数 $V(-x) = V(x)$ 具有空间反射对称性，能量本征态可按宇称分类。
     <strong>偶宇称解</strong>（$\psi(-x) = \psi(x)$）在阱内为
-    <Fragment set:html={defined.evenSol} />；
+    $\psi = A\cos(kx)$；
     <strong>奇宇称解</strong>（$\psi(-x) = -\psi(x)$）在阱内为
-    <Fragment set:html={defined.oddSol} />。
+    $\psi = B\sin(kx)$。
   </p>
 
   <h3>连续性条件与超越方程</h3>
@@ -825,32 +624,32 @@ const defined = {
     对偶宇称解，连续性条件在 $x = a$ 处给出：
   </p>
 
-  <Fragment set:html={defined.evenTranscendental} />
+  $$k\tan(ka) = \kappa$$
 
   <p>
     对奇宇称解：
   </p>
 
-  <Fragment set:html={defined.oddTranscendental} />
+  $$-k\cot(ka) = \kappa$$
 
-  <Derivation title="偶宇称超越方程的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">偶宇称超越方程的推导</summary><div class="derivation-content">
     <p>
       偶宇称解在 $x \geq 0$ 区域为：
     </p>
     <p>
-      <Fragment set:html={defined.derivEvenPsi} />
+      $$\psi(x) = \begin{cases} A\cos(kx), & 0 \leq x \leq a \\ Ce^{-\kappa x}, & x > a \end{cases}$$
     </p>
     <p>
       在 $x = a$ 处要求 $\psi(x)$ 连续：
     </p>
     <p>
-      <Fragment set:html={defined.derivMatch1} />
+      $$A\cos(ka) = Ce^{-\kappa a}$$
     </p>
     <p>
       要求 $\psi'(x)$ 连续：
     </p>
     <p>
-      <Fragment set:html={defined.derivMatch2} />
+      $$-kA\sin(ka) = -\kappa Ce^{-\kappa a}$$
     </p>
     <p>
       两式相除消去 $A$ 和 $C$：
@@ -860,26 +659,26 @@ const defined = {
     </p>
     <p>
       同时 $k$ 和 $\kappa$ 不是独立的，它们通过
-      <Fragment set:html={defined.kkrelation} /> 联系，
-      这等价于 <Fragment set:html={defined.circleEq} />
-      （其中 <Fragment set:html={defined.dimlessZ} />，<Fragment set:html={defined.dimlessZ0} />）。
+      $k^2 + \kappa^2 = 2mV_0/\hbar^2$ 联系，
+      这等价于 $$z^2 + (\kappa a)^2 = z_0^2$$
+      （其中 $z = ka$，$z_0 = a\sqrt{2mV_0}/\hbar$）。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>图解法求解</h3>
 
   <p>
-    引入无量纲变量 <Fragment set:html={defined.dimlessZ} /> 和
-    <Fragment set:html={defined.dimlessZ0} />，超越方程化为：
+    引入无量纲变量 $z = ka$ 和
+    $z_0 = a\sqrt{2mV_0}/\hbar$，超越方程化为：
   </p>
 
-  <p>偶宇称：<Fragment set:html={defined.evenGraphical} /></p>
+  <p>偶宇称：$$z\tan z = \sqrt{z_0^2 - z^2}$$</p>
 
-  <p>奇宇称：<Fragment set:html={defined.oddGraphical} /></p>
+  <p>奇宇称：$$-z\cot z = \sqrt{z_0^2 - z^2}$$</p>
 
   <p>
-    加上约束 <Fragment set:html={defined.circleEq} />。
-    这些方程只能图解法或数值求解。在 <Fragment set:html={defined.graphicalPlane} /> 平面上，
+    加上约束 $$z^2 + (\kappa a)^2 = z_0^2$$。
+    这些方程只能图解法或数值求解。在 $z$-$\sqrt{z_0^2 - z^2}$ 平面上，
     束缚态能级对应 $z\tan z$（或 $-z\cot z$）曲线与半径为 $z_0$ 的四分之一圆的交点。
   </p>
 
@@ -888,11 +687,11 @@ const defined = {
   <p>
     从图解法可以看出，束缚态的个数取决于 $z_0$ 的大小。$\tan z$ 的每个分支
     （宽度为 $\pi/2$）最多贡献一个交点，因此束缚态总数约为
-    <Fragment set:html={defined.nBound} />。
+    $$N = \left\lfloor\frac{z_0}{\pi/2}\right\rfloor + 1$$。
   </p>
 
   <p>
-    特别重要的结论：<strong>无论势阱多么浅（只要 <Fragment set:html={defined.atLeastOneBound} />），
+    特别重要的结论：<strong>无论势阱多么浅（只要 $z_0 > 0$），
     一维对称方势阱至少存在一个束缚态。</strong>这是一维问题的一般性质
     （对于一般的一维有吸引的势阱都成立，但在三维中不一定成立）。
   </p>
@@ -902,21 +701,21 @@ const defined = {
   <p>
     在 $V_0 \to \infty$ 的极限下，$z_0 \to \infty$，束缚态数目趋于无穷，
     能级趋近于无限深势阱的结果
-    <Fragment set:html={defined.infiniteWellEn} />。
+    $$E_n^{(\infty)} = \frac{n^2\pi^2\hbar^2}{2m(2a)^2} - V_0$$。
     有限深方势阱与无限深势阱的主要区别在于：
   </p>
 
   <ol>
     <li>有限深势阱只有有限个束缚态，而无限深势阱有无穷多个。</li>
     <li>有限深势阱的波函数在阱外不为零，而是以穿透深度
-      <Fragment set:html={defined.penetrationDepth} /> 指数衰减
-      （<Fragment set:html={defined.expDecayInline} />）。
+      $\delta = 1/\kappa = \hbar/\sqrt{-2mE}$ 指数衰减
+      （$e^{-\kappa|x|}$）。
       粒子在经典禁区中有非零的存在概率。</li>
     <li>有限深势阱的能级低于对应的无限深势阱能级（因为波函数
       "渗透"到阱外，有效宽度增大）。</li>
   </ol>
 
-  <InsightBox title="从有限到无限：极限的物理意义">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>从有限到无限：极限的物理意义</span></div>
     <p>
       无限深势阱是有限深势阱在 $V_0 \to \infty$ 时的数学极限。
       在此极限下，穿透深度 $\delta \to 0$，波函数在阱壁处的边界条件趋向于 $\psi = 0$，
@@ -925,15 +724,15 @@ const defined = {
       这一近似是合理的：当最低几个束缚态的能量远低于势阱深度 $V_0$ 时，
       无限深势阱近似良好。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.2.6：有限深方势阱</li>
       <li>曾谨言,《量子力学》卷I, 第三章 &sect;3.4：一维方势阱</li>
       <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, &sect;22：有限深势阱</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 3.5 隧穿效应 -->
@@ -952,12 +751,12 @@ const defined = {
     考虑一维方势垒：
   </p>
 
-  <Fragment set:html={defined.barrierPotential} />
+  $$V(x) = \begin{cases} V_0 & 0 \leq x \leq a \\ 0 & \text{otherwise} \end{cases}$$
 
   <p>
     其中 $V_0 > 0$，$a$ 为势垒宽度。设粒子从左方入射，能量 $E &lt; V_0$。
-    定义 <Fragment set:html={defined.kBarrier} /> 和
-    <Fragment set:html={defined.kappaBarrier} />。
+    定义 $k = \sqrt{2mE}/\hbar$ 和
+    $\kappa = \sqrt{2m(V_0 - E)}/\hbar$。
   </p>
 
   <p>
@@ -965,9 +764,9 @@ const defined = {
   </p>
 
   <ul>
-    <li>区域 I（$x &lt; 0$）：<Fragment set:html={defined.regionI} />（入射波 + 反射波）</li>
-    <li>区域 II（$0 \leq x \leq a$）：<Fragment set:html={defined.regionII} />（指数衰减和增长）</li>
-    <li>区域 III（$x > a$）：<Fragment set:html={defined.regionIII} />（透射波，无反射波）</li>
+    <li>区域 I（$x &lt; 0$）：$\psi_I = e^{ikx} + Re^{-ikx}$（入射波 + 反射波）</li>
+    <li>区域 II（$0 \leq x \leq a$）：$\psi_{II} = Ce^{\kappa x} + De^{-\kappa x}$（指数衰减和增长）</li>
+    <li>区域 III（$x > a$）：$\psi_{III} = Te^{ikx}$（透射波，无反射波）</li>
   </ul>
 
   <h3>透射系数的求解</h3>
@@ -982,77 +781,77 @@ const defined = {
     <strong>透射概率</strong>（tunneling probability）为：
   </p>
 
-  <Fragment set:html={defined.transmCoeff} />
+  $$T = |t|^2 = \frac{1}{1 + \frac{V_0^2}{4E(V_0 - E)}\sinh^2(\kappa a)}$$
 
   <p>
-    满足概率守恒 <Fragment set:html={defined.reflCoeff} />。
+    满足概率守恒 $R + T = 1$。
   </p>
 
-  <Derivation title="透射系数的完整推导">
+  <details class="derivation-block"><summary class="derivation-toggle">透射系数的完整推导</summary><div class="derivation-content">
     <p>
       在 $x = 0$：
     </p>
     <p>
-      <Fragment set:html={defined.derivBound1a} />
+      $$1 + R = C + D$$
     </p>
     <p>
-      <Fragment set:html={defined.derivBound1b} />
+      $$ik(1 - R) = \kappa(C - D)$$
     </p>
     <p>
       在 $x = a$：
     </p>
     <p>
-      <Fragment set:html={defined.derivBound2a} />
+      $$Ce^{\kappa a} + De^{-\kappa a} = Te^{ika}$$
     </p>
     <p>
-      <Fragment set:html={defined.derivBound2b} />
+      $$\kappa(Ce^{\kappa a} - De^{-\kappa a}) = ikTe^{ika}$$
     </p>
     <p>
       从后两个方程解出 $C$ 和 $D$：
     </p>
     <p>
-      <Fragment set:html={defined.derivCD} />
+      $$C = \frac{T}{2}e^{ika}\left(1 + \frac{ik}{\kappa}\right)e^{-\kappa a}, \quad D = \frac{T}{2}e^{ika}\left(1 - \frac{ik}{\kappa}\right)e^{\kappa a}$$
     </p>
     <p>
       代入前两个方程，消去 $R$，得到：
     </p>
     <p>
-      <Fragment set:html={defined.derivCombine} />
+      $$\frac{2ik}{T e^{ika}} = (ik + \kappa)\frac{e^{-\kappa a}}{2} + (ik - \kappa)\frac{e^{\kappa a}}{2} \cdot \frac{(ik + \kappa)}{(ik - \kappa)} \cdot \frac{(ik - \kappa)}{(ik + \kappa)}$$
     </p>
     <p>
       经过代数整理（利用双曲函数 $\sinh$ 和 $\cosh$）：
     </p>
     <p>
-      <Fragment set:html={defined.derivTinv} />
+      $$T^{-1} = e^{ika}\left[\cosh(\kappa a) + \frac{i}{2}\left(\frac{\kappa}{k} - \frac{k}{\kappa}\right)\sinh(\kappa a)\right]$$
     </p>
     <p>
       取模的平方：
     </p>
     <p>
-      <Fragment set:html={defined.derivTinvSq} />
+      $$|T|^{-2} = \cosh^2(\kappa a) + \frac{1}{4}\left(\frac{\kappa}{k} - \frac{k}{\kappa}\right)^2\sinh^2(\kappa a)$$
     </p>
     <p>
       利用 $\cosh^2 = 1 + \sinh^2$ 以及
-      <Fragment set:html={defined.derivIdentity} />，
+      $\left(\frac{\kappa}{k} - \frac{k}{\kappa}\right)^2 = \frac{(\kappa^2 - k^2)^2}{\kappa^2 k^2} = \frac{(\kappa^2 + k^2)^2}{\kappa^2 k^2} - 4$，
       最终化简得到：
     </p>
     <p>
-      <Fragment set:html={defined.derivTresult} />
+      $$|T|^2 = \frac{1}{1 + \frac{(\kappa^2 + k^2)^2}{4\kappa^2 k^2}\sinh^2(\kappa a)} = \frac{1}{1 + \frac{V_0^2}{4E(V_0 - E)}\sinh^2(\kappa a)}$$
     </p>
     <p>
-      其中用到了 <Fragment set:html={defined.derivKrel1} />，
-      <Fragment set:html={defined.derivKrel2} />。
+      其中用到了 $\kappa^2 + k^2 = 2mV_0/\hbar^2$，
+      $\kappa^2 k^2 = 4m^2 E(V_0 - E)/\hbar^4$。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>隧穿概率的指数行为</h3>
 
   <p>
-    在"厚势垒"极限 <Fragment set:html={defined.kappaA} /> $\gg 1$ 时，
-    <Fragment set:html={defined.sinhDef} />，透射系数近似为：
+    在"厚势垒"极限 $\kappa a$ $\gg 1$ 时，
+    $\sinh(\kappa a) \approx \frac{1}{2}e^{\kappa a}$，透射系数近似为：
   </p>
 
-  <Fragment set:html={defined.transmApprox} />
+  $$T \approx \frac{16E(V_0 - E)}{V_0^2}\,e^{-2\kappa a}, \quad \kappa a \gg 1$$
 
   <p>
     透射概率<strong>指数依赖</strong>于势垒的宽度 $a$ 和高度参数 $\kappa$。
@@ -1063,16 +862,16 @@ const defined = {
   <h3>共振透射</h3>
 
   <p>
-    当粒子能量 <Fragment set:html={defined.overBarrier} /> 时，势垒区域的解变为振荡形式，
+    当粒子能量 $E > V_0$ 时，势垒区域的解变为振荡形式，
     透射系数变为：
   </p>
 
-  <Fragment set:html={defined.overBarrierT} />
+  $$T = \frac{1}{1 + \frac{V_0^2}{4E(E - V_0)}\sin^2(k'a)}$$
 
   <p>
-    其中 <Fragment set:html={defined.kPrime} />。
-    当 <Fragment set:html={defined.resonanceCond} />（$n$ 为正整数）时，
-    <Fragment set:html={defined.resonanceT} />——发生<strong>共振透射</strong>（resonance tunneling），
+    其中 $k' = \sqrt{2m(E - V_0)}/\hbar$。
+    当 $k'a = n\pi$（$n$ 为正整数）时，
+    $T = 1$——发生<strong>共振透射</strong>（resonance tunneling），
     粒子被完全透射。这对应于势垒宽度恰好容纳半波长的整数倍，
     类似光学中的 Fabry-P&eacute;rot 干涉仪。
   </p>
@@ -1084,12 +883,12 @@ const defined = {
     （Wentzel-Kramers-Brillouin）给出：
   </p>
 
-  <Fragment set:html={defined.wkbTunnel} />
+  $$T \approx \exp\!\left(-\frac{2}{\hbar}\int_{x_1}^{x_2}\sqrt{2m\bigl(V(x) - E\bigr)}\,dx\right)$$
 
   <p>
     其中 $x_1$ 和 $x_2$ 是经典转折点（$V(x_1) = V(x_2) = E$）。
     这个公式将在后续 WKB 近似章节中系统推导。
-    对于方势垒，WKB 公式退化为上面的指数因子 <Fragment set:html={defined.wkbExpFactor} />。
+    对于方势垒，WKB 公式退化为上面的指数因子 $e^{-2\kappa a}$。
   </p>
 
   <h3>物理应用</h3>
@@ -1101,25 +900,25 @@ const defined = {
     Coulomb 势垒的隧穿而逃逸：
   </p>
 
-  <Fragment set:html={defined.gamowFactor} />
+  $$\Gamma \propto \exp\!\left(-\frac{2}{\hbar}\int_{R}^{b}\sqrt{2m\!\left(\frac{Ze^2}{4\pi\epsilon_0 r} - E\right)}\,dr\right)$$
 
   <p>
     其中 $R$ 为核半径，$b$ 为经典转折点。这给出了
-    <Fragment set:html={defined.gamowResult} />（Geiger-Nuttall 定律），
+    $$\ln\Gamma \propto -\frac{Z}{\sqrt{E}}$$（Geiger-Nuttall 定律），
     成功解释了 $\alpha$ 衰变寿命对衰变能量的极端敏感性
-    （能量变化 2 倍，寿命变化可达 <Fragment set:html={defined.decayLifetime} /> 倍）。
+    （能量变化 2 倍，寿命变化可达 $10^{20}$ 倍）。
   </p>
 
   <p>
     <strong>扫描隧穿显微镜（STM）</strong>：1981 年 Binnig 和 Rohrer 发明的 STM
     利用电子在真空隧道结中的隧穿效应。当导电探针尖端与样品表面距离为 $d$ 时，
-    隧穿电流 <Fragment set:html={defined.tunnelCurrentSTM} />，
+    隧穿电流 $I \propto e^{-2\kappa d}$，
     其中 $\kappa$ 由功函数决定。由于隧穿电流对距离的指数敏感性
-    （典型地，$d$ 增加 <Fragment set:html={defined.stmDistance} />，电流变化一个数量级），
+    （典型地，$d$ 增加 $0.1\,\text{nm}$，电流变化一个数量级），
     STM 可以实现原子级分辨率。
   </p>
 
-  <ThinkingBox title="隧穿效应的深层含义">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>隧穿效应的深层含义</span></div>
     <p>
       隧穿效应没有经典对应物。它的根源在于 Schr&ouml;dinger 方程的波动本质：
       在经典禁区中，波函数不是零而是指数衰减。只要势垒不是无穷厚，
@@ -1137,9 +936,9 @@ const defined = {
       约瑟夫森结（超导隧穿）等。在核物理中，隧穿效应控制了
       恒星中的核聚变反应速率，是太阳发光的本质机制。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <InsightBox title="转移矩阵方法">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>转移矩阵方法</span></div>
     <p>
       对于多层势垒（如多个势垒排列）或更复杂的分段常数势，可以使用
       <strong>转移矩阵</strong>（transfer matrix）方法系统地处理：
@@ -1147,9 +946,9 @@ const defined = {
       由各矩阵的连乘积决定。这种方法在固体物理中分析电子在周期势中的能带结构
       （Kronig-Penney 模型）时极为有用。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.2.5：隧穿效应与方势垒</li>
       <li>曾谨言,《量子力学》卷I, 第三章 &sect;3.5：势垒贯穿</li>
@@ -1157,7 +956,7 @@ const defined = {
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.2.4 补充材料：WKB 近似与隧穿</li>
       <li>Gamow, G. (1928). <em>Z. Phys.</em> <strong>51</strong>, 204：$\alpha$ 衰变的量子理论</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 章末总结 -->
@@ -1173,7 +972,7 @@ const defined = {
       色散导致波包扩散，群速度对应经典粒子速度。</li>
     <li><strong>量子谐振子</strong>：代数方法（产生湮灭算符）和解析方法（Hermite 多项式）
       分别从代数结构和微分方程的角度给出了完整的解。能级等间距
-      <Fragment set:html={defined.sumEnergy} />，零点能源于不确定性关系。</li>
+      $E_n = \hbar\omega(n + 1/2)$，零点能源于不确定性关系。</li>
     <li><strong>有限深方势阱</strong>：束缚态数目有限，波函数在经典禁区中指数衰减。
       连续性条件导致超越方程，只能图解或数值求解。一维对称势阱至少存在一个束缚态。</li>
     <li><strong>隧穿效应</strong>：粒子可以穿透经典不可逾越的势垒，概率指数依赖于势垒参数。
@@ -1185,15 +984,18 @@ const defined = {
     将在后续讨论三维问题（特别是中心力场中的径向方程）时继续发挥核心作用。
   </p>
 
-  <ThinkingBox title="从一维到三维">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>从一维到三维</span></div>
     <p>
       一维问题并不仅仅是简化的教学模型。在三维中心力场中，分离变量后径向方程
-      <Fragment set:html={defined.radialEq} />（其中 $u = rR$）
+      $u''(r) + [k^2 - l(l+1)/r^2 - U(r)]u = 0$（其中 $u = rR$）
       本质上是一个一维问题，等效势包含离心势 $l(l+1)/r^2$。
       因此本章发展的所有技术——从渐近分析到代数方法——都可以直接推广。
       特别地，氢原子的径向方程就是一个等效的一维库仑势问题，
       而三维谐振子的径向部分也归结为与本章类似的 Hermite/Laguerre 方程。
     </p>
-  </ThinkingBox>
+  </div>`;
+---
 
+<ChapterLayout title="第三章 一维问题" courseId="qm" chapterId="ch03">
+  <Fragment set:html={content} />
 </ChapterLayout>

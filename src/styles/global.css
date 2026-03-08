@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "katex/dist/katex.min.css";
 
 @theme {
   --color-primary: #1e40af;
@@ -79,11 +78,40 @@ body {
   font-size: 0.9rem;
 }
 
+/* Box headers */
+.box-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+.insight-box .box-header { color: var(--color-insight); }
+.thinking-box .box-header { color: var(--color-warning); }
+.reference-box .box-header { color: var(--color-text-muted); }
+.box-icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
+.insight-box .box-icon { color: var(--color-insight); }
+.thinking-box .box-icon { color: var(--color-warning); }
+.reference-box .box-icon { color: var(--color-text-muted); }
+.insight-box p, .thinking-box p, .reference-box p { font-size: 0.9rem; line-height: 1.7; }
+
+/* Derivation blocks using HTML details/summary */
+.derivation-block { margin: 1rem 0; }
 .derivation-toggle {
   cursor: pointer;
   color: var(--color-primary-light);
   user-select: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
 }
+.derivation-toggle::-webkit-details-marker { display: none; }
+.derivation-toggle::before { content: "▶"; font-size: 0.7rem; transition: transform 0.2s; }
+.derivation-block[open] .derivation-toggle::before { transform: rotate(90deg); }
 .derivation-toggle:hover { color: white; }
 
 .derivation-content {

@@ -1,14 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
----
 
-<ChapterLayout title="第一章 统计力学的逻辑基础" courseId="stat" chapterId="ch01">
-
-  <h1>第一章 统计力学的逻辑基础</h1>
+const content = String.raw`<h1>第一章 统计力学的逻辑基础</h1>
 
   <p>
     统计力学是从微观动力学通向宏观热力学的桥梁。它的逻辑起点并非对力学规律的否定，
@@ -38,14 +31,14 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     随时间演化，代表点在 $\Gamma$ 空间中画出一条轨迹——<strong>相轨迹</strong>。
   </p>
 
-  <InsightBox title="$\Gamma$ 空间 vs. $\mu$ 空间">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>$\Gamma$ 空间 vs. $\mu$ 空间</span></div>
     <p>
       必须区分 $\Gamma$ 空间与 $\mu$ 空间。$\mu$ 空间是<strong>单个粒子</strong>的相空间（$6$ 维），
       $\Gamma$ 空间是<strong>整个系统</strong>的相空间（$6N$ 维）。Boltzmann的 $H$ 定理在 $\mu$ 空间中表述，
       而Gibbs的系综理论在 $\Gamma$ 空间中建立。对于全同粒子系统，$\Gamma$ 空间中交换任意两个粒子的坐标与动量
       所得的点对应同一物理状态——这一点在后续讨论 Gibbs 佯谬时至关重要。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>Hamilton正则方程</h3>
 
@@ -135,14 +128,14 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     也是解决 Gibbs 佯谬的必要条件。
   </p>
 
-  <InsightBox title="经典极限的微妙之处">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>经典极限的微妙之处</span></div>
     <p>
       经典统计力学的完整微观态计数公式为 $\Omega = \frac{1}{N! \, h^{f}} \int d\Gamma$。
       因子 $h^f$ 来自量子力学（设定相空间格子大小），$N!$ 来自全同粒子的不可区分性。
       历史上，Gibbs 在量子力学诞生之前就已凭借"正确计数"的要求引入了 $N!$，
       这是理论物理中美学直觉领先于实验验证的经典案例。
     </p>
-  </InsightBox>
+  </div>
 
 
   <!-- ============================================================ -->
@@ -187,7 +180,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
 
   $$\frac{d\rho}{dt} = 0$$
 
-  <Derivation title="Liouville定理的完整推导">
+  <details class="derivation-block"><summary class="derivation-toggle">Liouville定理的完整推导</summary><div class="derivation-content">
     <p>
       <strong>方法一：连续性方程出发。</strong>
     </p>
@@ -248,7 +241,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       $i\hbar \, \partial\hat{\rho}/\partial t = [\hat{H}, \hat{\rho}]$ 形成精确的对应
       （Poisson括号 $\leftrightarrow$ $(i\hbar)^{-1}$[对易子]）。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>几何含义：相空间流体不可压缩</h3>
 
@@ -270,7 +263,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     若在某个方向上被压缩，必然在另一方向上膨胀，总体积保持恒定。
   </p>
 
-  <InsightBox title="辛结构与Liouville定理">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>辛结构与Liouville定理</span></div>
     <p>
       从更深层的数学视角看，Liouville定理是Hamilton力学的<strong>辛结构</strong>的直接推论。
       相空间天然配备辛形式 $\omega = \sum_i dp_i \wedge dq_i$，Hamilton流保持 $\omega$ 不变
@@ -278,7 +271,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       保辛自动蕴含保体积。这一理解揭示了 Liouville 定理不是"碰巧成立"，
       而是Hamilton力学几何结构的必然后果。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>平衡态条件</h3>
 
@@ -327,7 +320,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     对于更一般的系统，遍历性仍是一个活跃的数学物理研究方向。
   </p>
 
-  <ThinkingBox title="Liouville定理与熵增的调和">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>Liouville定理与熵增的调和</span></div>
     <p>
       <strong>问题：</strong>Liouville定理说相空间体积守恒（因而精细粒度的Gibbs熵
       $S_{\text{fine}} = -k_B \int \rho \ln \rho \, d\Gamma$ 不随时间改变），
@@ -346,9 +339,9 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       但它扩散成越来越细的丝缕，最终在粗粒化的视角下均匀充满整杯水——
       这就是"熵增"。精细尺度上信息仍在，但宏观上不可回收。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ThinkingBox title="遍历假说的有效性">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>遍历假说的有效性</span></div>
     <p>
       <strong>问题：</strong>对于大多数实际系统，严格的遍历性并未得到证明。
       那么统计力学为何仍然有效？
@@ -373,7 +366,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       它在气体、液体、固体、等离子体、辐射场等千差万别的系统中一致地给出正确预言，
       这本身就是对其基本假设最有力的佐证。
     </p>
-  </ThinkingBox>
+  </div>
 
 
   <!-- ============================================================ -->
@@ -465,7 +458,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     （在连续性和单调性条件下）。常数 $k_B$ 只是选定了温度的单位。
   </p>
 
-  <Derivation title="从Boltzmann熵推导热力学基本关系">
+  <details class="derivation-block"><summary class="derivation-toggle">从Boltzmann熵推导热力学基本关系</summary><div class="derivation-content">
     <p>
       Boltzmann熵公式的威力在于它可以直接导出热力学的基本关系。
       设 $\Sigma(E, V, N)$ 为相空间中 $H(q,p) \leq E$ 的体积：
@@ -494,7 +487,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       第一个等式定义了温度，第二个给出状态方程，第三个定义化学势。
       因此，只要能计算 $\Omega(E, V, N)$，所有热力学信息原则上都可提取。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>Gibbs熵</h3>
 
@@ -523,7 +516,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     因此，Boltzmann熵是Gibbs熵在等概率分布（微正则系综）下的特例。
   </p>
 
-  <InsightBox title="Gibbs熵的非负性与极值性质">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Gibbs熵的非负性与极值性质</span></div>
     <p>
       Gibbs熵具有以下重要性质：(1) $S_G \geq 0$，等号当且仅当系统处于纯态（$p_i = 1$ 对某个 $i$）；
       (2) 在所有满足 $\sum p_i = 1$ 的分布中，等概率分布 $p_i = 1/\Omega$ 使 $S_G$ 取最大值 $k_B \ln \Omega$。
@@ -532,7 +525,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       等号成立当且仅当所有 $p_i$ 相等。
       这意味着<strong>等概率分布是"最无序"的分布</strong>——它使熵最大化。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>Shannon信息熵与物理熵的联系</h3>
 
@@ -576,7 +569,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     这是因为最大熵分布是对未知信息做出最少假设的分布——它不引入任何超出约束所蕴含的结构。
   </p>
 
-  <Derivation title="从最大熵原理导出微正则和正则分布">
+  <details class="derivation-block"><summary class="derivation-toggle">从最大熵原理导出微正则和正则分布</summary><div class="derivation-content">
     <p><strong>情形一：微正则系综。</strong></p>
     <p>
       已知信息：系统能量在 $[E, E + \delta E]$ 内，有 $\Omega$ 个可及态。
@@ -617,9 +610,9 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       可以证明 $\beta = 1/(k_B T)$。这就是<strong>正则分布</strong>（Boltzmann分布/Gibbs分布），
       它的出现完全由最大熵原理在平均能量约束下唯一确定。
     </p>
-  </Derivation>
+  </div></details>
 
-  <ThinkingBox title="$\Omega$ 的精确定义与量子力学的角色">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>$\Omega$ 的精确定义与量子力学的角色</span></div>
     <p>
       <strong>问题：</strong>在 $S = k_B \ln \Omega$ 中，$\Omega$ 对连续相空间如何精确定义？
       经典力学中相空间是连续的，"微观态数"似乎没有意义。量子力学在此扮演什么角色？
@@ -645,9 +638,9 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       量子力学的输入是不可或缺的。这是 Nernst 第三定律（$T \to 0$ 时 $S \to 0$）
       得以成立的微观基础。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <InsightBox title="从信息到物理：Landauer原理">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>从信息到物理：Landauer原理</span></div>
     <p>
       Shannon-Jaynes的信息论视角不仅仅是哲学上的重新诠释，它有可实验检验的物理后果。
       Landauer（1961）指出，擦除一比特信息必然向环境释放至少 $k_B T \ln 2$ 的热量。
@@ -655,7 +648,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       由第二定律，环境的熵必须至少增加相同的量。Landauer原理在2012年被实验验证
       （B&eacute;rut et al., <em>Nature</em>），直接证实了信息与物理熵之间的定量联系。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>本章小结</h3>
 
@@ -674,7 +667,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     以处理非孤立系统。
   </p>
 
-  <ReferenceBox title="本章参考文献">
+  <div class="reference-box"><div class="box-header ref-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" /></svg><span>本章参考文献</span></div>
     <ul>
       <li><strong>Pathria &amp; Beale</strong>, <em>Statistical Mechanics</em>, 4th ed. — Ch.1 (统计力学与热力学的联系), Ch.2 (系综理论的基本元素). 对微正则系综和Liouville定理有系统阐述。</li>
       <li><strong>Huang, K.</strong>, <em>Statistical Mechanics</em>, 2nd ed. — Ch.4 (系综的一般讨论), Ch.6 (经典统计力学). 遍历假说的讨论尤为清晰。</li>
@@ -685,6 +678,9 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       <li><strong>Jaynes, E.T.</strong>, "Information theory and statistical mechanics", <em>Phys. Rev.</em> <strong>106</strong>, 620 (1957). 最大熵原理的奠基论文。</li>
       <li><strong>Khinchin, A.I.</strong>, <em>Mathematical Foundations of Statistical Mechanics</em> (1949). 对遍历问题和大数定律在统计力学中的角色有严格的数学讨论。</li>
     </ul>
-  </ReferenceBox>
+  </div>`;
+---
 
+<ChapterLayout title="第一章 统计力学的逻辑基础" courseId="stat" chapterId="ch01">
+  <Fragment set:html={content} />
 </ChapterLayout>

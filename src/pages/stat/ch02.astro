@@ -1,14 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
----
 
-<ChapterLayout title="第二章 微正则系综" courseId="stat" chapterId="ch02">
-
-  <h1>第二章 微正则系综</h1>
+const content = String.raw`<h1>第二章 微正则系综</h1>
 
   <p>
     微正则系综描述一个<strong>孤立系统</strong>——能量 $E$、体积 $V$、粒子数 $N$ 均严格守恒。系综的核心对象是<strong>态密度</strong> $\Omega(E, V, N)$：它计数系统在能量 $E$ 附近可及的微观态数目，是统计力学中联系微观动力学与宏观热力学的桥梁。本章将从态密度的定义出发，严格推导全部热力学关系，并以经典理想气体、谐振子系统、二能级系统为例展示微正则系综的力量。
@@ -40,11 +33,11 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     若不引入 $N!$ 因子，对 $N$ 个全同粒子的任何一个微观态，粒子标号的全排列将被计数 $N!$ 次，导致对微观态的过度计数。这一过度计数的直接后果就是<strong>Gibbs佯谬</strong>——混合两份完全相同的理想气体时熵会增大，违反热力学直觉。引入 $1/N!$ 的"正确Boltzmann计数"消除了这一困难。
   </p>
 
-  <InsightBox title="Gibbs因子的本质">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Gibbs因子的本质</span></div>
     <p>
       $1/N!$ 因子本质上来源于量子力学：全同粒子的波函数在粒子交换下要么对称（玻色子），要么反对称（费米子）。在经典极限下，两种统计都退化为 $1/N!$ 的修正。Gibbs在量子力学诞生之前就引入了这个因子——这是一个深刻的物理直觉。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>$h^{3N}$ 因子：相空间的量子化</h3>
   <p>
@@ -62,7 +55,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     空间部分积分直接给出 $V^N$。动量部分需要计算 $3N$ 维球面 $\sum_{i=1}^{3N} p_i^2 = 2mE$ 的面积。
   </p>
 
-  <Derivation title="N维球体积与态密度推导">
+  <details class="derivation-block"><summary class="derivation-toggle">N维球体积与态密度推导</summary><div class="derivation-content">
     <p>$n$ 维空间中半径为 $R$ 的球的体积为</p>
     $$
       V_n(R) = \frac{\pi^{n/2}}{\Gamma(n/2 + 1)}\, R^n
@@ -90,7 +83,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     $$
       \Sigma(E, V, N) = \frac{V^N}{N!\, h^{3N}} \cdot \frac{\pi^{3N/2}}{\Gamma(3N/2 + 1)}\, (2mE)^{3N/2}
     $$
-  </Derivation>
+  </div></details>
 
   <h3>能壳方法 vs 能面以下方法的等价性</h3>
   <p>
@@ -104,7 +97,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     在热力学极限下，$\ln \omega(E)$ 与 $\ln \Sigma(E)$ 仅差一个 $O(\ln N)$ 的修正项，相对于 $O(N)$ 的主项完全可忽略。因此两种定义在热力学极限下严格等价。
   </p>
 
-  <ThinkingBox title="为何能壳与能面以下等价？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>为何能壳与能面以下等价？</span></div>
     <p>
       直觉上，$\Sigma(E)$ 是 $E$ 的急剧增函数（对理想气体，$\Sigma \propto E^{3N/2}$）。因此 $\Sigma(E)$ 的"绝大部分"集中在 $E$ 附近极薄的壳层中。具体地，$\omega(E) = d\Sigma/dE \sim (3N/2)\,\Sigma/E$，从而
     </p>
@@ -114,16 +107,16 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     <p>
       而 $\ln\Sigma(E)$ 本身是 $O(N)$ 量。因此在热力学极限下，$O(\ln N)$ 修正完全无关紧要。这一论证对一般系统都成立，只要态密度是能量的快速增函数。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 1.4, 2.3-2.4</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 6.1-6.3</li>
       <li>汪志诚,《热力学·统计物理》, 第6版, 第7章</li>
       <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;7</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="thermodynamics-from-counting">2.2 从态密度推导热力学</h2>
@@ -156,15 +149,15 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     -\frac{\mu}{T} = \left(\frac{\partial S}{\partial N}\right)_{E,V}
   $$
 
-  <InsightBox title="温度的统计力学本质">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>温度的统计力学本质</span></div>
     <p>
       温度不是微观粒子运动快慢的简单度量，而是<strong>熵对能量的响应</strong>。当两个系统热接触时，能量从 $\partial S/\partial E$ 较大（即温度较低）的系统流向 $\partial S/\partial E$ 较小（即温度较高）的系统——直到两者 $1/T$ 相等，即达到热平衡。这一图像完全基于态密度的性质，无需引入任何"热"的先验概念。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>理想气体状态方程的推导</h3>
 
-  <Derivation title="从态密度推导 PV = Nk_BT">
+  <details class="derivation-block"><summary class="derivation-toggle">从态密度推导 PV = Nk_BT</summary><div class="derivation-content">
     <p>利用上节的态密度结果，对累积态数取对数：</p>
     $$
       \ln\Sigma(E,V,N) = N\ln V + \frac{3N}{2}\ln(2mE) + \frac{3N}{2}\ln\pi - \ln\Gamma\!\left(\frac{3N}{2}+1\right) - \ln(N!) - 3N\ln h
@@ -186,7 +179,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       E = \frac{3}{2}Nk_BT
     $$
     <p>这就是能量均分定理：每个平动自由度贡献 $\frac{1}{2}k_BT$ 的能量。</p>
-  </Derivation>
+  </div></details>
 
   <h3>Sackur-Tetrode公式</h3>
   <p>
@@ -224,13 +217,13 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     <li>负温度对应于粒子占据高能态多于低能态的<strong>粒子数反转</strong>状态。</li>
   </ul>
 
-  <ThinkingBox title="负温度真的存在吗？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>负温度真的存在吗？</span></div>
     <p>
       负温度是否具有物理意义，取决于对熵的定义。使用Boltzmann的 $S = k_B\ln\Omega$ 可以得到负温度，但Gibbs的 $S = k_B\ln\Sigma$（累积态数）给出的温度总是正的。2014年前后，Dunkel & Hilbert 在 <em>Nature Physics</em> 上引发了激烈讨论。目前多数统计力学家认为，对于能谱有上界的系统（如核自旋系统），Boltzmann定义下的负温度是自洽且有实验对应的。Purcell和Pound在1951年的核自旋实验中就实现了负温度态。关键在于：这些系统必须与平动自由度有效解耦，否则无法达到平衡态。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 1.4-1.6, 2.4</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 6.4-6.5</li>
@@ -238,7 +231,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;7, &sect;24</li>
       <li>N.F. Ramsey, <em>Phys. Rev.</em> <strong>103</strong>, 20 (1956) — 负温度的热力学理论</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="microcanonical-applications">2.3 微正则系综的经典应用</h2>
@@ -255,7 +248,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     做变量替换 $x_i = p_i/\sqrt{2m}$，$y_i = q_i\sqrt{m\omega^2/2}$，等能面变为 $2N$ 维空间中的球面 $\sum(x_i^2 + y_i^2) = E$。
   </p>
 
-  <Derivation title="N个谐振子态密度的完整推导">
+  <details class="derivation-block"><summary class="derivation-toggle">N个谐振子态密度的完整推导</summary><div class="derivation-content">
     <p>等能面以下的相空间体积为</p>
     $$
       \Sigma(E) = \frac{1}{N!\,h^N} \int_{H \leq E} d^N q\, d^N p
@@ -272,7 +265,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     <p>
       有趣的是，如果不考虑全同性（令 $N! \to 1$），对应的量子问题（$N$ 个可分辨的量子谐振子，总能量为 $E = (M + N/2)\hbar\omega$）的微观态数恰好是组合数 $\binom{M+N-1}{N-1}$，其中 $M$ 为总量子数。在经典极限 $M \gg N$ 下，两者一致。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
     由 $S = k_B\ln\Omega$ 和 $1/T = \partial S/\partial E$，得到
@@ -321,11 +314,11 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     这给出著名的<strong>Schottky比热</strong>峰：$C_V$ 在 $k_BT \sim \varepsilon$ 附近有一个峰值，在 $T \to 0$ 和 $T \to \infty$ 时均趋于零。
   </p>
 
-  <InsightBox title="Schottky峰的物理图像">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Schottky峰的物理图像</span></div>
     <p>
       低温时几乎所有粒子在基态，激发需要克服能隙 $\varepsilon$，比热按 $e^{-\varepsilon/(k_BT)}$ 指数衰减（冻结）。高温时两个能级几乎等概率占据，增加温度几乎不改变能级布居——比热也趋于零（饱和）。比热峰出现在这两种机制竞争的中间温度区。Schottky比热是实验上检测局域能级间距的重要手段。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>Gibbs佯谬的深入分析</h3>
   <p>
@@ -341,11 +334,11 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     \Delta S_{\text{correct}} = Nk_B\ln\frac{V}{N} - 2\cdot\frac{N}{2}k_B\ln\frac{V/2}{N/2} = 0
   $$
 
-  <ThinkingBox title="Gibbs佯谬的更深层次">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>Gibbs佯谬的更深层次</span></div>
     <p>
       Gibbs佯谬的真正根源不仅是计数因子，而是<strong>"粒子的可分辨性是否是物理的"</strong>这一基本问题。在经典力学中，粒子有确定的轨迹，原则上可以追踪——那为什么要除以 $N!$？答案是：我们讨论的是<strong>宏观态</strong>的熵，而非单个轨迹。即使经典粒子原则上可分辨，如果宏观测量无法区分粒子交换后的态，那么这些态在统计上就应被视为同一态。$1/N!$ 因子正是这一物理要求的数学体现。这也解释了为什么对<strong>不同种类</strong>粒子的混合，确实有 $\Delta S = Nk_B\ln 2$ 的混合熵——因为不同种类的粒子可以被实验区分。
     </p>
-  </ThinkingBox>
+  </div>
 
   <h3>从微正则到正则：系综转化</h3>
   <p>
@@ -376,7 +369,7 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
     这正是正则系综的起点——将在下一章详细展开。
   </p>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 2.3-2.5, 3.1</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 6.4-6.6, 7.1</li>
@@ -384,6 +377,9 @@ import ReferenceBox from '../../components/ReferenceBox.astro';
       <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;7, &sect;28</li>
       <li>E.T. Jaynes, "The Gibbs Paradox", in <em>Maximum Entropy and Bayesian Methods</em> (1992)</li>
     </ul>
-  </ReferenceBox>
+  </div>`;
+---
 
+<ChapterLayout title="第二章 微正则系综" courseId="stat" chapterId="ch02">
+  <Fragment set:html={content} />
 </ChapterLayout>

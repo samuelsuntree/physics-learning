@@ -1,93 +1,19 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const defined = {
-  /* ── helpers: every LaTeX snippet that contains { or } lives here ── */
-
-  /* §9.1 传播子与路径积分表述 */
-  propagatorDef: String.raw`$$K(x_f, t_f;\, x_i, t_i) = \langle x_f | \hat{U}(t_f, t_i) | x_i \rangle$$`,
-  Uoperator: String.raw`$\hat{U}(t_f, t_i) = e^{-iH(t_f - t_i)/\hbar}$`,
-  psiPropagator: String.raw`$$\psi(x_f, t_f) = \int_{-\infty}^{\infty} K(x_f, t_f;\, x_i, t_i)\,\psi(x_i, t_i)\,dx_i$$`,
-  timeSliceU: String.raw`$$e^{-iH T/\hbar} = \left(e^{-iH\epsilon/\hbar}\right)^N, \quad \epsilon = T/N$$`,
-  completeness: String.raw`$$\hat{1} = \int_{-\infty}^{\infty} |x\rangle\langle x|\,dx$$`,
-  timeSliceK: String.raw`$$K = \int dx_1\,dx_2\cdots dx_{N-1}\;\prod_{j=0}^{N-1}\langle x_{j+1}|e^{-iH\epsilon/\hbar}|x_j\rangle$$`,
-  singleStep: String.raw`$$\langle x_{j+1}|e^{-iH\epsilon/\hbar}|x_j\rangle \approx \sqrt{\frac{m}{2\pi i\hbar\epsilon}}\exp\!\left(\frac{i\epsilon}{\hbar}\left[\frac{m}{2}\left(\frac{x_{j+1}-x_j}{\epsilon}\right)^2 - V\!\left(\frac{x_{j+1}+x_j}{2}\right)\right]\right)$$`,
-  feynmanPI: String.raw`$$K(x_f, t_f;\, x_i, t_i) = \int \mathcal{D}x(t)\;\exp\!\left(\frac{i}{\hbar}S[x(t)]\right)$$`,
-  actionDef: String.raw`$$S[x(t)] = \int_{t_i}^{t_f} L\bigl(x(t), \dot{x}(t)\bigr)\,dt = \int_{t_i}^{t_f}\left[\frac{1}{2}m\dot{x}^2 - V(x)\right]dt$$`,
-  pathMeasure: String.raw`$$\int\mathcal{D}x(t) \equiv \lim_{N\to\infty}\left(\frac{m}{2\pi i\hbar\epsilon}\right)^{N/2}\int dx_1\,dx_2\cdots dx_{N-1}$$`,
-  propagatorCompose: String.raw`$$K(x_f, t_f;\, x_i, t_i) = \int K(x_f, t_f;\, x_m, t_m)\,K(x_m, t_m;\, x_i, t_i)\,dx_m$$`,
-  SEfromPI: String.raw`$$i\hbar\frac{\partial}{\partial t}\psi(x,t) = \hat{H}\psi(x,t)$$`,
-
-  /* SE推导辅助 */
-  psiInfStep: String.raw`$$\psi(x, t+\epsilon) = \int K(x, t+\epsilon;\, x', t)\,\psi(x', t)\,dx'$$`,
-  etaSubst: String.raw`$\eta = x' - x$`,
-  etaExpand: String.raw`$$\psi(x, t+\epsilon) = \sqrt{\frac{m}{2\pi i\hbar\epsilon}}\int d\eta\;\exp\!\left(\frac{im\eta^2}{2\hbar\epsilon}\right)\exp\!\left(-\frac{i\epsilon}{\hbar}V(x)\right)\left[\psi(x,t) + \eta\,\psi'(x,t) + \frac{\eta^2}{2}\psi''(x,t) + \cdots\right]$$`,
-  gaussIntEta0: String.raw`$\int d\eta\,e^{im\eta^2/(2\hbar\epsilon)} = \sqrt{2\pi i\hbar\epsilon/m}$`,
-  gaussIntEta1: String.raw`$\int d\eta\;\eta\,e^{im\eta^2/(2\hbar\epsilon)} = 0$`,
-  gaussIntEta2: String.raw`$\int d\eta\;\eta^2\,e^{im\eta^2/(2\hbar\epsilon)} = i\hbar\epsilon/m \cdot \sqrt{2\pi i\hbar\epsilon/m}$`,
-  SEresult: String.raw`$$\psi + \epsilon\,\dot{\psi} + \cdots = \left(1 - \frac{i\epsilon}{\hbar}V + \cdots\right)\left(\psi + \frac{i\hbar\epsilon}{2m}\psi'' + \cdots\right)$$`,
-
-  /* §9.2 自由粒子与谐振子 */
-  freeAction: String.raw`$$S_{\text{cl}} = \frac{m(x_f - x_i)^2}{2T}$$`,
-  freePropagator: String.raw`$$K_0(x_f, t_f;\, x_i, t_i) = \sqrt{\frac{m}{2\pi i\hbar T}}\exp\!\left(\frac{im(x_f - x_i)^2}{2\hbar T}\right)$$`,
-  Tdef: String.raw`$T = t_f - t_i$`,
-  freeGaussIntegral: String.raw`$$\int_{-\infty}^{\infty}\exp\!\left(\frac{im}{2\hbar\epsilon}\left[(x_{j+1}-x_j)^2 + (x_j - x_{j-1})^2\right]\right)dx_j$$`,
-  hoAction: String.raw`$$S_{\text{cl}} = \frac{m\omega}{2\sin\omega T}\left[(x_f^2 + x_i^2)\cos\omega T - 2x_f x_i\right]$$`,
-  hoPropagator: String.raw`$$K_{\text{ho}} = \sqrt{\frac{m\omega}{2\pi i\hbar\sin\omega T}}\exp\!\left(\frac{im\omega}{2\hbar\sin\omega T}\left[(x_f^2 + x_i^2)\cos\omega T - 2x_f x_i\right]\right)$$`,
-  hoLagrangian: String.raw`$L = \frac{1}{2}m\dot{x}^2 - \frac{1}{2}m\omega^2 x^2$`,
-  hoEL: String.raw`$\ddot{x}_{\text{cl}} + \omega^2 x_{\text{cl}} = 0$`,
-  hoSolution: String.raw`$$x_{\text{cl}}(t) = \frac{x_i\sin\omega(t_f - t) + x_f\sin\omega(t - t_i)}{\sin\omega T}$$`,
-  semiclassical: String.raw`$$K = F(T)\,\exp\!\left(\frac{i}{\hbar}S_{\text{cl}}[x_{\text{cl}}]\right)$$`,
-  fluctuationPath: String.raw`$x(t) = x_{\text{cl}}(t) + y(t)$`,
-  fluctuationBC: String.raw`$y(t_i) = y(t_f) = 0$`,
-  actionSplit: String.raw`$$S[x] = S_{\text{cl}} + \frac{1}{2}\int_{t_i}^{t_f}\left[m\dot{y}^2 - m\omega^2 y^2\right]dt$$`,
-  prefactorDef: String.raw`$$F(T) = \int\mathcal{D}y(t)\;\exp\!\left(\frac{i}{2\hbar}\int_{t_i}^{t_f}\left[m\dot{y}^2 - m\omega^2 y^2\right]dt\right)$$`,
-  crossTermVanish: String.raw`$\delta S_{\text{cl}}/\delta x = 0$`,
-
-  /* §9.3 经典极限与驻相近似 */
-  stationaryPhase: String.raw`$$\int\mathcal{D}x\;e^{iS[x]/\hbar} \xrightarrow{\hbar\to 0} \text{dominated by } \delta S = 0$$`,
-  ELeq: String.raw`$$\frac{\delta S}{\delta x(t)} = 0 \implies \frac{d}{dt}\frac{\partial L}{\partial\dot{x}} - \frac{\partial L}{\partial x} = 0$$`,
-  phaseOscillation: String.raw`$e^{iS/\hbar}$`,
-  semiclassicalExpansion: String.raw`$$K \approx \sum_{\text{cl. paths}} A_{\text{cl}}\,\exp\!\left(\frac{i}{\hbar}S_{\text{cl}}\right)$$`,
-  wickRotation: String.raw`$t \to -i\tau$`,
-  euclideanAction: String.raw`$$S_E[x(\tau)] = \int_0^{\beta\hbar}\!\left[\frac{1}{2}m\dot{x}^2 + V(x)\right]d\tau$$`,
-  partitionFunc: String.raw`$$Z = \text{Tr}\,e^{-\beta H} = \int\mathcal{D}x(\tau)\;\exp\!\left(-\frac{1}{\hbar}S_E[x(\tau)]\right)$$`,
-  periodicBC: String.raw`$x(0) = x(\beta\hbar)$`,
-  betaDef: String.raw`$\beta = 1/(k_B \mathcal{T})$`,
-  iStominusS: String.raw`$iS/\hbar \to -S_E/\hbar$`,
-  qftAction: String.raw`$$Z = \int\mathcal{D}\phi\;\exp\!\left(\frac{i}{\hbar}S[\phi]\right)$$`,
-  qftField: String.raw`$x(t) \to \phi(x,t)$`,
-  morseIndex: String.raw`$\det\!\left(-m\frac{d^2}{dt^2} - m\omega^2\right)$`,
-
-  /* 通用符号 */
-  hbar: String.raw`$\hbar$`,
-  Scl: String.raw`$S_{\text{cl}}$`,
-  Dx: String.raw`$\mathcal{D}x(t)$`,
-  epsilonDef: String.raw`$\epsilon = T/N$`,
-  Ndef: String.raw`$N \to \infty$`,
-  xj: String.raw`$x_j$`,
-};
----
-
-<ChapterLayout title="第九章 路径积分" courseId="qm" chapterId="ch09">
-
-  <h1>第九章 路径积分</h1>
+const content = String.raw`<h1>第九章 路径积分</h1>
 
   <p>
     路径积分（path integral）是 Feynman 于 1948 年提出的量子力学的第三种表述，
     与 Schrodinger 的波动力学和 Heisenberg 的矩阵力学完全等价，但提供了全新的物理图像：
     量子力学中粒子从一点运动到另一点时，它同时经历了<strong>所有可能的路径</strong>，
-    每条路径带有一个相位因子 <Fragment set:html={defined.phaseOscillation} />，
+    每条路径带有一个相位因子 $e^{iS/\hbar}$，
     其中 $S$ 是该路径的经典作用量。所有路径的振幅相干叠加，就给出了量子力学的传播子。
     这一表述不仅为量子力学提供了最直观的物理图像——经典力学如何从量子力学中涌现——
     更是量子场论、统计力学和规范理论的基础语言。
   </p>
 
-  <InsightBox title="三种等价表述">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>三种等价表述</span></div>
     <p>
       量子力学的三种表述——Schrodinger 波动方程、Heisenberg 矩阵力学和 Feynman 路径积分——
       是完全等价的数学框架。但它们各自突出不同的物理侧面：波动方程强调态的时间演化，
@@ -95,7 +21,7 @@ const defined = {
       在向量子场论过渡时，路径积分表述的优势尤为突出，因为它可以自然地处理规范对称性、
       非微扰效应和拓扑性质。
     </p>
-  </InsightBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 9.1 传播子与路径积分表述 -->
@@ -110,16 +36,16 @@ const defined = {
     时间演化算符在坐标表象中的矩阵元：
   </p>
 
-  <Fragment set:html={defined.propagatorDef} />
+  $$K(x_f, t_f;\, x_i, t_i) = \langle x_f | \hat{U}(t_f, t_i) | x_i \rangle$$
 
   <p>
-    其中 <Fragment set:html={defined.Uoperator} />
+    其中 $\hat{U}(t_f, t_i) = e^{-iH(t_f - t_i)/\hbar}$
     是时间演化算符。传播子的物理意义是：粒子在 $t_i$ 时刻处于位置 $x_i$，
     在 $t_f$ 时刻出现在位置 $x_f$ 的概率振幅。知道了传播子，就可以由初始波函数
     求出任意时刻的波函数：
   </p>
 
-  <Fragment set:html={defined.psiPropagator} />
+  $$\psi(x_f, t_f) = \int_{-\infty}^{\infty} K(x_f, t_f;\, x_i, t_i)\,\psi(x_i, t_i)\,dx_i$$
 
   <p>
     因此，传播子完全等价于 Schrodinger 方程——它包含了系统的全部动力学信息。
@@ -130,18 +56,18 @@ const defined = {
   <p>
     Feynman 路径积分的推导从将时间演化分割成 $N$ 个无穷小步开始。
     设总演化时间 $T = t_f - t_i$，将其等分为 $N$ 段，每段时间
-    <Fragment set:html={defined.epsilonDef} />：
+    $\epsilon = T/N$：
   </p>
 
-  <Fragment set:html={defined.timeSliceU} />
+  $$e^{-iH T/\hbar} = \left(e^{-iH\epsilon/\hbar}\right)^N, \quad \epsilon = T/N$$
 
   <p>
     在每两个相邻时间切片之间插入坐标的完备性关系
-    <Fragment set:html={defined.completeness} />，传播子变为对所有中间点
-    <Fragment set:html={defined.xj} /> 的积分：
+    $$\hat{1} = \int_{-\infty}^{\infty} |x\rangle\langle x|\,dx$$，传播子变为对所有中间点
+    $x_j$ 的积分：
   </p>
 
-  <Fragment set:html={defined.timeSliceK} />
+  $$K = \int dx_1\,dx_2\cdots dx_{N-1}\;\prod_{j=0}^{N-1}\langle x_{j+1}|e^{-iH\epsilon/\hbar}|x_j\rangle$$
 
   <p>
     其中 $x_0 = x_i$，$x_N = x_f$。关键的一步是计算单步传播子。
@@ -150,35 +76,35 @@ const defined = {
     其贡献为 $O(\epsilon^2)$），并插入动量完备性关系完成 Gauss 积分，得到：
   </p>
 
-  <Fragment set:html={defined.singleStep} />
+  $$\langle x_{j+1}|e^{-iH\epsilon/\hbar}|x_j\rangle \approx \sqrt{\frac{m}{2\pi i\hbar\epsilon}}\exp\!\left(\frac{i\epsilon}{\hbar}\left[\frac{m}{2}\left(\frac{x_{j+1}-x_j}{\epsilon}\right)^2 - V\!\left(\frac{x_{j+1}+x_j}{2}\right)\right]\right)$$
 
   <p>
     方括号中恰好是 Lagrange 量 $L = T - V$ 在离散时间步上的表达。
-    将 $N$ 步的结果组合起来，令 <Fragment set:html={defined.Ndef} />，
+    将 $N$ 步的结果组合起来，令 $N \to \infty$，
     离散求和变为连续积分，得到 Feynman 路径积分的核心公式：
   </p>
 
-  <Fragment set:html={defined.feynmanPI} />
+  $$K(x_f, t_f;\, x_i, t_i) = \int \mathcal{D}x(t)\;\exp\!\left(\frac{i}{\hbar}S[x(t)]\right)$$
 
   <p>其中经典作用量为</p>
 
-  <Fragment set:html={defined.actionDef} />
+  $$S[x(t)] = \int_{t_i}^{t_f} L\bigl(x(t), \dot{x}(t)\bigr)\,dt = \int_{t_i}^{t_f}\left[\frac{1}{2}m\dot{x}^2 - V(x)\right]dt$$
 
   <p>路径积分测度的严格定义为</p>
 
-  <Fragment set:html={defined.pathMeasure} />
+  $$\int\mathcal{D}x(t) \equiv \lim_{N\to\infty}\left(\frac{m}{2\pi i\hbar\epsilon}\right)^{N/2}\int dx_1\,dx_2\cdots dx_{N-1}$$
 
-  <InsightBox title="路径积分的物理图景">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>路径积分的物理图景</span></div>
     <p>
       路径积分告诉我们：量子力学的传播振幅是对<strong>所有</strong>连接初态和末态的路径的求和，
-      每条路径贡献一个相位因子 <Fragment set:html={defined.phaseOscillation} />。
+      每条路径贡献一个相位因子 $e^{iS/\hbar}$。
       没有哪条路径是"特殊的"——光滑的、不光滑的、甚至时空中来回折返的路径都有贡献。
       经典路径（使作用量取驻值的路径）之所以在宏观极限下主导行为，
-      是因为在 <Fragment set:html={defined.hbar} /> $\to 0$ 时，
+      是因为在 $\hbar$ $\to 0$ 时，
       偏离经典路径的路径由于剧烈的相位振荡而相互抵消（驻相近似）。
       这提供了经典力学从量子力学中涌现的最透明的图像。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>传播子的半群性质</h3>
 
@@ -186,7 +112,7 @@ const defined = {
     传播子满足重要的组合律（半群性质），对任意中间时刻 $t_m$（$t_i < t_m < t_f$）：
   </p>
 
-  <Fragment set:html={defined.propagatorCompose} />
+  $$K(x_f, t_f;\, x_i, t_i) = \int K(x_f, t_f;\, x_m, t_m)\,K(x_m, t_m;\, x_i, t_i)\,dx_m$$
 
   <p>
     这一性质直接来源于时间演化算符的乘法性 $U(t_f, t_i) = U(t_f, t_m)\,U(t_m, t_i)$，
@@ -201,27 +127,27 @@ const defined = {
     关键思路是考虑无穷小时间步 $\epsilon$ 的传播：
   </p>
 
-  <Fragment set:html={defined.psiInfStep} />
+  $$\psi(x, t+\epsilon) = \int K(x, t+\epsilon;\, x', t)\,\psi(x', t)\,dx'$$
 
-  <Derivation title="从路径积分推导 Schrodinger 方程">
+  <details class="derivation-block"><summary class="derivation-toggle">从路径积分推导 Schrodinger 方程</summary><div class="derivation-content">
     <p>
       考虑无穷小时间步 $\epsilon$ 的传播。将 $x' = x + \eta$ 代入单步传播子，
-      设 <Fragment set:html={defined.etaSubst} />，则：
+      设 $\eta = x' - x$，则：
     </p>
-    <Fragment set:html={defined.etaExpand} />
+    $$\psi(x, t+\epsilon) = \sqrt{\frac{m}{2\pi i\hbar\epsilon}}\int d\eta\;\exp\!\left(\frac{im\eta^2}{2\hbar\epsilon}\right)\exp\!\left(-\frac{i\epsilon}{\hbar}V(x)\right)\left[\psi(x,t) + \eta\,\psi'(x,t) + \frac{\eta^2}{2}\psi''(x,t) + \cdots\right]$$
     <p>
       Gauss 积分给出以下关键结果：
     </p>
     <ul>
-      <li><Fragment set:html={defined.gaussIntEta0} /></li>
-      <li><Fragment set:html={defined.gaussIntEta1} />（奇函数积分为零）</li>
-      <li><Fragment set:html={defined.gaussIntEta2} /></li>
+      <li>$\int d\eta\,e^{im\eta^2/(2\hbar\epsilon)} = \sqrt{2\pi i\hbar\epsilon/m}$</li>
+      <li>$\int d\eta\;\eta\,e^{im\eta^2/(2\hbar\epsilon)} = 0$（奇函数积分为零）</li>
+      <li>$\int d\eta\;\eta^2\,e^{im\eta^2/(2\hbar\epsilon)} = i\hbar\epsilon/m \cdot \sqrt{2\pi i\hbar\epsilon/m}$</li>
     </ul>
     <p>
       注意 $\eta^2$ 项的积分结果是 $O(\epsilon)$，而 $\eta^4$ 项为 $O(\epsilon^2)$，
       可忽略。代入并展开到 $O(\epsilon)$ 阶：
     </p>
-    <Fragment set:html={defined.SEresult} />
+    $$\psi + \epsilon\,\dot{\psi} + \cdots = \left(1 - \frac{i\epsilon}{\hbar}V + \cdots\right)\left(\psi + \frac{i\hbar\epsilon}{2m}\psi'' + \cdots\right)$$
     <p>
       零阶项 $\psi$ 自动匹配。比较两端的 $O(\epsilon)$ 项：
     </p>
@@ -233,27 +159,27 @@ const defined = {
     <p>
       这正是一维含时 Schrodinger 方程。这一推导直接证明了路径积分表述与波动力学的等价性。
     </p>
-  </Derivation>
+  </div></details>
 
-  <ThinkingBox title="路径积分测度的数学困难">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>路径积分测度的数学困难</span></div>
     <p>
-      应当注意，路径积分 <Fragment set:html={defined.Dx} /> 的严格数学定义是一个深刻的问题。
-      在 Minkowski 时空中（实时间），由于被积函数 <Fragment set:html={defined.phaseOscillation} /> 是纯振荡的
+      应当注意，路径积分 $\mathcal{D}x(t)$ 的严格数学定义是一个深刻的问题。
+      在 Minkowski 时空中（实时间），由于被积函数 $e^{iS/\hbar}$ 是纯振荡的
       （不衰减），路径积分不是绝对收敛的，严格意义上不存在对应的 Lebesgue 测度。
       数学上严格定义的是 Wiener 测度——对应于 Wick 转动后的 Euclid 路径积分。
       在物理应用中，时间切片方法或格点正则化提供了明确的计算处方，物理结果在移除正则化后是良定义的。
       这一微妙之处在量子场论中变得更加重要，正则化和重整化理论正是为处理这类问题而发展的。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Feynman &amp; Hibbs, <em>Quantum Mechanics and Path Integrals</em>, Ch.2-3：路径积分的原始表述</li>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.2.6：传播子与路径积分</li>
       <li>Weinberg, <em>Lectures on Quantum Mechanics</em>, Ch.9：路径积分方法</li>
       <li>Schulman, <em>Techniques and Applications of Path Integration</em>：路径积分的数学基础</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 9.2 自由粒子与谐振子的路径积分 -->
@@ -268,17 +194,17 @@ const defined = {
   </p>
 
   <p>
-    自由粒子从 $x_i$ 到 $x_f$、经过时间 <Fragment set:html={defined.Tdef} /> 的经典作用量为
+    自由粒子从 $x_i$ 到 $x_f$、经过时间 $T = t_f - t_i$ 的经典作用量为
   </p>
 
-  <Fragment set:html={defined.freeAction} />
+  $$S_{\text{cl}} = \frac{m(x_f - x_i)^2}{2T}$$
 
   <p>
     这是因为自由粒子的经典轨迹是匀速直线运动 $x_{\text{cl}}(t) = x_i + (x_f - x_i)(t - t_i)/T$，
     代入 $S = \int \frac{1}{2}m\dot{x}^2 dt$ 即得。
   </p>
 
-  <Derivation title="自由粒子路径积分的逐步 Gauss 积分">
+  <details class="derivation-block"><summary class="derivation-toggle">自由粒子路径积分的逐步 Gauss 积分</summary><div class="derivation-content">
     <p>
       利用时间切片，自由粒子传播子为
     </p>
@@ -287,28 +213,28 @@ const defined = {
       首先对 $x_1$ 积分。指数中含 $x_1$ 的项只有 $(x_2 - x_1)^2 + (x_1 - x_0)^2$。
       完成平方后执行 Gauss 积分：
     </p>
-    <Fragment set:html={defined.freeGaussIntegral} />
+    $$\int_{-\infty}^{\infty}\exp\!\left(\frac{im}{2\hbar\epsilon}\left[(x_{j+1}-x_j)^2 + (x_j - x_{j-1})^2\right]\right)dx_j$$
     <p>
       结果将 $x_0$ 和 $x_2$ 的间距合并为"有效"的两步间距，并产生归一化因子。
       逐步积分后，第 $k$ 步积分将前 $k+1$ 个点的贡献合并，
       归一化因子按递推关系 $\sqrt{k/(k+1)}$ 逐步累积。
       最终完成全部 $N-1$ 次 Gauss 积分后，取 $N \to \infty$ 极限，得到精确结果：
     </p>
-    <Fragment set:html={defined.freePropagator} />
+    $$K_0(x_f, t_f;\, x_i, t_i) = \sqrt{\frac{m}{2\pi i\hbar T}}\exp\!\left(\frac{im(x_f - x_i)^2}{2\hbar T}\right)$$
     <p>
       这一结果也可以直接在动量空间中验证：
       $K_0 = \int \frac{dp}{2\pi\hbar}\,e^{ip(x_f - x_i)/\hbar}\,e^{-ip^2 T/(2m\hbar)}$，
       完成 Gauss 积分后得到完全相同的结果。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>自由粒子传播子的最终结果为</p>
 
-  <Fragment set:html={defined.freePropagator} />
+  $$K_0(x_f, t_f;\, x_i, t_i) = \sqrt{\frac{m}{2\pi i\hbar T}}\exp\!\left(\frac{im(x_f - x_i)^2}{2\hbar T}\right)$$
 
   <p>
     注意几个重要特征：(1) 传播子仅依赖于 $x_f - x_i$ 和 $T$，反映了空间平移不变性和时间平移不变性；
-    (2) 指数中的相位恰好是经典作用量 <Fragment set:html={defined.Scl} /> 除以 <Fragment set:html={defined.hbar} />；
+    (2) 指数中的相位恰好是经典作用量 $S_{\text{cl}}$ 除以 $\hbar$；
     (3) 前因子中出现 $\sqrt{i}$，体现了量子力学振幅（而非概率）的复数本质；
     (4) 在 $T \to 0$ 极限下，$K_0 \to \delta(x_f - x_i)$，即传播子趋于 $\delta$ 函数，这与 $U(0) = \hat{1}$ 一致。
   </p>
@@ -316,51 +242,51 @@ const defined = {
   <h3>谐振子传播子</h3>
 
   <p>
-    一维谐振子 <Fragment set:html={defined.hoLagrangian} /> 的路径积分也可以精确计算，
+    一维谐振子 $L = \frac{1}{2}m\dot{x}^2 - \frac{1}{2}m\omega^2 x^2$ 的路径积分也可以精确计算，
     因为作用量是路径的二次泛函，所有中间点积分仍然是 Gauss 型的。
   </p>
 
   <p>
-    首先求经典轨迹。Euler-Lagrange 方程 <Fragment set:html={defined.hoEL} /> 的解
+    首先求经典轨迹。Euler-Lagrange 方程 $\ddot{x}_{\text{cl}} + \omega^2 x_{\text{cl}} = 0$ 的解
     在边界条件 $x(t_i) = x_i$、$x(t_f) = x_f$ 下为
   </p>
 
-  <Fragment set:html={defined.hoSolution} />
+  $$x_{\text{cl}}(t) = \frac{x_i\sin\omega(t_f - t) + x_f\sin\omega(t - t_i)}{\sin\omega T}$$
 
   <p>
     将经典解代入作用量，经过直接计算得到经典作用量：
   </p>
 
-  <Fragment set:html={defined.hoAction} />
+  $$S_{\text{cl}} = \frac{m\omega}{2\sin\omega T}\left[(x_f^2 + x_i^2)\cos\omega T - 2x_f x_i\right]$$
 
   <h3>半经典近似与量子涨落</h3>
 
   <p>
     对于谐振子这类作用量是路径二次泛函的系统，路径积分可以精确分离为经典贡献和量子涨落。
-    将路径分解为经典路径加涨落 <Fragment set:html={defined.fluctuationPath} />，
-    其中涨落 $y(t)$ 满足齐次边界条件 <Fragment set:html={defined.fluctuationBC} />。
-    由于经典路径满足运动方程（即 <Fragment set:html={defined.crossTermVanish} />），
+    将路径分解为经典路径加涨落 $x(t) = x_{\text{cl}}(t) + y(t)$，
+    其中涨落 $y(t)$ 满足齐次边界条件 $y(t_i) = y(t_f) = 0$。
+    由于经典路径满足运动方程（即 $\delta S_{\text{cl}}/\delta x = 0$），
     交叉项恰好消失，作用量精确分解为
   </p>
 
-  <Fragment set:html={defined.actionSplit} />
+  $$S[x] = S_{\text{cl}} + \frac{1}{2}\int_{t_i}^{t_f}\left[m\dot{y}^2 - m\omega^2 y^2\right]dt$$
 
   <p>
     注意对于谐振子而言，涨落项中没有线性项——这正是经典路径使作用量取驻值的体现。
     因此传播子分解为
   </p>
 
-  <Fragment set:html={defined.semiclassical} />
+  $$K = F(T)\,\exp\!\left(\frac{i}{\hbar}S_{\text{cl}}[x_{\text{cl}}]\right)$$
 
   <p>
     其中前因子 $F(T)$ 来自对涨落的路径积分：
   </p>
 
-  <Fragment set:html={defined.prefactorDef} />
+  $$F(T) = \int\mathcal{D}y(t)\;\exp\!\left(\frac{i}{2\hbar}\int_{t_i}^{t_f}\left[m\dot{y}^2 - m\omega^2 y^2\right]dt\right)$$
 
   <p>
     这个涨落积分只依赖于 $T$ 而不依赖于端点 $x_i, x_f$（因为涨落满足零边界条件）。
-    它可以通过计算函数行列式 <Fragment set:html={defined.morseIndex} /> 来求得。
+    它可以通过计算函数行列式 $\det\!\left(-m\frac{d^2}{dt^2} - m\omega^2\right)$ 来求得。
     将涨落展开为 Fourier 正弦级数（满足零边界条件），将路径积分转化为无穷多个
     独立 Gauss 积分的乘积，利用无穷乘积公式
     $\prod_{n=1}^{\infty}(1 - x^2/n^2\pi^2) = \sin x / x$ 求和，最终得到
@@ -369,21 +295,21 @@ const defined = {
 
   <p>因此，谐振子传播子的精确结果为</p>
 
-  <Fragment set:html={defined.hoPropagator} />
+  $$K_{\text{ho}} = \sqrt{\frac{m\omega}{2\pi i\hbar\sin\omega T}}\exp\!\left(\frac{im\omega}{2\hbar\sin\omega T}\left[(x_f^2 + x_i^2)\cos\omega T - 2x_f x_i\right]\right)$$
 
-  <InsightBox title="二次作用量的精确性">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>二次作用量的精确性</span></div>
     <p>
       自由粒子和谐振子的路径积分之所以能精确计算，根本原因在于它们的作用量是路径的
       <strong>二次泛函</strong>。此时路径积分等价于（无穷维的）Gauss 积分，
       而 Gauss 积分总可以精确执行。传播子的形式为
-      <Fragment set:html={defined.semiclassical} />，其中 <Fragment set:html={defined.Scl} /> 是经典作用量，
+      $$K = F(T)\,\exp\!\left(\frac{i}{\hbar}S_{\text{cl}}[x_{\text{cl}}]\right)$$，其中 $S_{\text{cl}}$ 是经典作用量，
       前因子 $F(T)$ 来自涨落的 Gauss 积分。对于更一般的势能（非二次），
       作用量含路径的高次项，涨落积分不再是 Gauss 型的，
       路径积分一般只能做近似（半经典近似、微扰展开等）。
     </p>
-  </InsightBox>
+  </div>
 
-  <ThinkingBox title="传播子的奇异结构">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>传播子的奇异结构</span></div>
     <p>
       谐振子传播子在 $\omega T = n\pi$（$n = 1, 2, \ldots$）处出现奇异性
       （$\sin\omega T = 0$），对应于经典力学中的<strong>焦点</strong>（caustic）。
@@ -395,15 +321,15 @@ const defined = {
       穿越焦点时，传播子获得额外的 $e^{-i\pi/2}$ 相位因子（Maslov 指数），
       这与 WKB 近似中的连接公式密切相关。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Feynman &amp; Hibbs, <em>Quantum Mechanics and Path Integrals</em>, Ch.3：自由粒子和谐振子</li>
       <li>Schulman, <em>Techniques and Applications of Path Integration</em>, Ch.2-4：Gauss 型路径积分</li>
       <li>Kleinert, <em>Path Integrals in Quantum Mechanics, Statistics, Polymer Physics, and Financial Markets</em>, Ch.2：精确路径积分</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 9.3 经典极限与驻相近似 -->
@@ -414,10 +340,10 @@ const defined = {
 
   <p>
     路径积分为理解经典力学如何从量子力学中涌现提供了最自然的框架。
-    考虑路径积分 <Fragment set:html={defined.feynmanPI} />。
-    在 <Fragment set:html={defined.hbar} /> $\to 0$ 的极限下，
+    考虑路径积分 $$K(x_f, t_f;\, x_i, t_i) = \int \mathcal{D}x(t)\;\exp\!\left(\frac{i}{\hbar}S[x(t)]\right)$$。
+    在 $\hbar$ $\to 0$ 的极限下，
     相位 $S[x]/\hbar$ 对于宏观作用量（$S \gg \hbar$）是一个极其巨大的数。
-    此时，被积函数 <Fragment set:html={defined.phaseOscillation} /> 是一个快速振荡的函数——
+    此时，被积函数 $e^{iS/\hbar}$ 是一个快速振荡的函数——
     对于偏离驻相点（$\delta S = 0$）的路径，相邻路径的贡献由于相位差异而几乎完全抵消。
   </p>
 
@@ -426,13 +352,13 @@ const defined = {
     相位变化缓慢，路径的贡献才能相干地累加。驻相条件恰好给出经典力学的 Euler-Lagrange 方程：
   </p>
 
-  <Fragment set:html={defined.ELeq} />
+  $$\frac{\delta S}{\delta x(t)} = 0 \implies \frac{d}{dt}\frac{\partial L}{\partial\dot{x}} - \frac{\partial L}{\partial x} = 0$$
 
   <p>
     因此，在经典极限下，路径积分由经典路径（或多条经典路径）的贡献所主导：
   </p>
 
-  <Fragment set:html={defined.semiclassicalExpansion} />
+  $$K \approx \sum_{\text{cl. paths}} A_{\text{cl}}\,\exp\!\left(\frac{i}{\hbar}S_{\text{cl}}\right)$$
 
   <p>
     其中 $A_{\text{cl}}$ 是来自经典路径附近量子涨落的前因子（van Vleck 行列式）。
@@ -441,21 +367,21 @@ const defined = {
     不同经典路径之间的干涉给出量子效应。
   </p>
 
-  <InsightBox title="经典力学是量子力学的驻相近似">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>经典力学是量子力学的驻相近似</span></div>
     <p>
       这是路径积分最深刻的洞察之一：经典力学并非量子力学的独立理论，
-      而是路径积分在 <Fragment set:html={defined.hbar} /> $\to 0$ 极限下的<strong>驻相近似</strong>。
+      而是路径积分在 $\hbar$ $\to 0$ 极限下的<strong>驻相近似</strong>。
       Hamilton 的最小作用量原理——经典力学的基础公设——在路径积分框架中获得了自然的解释：
       它不再是一个独立的原理，而是量子力学在宏观极限下的必然推论。
-      量子修正表现为经典路径附近的涨落，可以按 <Fragment set:html={defined.hbar} /> 的幂次系统展开
+      量子修正表现为经典路径附近的涨落，可以按 $\hbar$ 的幂次系统展开
       （半经典展开或 WKB 展开）。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>量子修正与半经典展开</h3>
 
   <p>
-    在半经典近似中，将路径分解为经典路径加涨落 <Fragment set:html={defined.fluctuationPath} />，
+    在半经典近似中，将路径分解为经典路径加涨落 $x(t) = x_{\text{cl}}(t) + y(t)$，
     并将作用量在经典路径附近 Taylor 展开到二阶：
   </p>
 
@@ -471,13 +397,13 @@ const defined = {
 
   <p>
     路径积分与统计力学之间存在深刻的数学联系。进行 Wick 转动
-    <Fragment set:html={defined.wickRotation} />（将时间解析延拓到虚轴），
+    $t \to -i\tau$（将时间解析延拓到虚轴），
     Minkowski 作用量变为 Euclid 作用量，相位因子变为实指数衰减因子
-    <Fragment set:html={defined.iStominusS} />。
+    $iS/\hbar \to -S_E/\hbar$。
     Euclid 作用量为
   </p>
 
-  <Fragment set:html={defined.euclideanAction} />
+  $$S_E[x(\tau)] = \int_0^{\beta\hbar}\!\left[\frac{1}{2}m\dot{x}^2 + V(x)\right]d\tau$$
 
   <p>
     注意势能项的符号——Euclid 作用量中动能和势能<strong>同号</strong>（都为正），
@@ -488,11 +414,11 @@ const defined = {
     量子统计力学的配分函数可以表示为周期性边界条件下的 Euclid 路径积分：
   </p>
 
-  <Fragment set:html={defined.partitionFunc} />
+  $$Z = \text{Tr}\,e^{-\beta H} = \int\mathcal{D}x(\tau)\;\exp\!\left(-\frac{1}{\hbar}S_E[x(\tau)]\right)$$
 
   <p>
-    其中 <Fragment set:html={defined.betaDef} /> 是逆温度，路径满足周期性边界条件
-    <Fragment set:html={defined.periodicBC} />。
+    其中 $\beta = 1/(k_B \mathcal{T})$ 是逆温度，路径满足周期性边界条件
+    $x(0) = x(\beta\hbar)$。
     这建立了量子力学（虚时间演化）与经典统计力学之间的精确对应：
   </p>
 
@@ -506,7 +432,7 @@ const defined = {
     这一联系是凝聚态物理中量子蒙特卡洛方法的理论基础，也是量子场论中格点规范理论数值模拟的出发点。
   </p>
 
-  <Derivation title="配分函数的路径积分表示">
+  <details class="derivation-block"><summary class="derivation-toggle">配分函数的路径积分表示</summary><div class="derivation-content">
     <p>
       配分函数 $Z = \text{Tr}\,e^{-\beta H}$。利用坐标表象完备性：
     </p>
@@ -514,27 +440,27 @@ const defined = {
     <p>
       注意到 $\langle x|e^{-\beta H}|x'\rangle$ 恰好是"虚时间"传播子——
       将传播子 $K(x_f, t_f; x_i, t_i)$ 中的 $t_f - t_i$ 替换为 $-i\beta\hbar$，
-      即做 Wick 转动 <Fragment set:html={defined.wickRotation} />。
+      即做 Wick 转动 $t \to -i\tau$。
       对角元要求 $x = x'$，即路径的始点和终点重合——这就是周期性边界条件
-      <Fragment set:html={defined.periodicBC} /> 的来源。
+      $x(0) = x(\beta\hbar)$ 的来源。
       按照与实时间路径积分完全平行的时间切片方法，得到
     </p>
-    <Fragment set:html={defined.partitionFunc} />
+    $$Z = \text{Tr}\,e^{-\beta H} = \int\mathcal{D}x(\tau)\;\exp\!\left(-\frac{1}{\hbar}S_E[x(\tau)]\right)$$
     <p>
       Wick 转动下 $iS/\hbar = i\int L\,dt/\hbar \to -\int L_E\,d\tau/\hbar = -S_E/\hbar$，
       其中 $L_E = \frac{1}{2}m\dot{x}^2 + V(x)$（注意势能符号的变化）。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>路径积分在量子场论中的推广</h3>
 
   <p>
     路径积分最重要的应用是向量子场论的推广。基本思想是将量子力学的"路径"
-    $x(t)$ 替换为"场构型" <Fragment set:html={defined.qftField} />，
+    $x(t)$ 替换为"场构型" $x(t) \to \phi(x,t)$，
     作用量替换为场的作用量泛函，路径积分变为对所有场构型的泛函积分：
   </p>
 
-  <Fragment set:html={defined.qftAction} />
+  $$Z = \int\mathcal{D}\phi\;\exp\!\left(\frac{i}{\hbar}S[\phi]\right)$$
 
   <p>
     在量子场论中，路径积分（更准确地说，泛函积分）是处理规范理论、自发对称性破缺、
@@ -544,7 +470,7 @@ const defined = {
     可以毫不夸张地说，路径积分是现代理论物理的基础语言。
   </p>
 
-  <ThinkingBox title="路径积分的统一视角">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>路径积分的统一视角</span></div>
     <p>
       回顾本章内容，路径积分提供了一个统一的框架，将看似不同的物理领域联系在一起：
       量子力学的传播振幅、经典力学的最小作用量原理、量子统计力学的配分函数、
@@ -554,15 +480,18 @@ const defined = {
       但存在一种振幅，它的行为就好像所有轨迹都同时被经历了一样。"
       这一图像不仅是数学技巧，更是对量子世界本质的深刻洞察。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Feynman &amp; Hibbs, <em>Quantum Mechanics and Path Integrals</em>, Ch.4-5：经典极限和统计力学</li>
       <li>Weinberg, <em>The Quantum Theory of Fields</em>, Vol.I, Ch.9：路径积分方法</li>
       <li>Zinn-Justin, <em>Quantum Field Theory and Critical Phenomena</em>, Ch.1-2：从路径积分到场论</li>
       <li>Altland &amp; Simons, <em>Condensed Matter Field Theory</em>, Ch.3：路径积分在凝聚态中的应用</li>
     </ul>
-  </ReferenceBox>
+  </div>`;
+---
 
+<ChapterLayout title="第九章 路径积分" courseId="qm" chapterId="ch09">
+  <Fragment set:html={content} />
 </ChapterLayout>

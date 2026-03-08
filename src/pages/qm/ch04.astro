@@ -1,213 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const defined = {
-  /* ── helpers: every LaTeX snippet that contains { or } lives here ── */
-
-  /* §4.1 轨道角动量 */
-  LclassicalDef: String.raw`$\mathbf{L} = \mathbf{r} \times \mathbf{p}$`,
-  Ldef: String.raw`$$\hat{\mathbf{L}} = \hat{\mathbf{r}} \times \hat{\mathbf{p}}$$`,
-  Lcomponents: String.raw`$$\hat{L}_x = \hat{y}\hat{p}_z - \hat{z}\hat{p}_y, \quad \hat{L}_y = \hat{z}\hat{p}_x - \hat{x}\hat{p}_z, \quad \hat{L}_z = \hat{x}\hat{p}_y - \hat{y}\hat{p}_x$$`,
-  LcommFund: String.raw`$$[\hat{L}_i, \hat{L}_j] = i\hbar\,\varepsilon_{ijk}\hat{L}_k$$`,
-  LxLy: String.raw`$[\hat{L}_x, \hat{L}_y] = i\hbar\hat{L}_z$`,
-  LyLz: String.raw`$[\hat{L}_y, \hat{L}_z] = i\hbar\hat{L}_x$`,
-  LzLx: String.raw`$[\hat{L}_z, \hat{L}_x] = i\hbar\hat{L}_y$`,
-  L2def: String.raw`$\hat{L}^2 = \hat{L}_x^2 + \hat{L}_y^2 + \hat{L}_z^2$`,
-  L2commLi: String.raw`$$[\hat{L}^2, \hat{L}_i] = 0, \quad i = x, y, z$$`,
-  L2eigen: String.raw`$$\hat{L}^2|l, m\rangle = \hbar^2 l(l+1)|l, m\rangle$$`,
-  Lzeigen: String.raw`$$\hat{L}_z|l, m\rangle = \hbar m|l, m\rangle$$`,
-  lInteger: String.raw`$l = 0, 1, 2, \ldots$`,
-  mRange: String.raw`$m = -l, -l+1, \ldots, l-1, l$`,
-  LplusDef: String.raw`$\hat{L}_+ = \hat{L}_x + i\hat{L}_y$`,
-  LminusDef: String.raw`$\hat{L}_- = \hat{L}_x - i\hat{L}_y$`,
-  LplusAction: String.raw`$$\hat{L}_+|l, m\rangle = \hbar\sqrt{l(l+1) - m(m+1)}\,|l, m+1\rangle$$`,
-  LminusAction: String.raw`$$\hat{L}_-|l, m\rangle = \hbar\sqrt{l(l+1) - m(m-1)}\,|l, m-1\rangle$$`,
-  LpmComm: String.raw`$[\hat{L}_z, \hat{L}_\pm] = \pm\hbar\hat{L}_\pm$`,
-  LpLmComm: String.raw`$[\hat{L}_+, \hat{L}_-] = 2\hbar\hat{L}_z$`,
-  L2fromLpm: String.raw`$\hat{L}^2 = \hat{L}_-\hat{L}_+ + \hat{L}_z^2 + \hbar\hat{L}_z = \hat{L}_+\hat{L}_- + \hat{L}_z^2 - \hbar\hat{L}_z$`,
-  Ylm: String.raw`$Y_l^m(\theta, \varphi)$`,
-  YlmDef: String.raw`$$Y_l^m(\theta, \varphi) = (-1)^m \sqrt{\frac{2l+1}{4\pi}\frac{(l-m)!}{(l+m)!}}\,P_l^m(\cos\theta)\,e^{im\varphi}$$`,
-  Plm: String.raw`$P_l^m$`,
-  YlmOrtho: String.raw`$$\int_0^{2\pi}d\varphi\int_0^{\pi}\sin\theta\,d\theta\;Y_{l'}^{m'*}(\theta,\varphi)\,Y_l^m(\theta,\varphi) = \delta_{l'l}\,\delta_{m'm}$$`,
-  Y00: String.raw`$Y_0^0 = \frac{1}{\sqrt{4\pi}}$`,
-  Y10: String.raw`$Y_1^0 = \sqrt{\frac{3}{4\pi}}\cos\theta$`,
-  Y1pm1: String.raw`$Y_1^{\pm1} = \mp\sqrt{\frac{3}{8\pi}}\sin\theta\,e^{\pm i\varphi}$`,
-  LzDiffOp: String.raw`$\hat{L}_z = -i\hbar\frac{\partial}{\partial\varphi}$`,
-  L2DiffOp: String.raw`$$\hat{L}^2 = -\hbar^2\left[\frac{1}{\sin\theta}\frac{\partial}{\partial\theta}\left(\sin\theta\frac{\partial}{\partial\theta}\right) + \frac{1}{\sin^2\theta}\frac{\partial^2}{\partial\varphi^2}\right]$$`,
-  degeneracy2lp1: String.raw`$2l + 1$`,
-
-  /* §4.1 推导用 */
-  LxDef: String.raw`$\hat{L}_x = \hat{y}\hat{p}_z - \hat{z}\hat{p}_y$`,
-  LyDef: String.raw`$\hat{L}_y = \hat{z}\hat{p}_x - \hat{x}\hat{p}_z$`,
-  LxLyDeriv1: String.raw`$$[\hat{L}_x, \hat{L}_y] = [\hat{y}\hat{p}_z - \hat{z}\hat{p}_y,\;\hat{z}\hat{p}_x - \hat{x}\hat{p}_z]$$`,
-  LxLyDeriv2: String.raw`$$= [\hat{y}\hat{p}_z, \hat{z}\hat{p}_x] - [\hat{y}\hat{p}_z, \hat{x}\hat{p}_z] - [\hat{z}\hat{p}_y, \hat{z}\hat{p}_x] + [\hat{z}\hat{p}_y, \hat{x}\hat{p}_z]$$`,
-  canonCommDelta: String.raw`$[\hat{x}_i, \hat{p}_j] = i\hbar\delta_{ij}$`,
-  commYPx: String.raw`$[\hat{y}, \hat{p}_x] = 0$`,
-  commZPz: String.raw`$[\hat{z}, \hat{p}_z] = i\hbar$`,
-  LxLyDeriv3: String.raw`$[\hat{y}\hat{p}_z, \hat{z}\hat{p}_x] = \hat{y}[\hat{p}_z, \hat{z}]\hat{p}_x = -i\hbar\,\hat{y}\hat{p}_x$`,
-  LxLyDeriv4: String.raw`$[\hat{z}\hat{p}_y, \hat{x}\hat{p}_z] = \hat{x}[\hat{z}, \hat{p}_z]\hat{p}_y = i\hbar\,\hat{x}\hat{p}_y$`,
-  LxLyDeriv5: String.raw`$[\hat{y}\hat{p}_z, \hat{x}\hat{p}_z] = 0$`,
-  LxLyDeriv6: String.raw`$[\hat{z}\hat{p}_y, \hat{z}\hat{p}_x] = 0$`,
-  LxLyDeriv7: String.raw`$$[\hat{L}_x, \hat{L}_y] = -i\hbar\,\hat{y}\hat{p}_x + i\hbar\,\hat{x}\hat{p}_y = i\hbar(\hat{x}\hat{p}_y - \hat{y}\hat{p}_x) = i\hbar\hat{L}_z$$`,
-  L2LxDeriv1: String.raw`$$[\hat{L}^2, \hat{L}_x] = [\hat{L}_x^2, \hat{L}_x] + [\hat{L}_y^2, \hat{L}_x] + [\hat{L}_z^2, \hat{L}_x]$$`,
-  L2LxDeriv2: String.raw`$[\hat{L}_x^2, \hat{L}_x] = 0$`,
-  L2commIdent: String.raw`$[\hat{A}^2, \hat{B}] = \hat{A}[\hat{A}, \hat{B}] + [\hat{A}, \hat{B}]\hat{A}$`,
-  L2LxDeriv3: String.raw`$[\hat{L}_y^2, \hat{L}_x] = \hat{L}_y[\hat{L}_y, \hat{L}_x] + [\hat{L}_y, \hat{L}_x]\hat{L}_y = -i\hbar(\hat{L}_y\hat{L}_z + \hat{L}_z\hat{L}_y)$`,
-  L2LxDeriv4: String.raw`$[\hat{L}_z^2, \hat{L}_x] = \hat{L}_z[\hat{L}_z, \hat{L}_x] + [\hat{L}_z, \hat{L}_x]\hat{L}_z = i\hbar(\hat{L}_z\hat{L}_y + \hat{L}_y\hat{L}_z)$`,
-  L2LxDeriv5: String.raw`$[\hat{L}^2, \hat{L}_x] = 0$`,
-
-  /* §4.1 本征值推导用 */
-  LplusOnMax: String.raw`$\hat{L}_+|l, l\rangle = 0$`,
-  LminusOnMin: String.raw`$\hat{L}_-|l, -l\rangle = 0$`,
-  LpLmExpand: String.raw`$\hat{L}_-\hat{L}_+ = \hat{L}^2 - \hat{L}_z^2 - \hbar\hat{L}_z$`,
-  LpLmOnMax: String.raw`$$\langle l, l|\hat{L}_-\hat{L}_+|l, l\rangle = \langle l, l|(\hat{L}^2 - \hat{L}_z^2 - \hbar\hat{L}_z)|l, l\rangle = \hbar^2[\lambda - l^2 - l] = 0$$`,
-  lambdaResult: String.raw`$\lambda = l(l+1)$`,
-  LzOnLpPsi: String.raw`$$\hat{L}_z(\hat{L}_+|l, m\rangle) = (\hat{L}_+\hat{L}_z + \hbar\hat{L}_+)|l, m\rangle = \hbar(m+1)(\hat{L}_+|l, m\rangle)$$`,
-  LplusLmKet: String.raw`$\hat{L}_+|l, m\rangle$`,
-  L2minusLz2: String.raw`$\hat{L}^2 - \hat{L}_z^2 = \hat{L}_x^2 + \hat{L}_y^2 \geq 0$`,
-  lambdaMinusM2: String.raw`$\lambda - m^2 \geq 0$`,
-  mBound: String.raw`$|m| \leq \sqrt{\lambda}$`,
-  hbar2lambda: String.raw`$\hbar^2\lambda$`,
-  psiSingleVal: String.raw`$\psi(\varphi + 2\pi) = \psi(\varphi)$`,
-  LzEigenFunc: String.raw`$e^{im\varphi}$`,
-
-  /* §4.2 自旋 */
-  ScommFund: String.raw`$$[\hat{S}_i, \hat{S}_j] = i\hbar\,\varepsilon_{ijk}\hat{S}_k$$`,
-  S2eigen: String.raw`$$\hat{S}^2|s, m_s\rangle = \hbar^2 s(s+1)|s, m_s\rangle$$`,
-  Szeigen: String.raw`$$\hat{S}_z|s, m_s\rangle = \hbar m_s|s, m_s\rangle$$`,
-  sHalf: String.raw`$s = 1/2$`,
-  msValues: String.raw`$m_s = +1/2, -1/2$`,
-  SiPauli: String.raw`$$\hat{S}_i = \frac{\hbar}{2}\sigma_i$$`,
-  sigmaX: String.raw`$$\sigma_x = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$$`,
-  sigmaY: String.raw`$$\sigma_y = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}$$`,
-  sigmaZ: String.raw`$$\sigma_z = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}$$`,
-  pauliComm: String.raw`$[\sigma_i, \sigma_j] = 2i\varepsilon_{ijk}\sigma_k$`,
-  pauliAnticomm: String.raw`$\{\sigma_i, \sigma_j\} = 2\delta_{ij}I$`,
-  pauliProduct: String.raw`$$\sigma_i\sigma_j = \delta_{ij}I + i\varepsilon_{ijk}\sigma_k$$`,
-  spinUpKet: String.raw`$|\!\uparrow\rangle = |1/2, +1/2\rangle$`,
-  spinDownKet: String.raw`$|\!\downarrow\rangle = |1/2, -1/2\rangle$`,
-  spinUpCol: String.raw`$|\!\uparrow\rangle \doteq \begin{pmatrix} 1 \\ 0 \end{pmatrix}$`,
-  spinDownCol: String.raw`$|\!\downarrow\rangle \doteq \begin{pmatrix} 0 \\ 1 \end{pmatrix}$`,
-  generalSpin: String.raw`$$|\chi\rangle = \cos\frac{\theta}{2}\,|\!\uparrow\rangle + e^{i\varphi}\sin\frac{\theta}{2}\,|\!\downarrow\rangle$$`,
-  expectNhat: String.raw`$\langle\hat{\mathbf{S}}\rangle = \frac{\hbar}{2}\hat{n}$`,
-  nhatDef: String.raw`$\hat{n} = (\sin\theta\cos\varphi,\;\sin\theta\sin\varphi,\;\cos\theta)$`,
-  HmagField: String.raw`$$\hat{H} = -\hat{\boldsymbol{\mu}} \cdot \mathbf{B} = -\gamma\hat{\mathbf{S}} \cdot \mathbf{B}$$`,
-  muDef: String.raw`$\hat{\boldsymbol{\mu}} = \gamma\hat{\mathbf{S}}$`,
-  gyroRatio: String.raw`$\gamma$`,
-  BzField: String.raw`$\mathbf{B} = B_0\hat{z}$`,
-  HBz: String.raw`$\hat{H} = -\gamma B_0 \hat{S}_z = -\frac{\omega_0}{2}\hbar\sigma_z$`,
-  omega0: String.raw`$\omega_0 = \gamma B_0$`,
-  chiT0: String.raw`$|\chi(0)\rangle$`,
-  larmorEvolve: String.raw`$$|\chi(t)\rangle = \cos\frac{\theta}{2}\,e^{i\omega_0 t/2}|\!\uparrow\rangle + e^{i\varphi}\sin\frac{\theta}{2}\,e^{-i\omega_0 t/2}|\!\downarrow\rangle$$`,
-  larmorPhase: String.raw`$\varphi(t) = \varphi - \omega_0 t$`,
-  DrotDef: String.raw`$$D(\hat{n}, \theta) = \exp\!\left(-\frac{i\theta\,\hat{n}\cdot\hat{\mathbf{S}}}{\hbar}\right) = \exp\!\left(-\frac{i\theta}{2}\hat{n}\cdot\boldsymbol{\sigma}\right)$$`,
-  DrotExplicit: String.raw`$$D(\hat{n}, \theta) = \cos\frac{\theta}{2}\,I - i\sin\frac{\theta}{2}\,(\hat{n}\cdot\boldsymbol{\sigma})$$`,
-  Drot2pi: String.raw`$D(\hat{n}, 2\pi) = -I$`,
-  Drot4pi: String.raw`$D(\hat{n}, 4\pi) = +I$`,
-  nSigmaSquared: String.raw`$(\hat{n}\cdot\boldsymbol{\sigma})^2 = I$`,
-  SGforce: String.raw`$F_z = \mu_z \frac{\partial B_z}{\partial z}$`,
-  twoSpots: String.raw`$m_s = \pm 1/2$`,
-  silverState: String.raw`$^2S_{1/2}$`,
-  pauliSqTr: String.raw`$\sigma_i^2 = I$，$\mathrm{tr}(\sigma_i) = 0$，$\det(\sigma_i) = -1$`,
-  ShatBold: String.raw`$\hat{\mathbf{S}}$`,
-  LhatBold: String.raw`$\hat{\mathbf{L}}$`,
-  LrpDef: String.raw`$\hat{\mathbf{L}} = \hat{\mathbf{r}} \times \hat{\mathbf{p}}$`,
-  su2Lie: String.raw`$\mathfrak{su}(2)$`,
-  S2Sz: String.raw`$\hat{S}^2$ 和 $\hat{S}_z$`,
-  smsBasis: String.raw`$|s, m_s\rangle$`,
-  chiKet: String.raw`$|\chi\rangle$`,
-
-  /* §4.2 推导用 */
-  DexpandSum: String.raw`$$D(\hat{n}, \theta) = \sum_{k=0}^{\infty} \frac{1}{k!}\left(-\frac{i\theta}{2}\right)^k (\hat{n}\cdot\boldsymbol{\sigma})^k$$`,
-  nSigma2k: String.raw`$(\hat{n}\cdot\boldsymbol{\sigma})^{2k} = I$`,
-  nSigma2k1: String.raw`$(\hat{n}\cdot\boldsymbol{\sigma})^{2k+1} = \hat{n}\cdot\boldsymbol{\sigma}$`,
-  DexpandSplit: String.raw`$$D = \sum_{k=0}^{\infty}\frac{(-1)^k}{(2k)!}\left(\frac{\theta}{2}\right)^{2k} I - i\sum_{k=0}^{\infty}\frac{(-1)^k}{(2k+1)!}\left(\frac{\theta}{2}\right)^{2k+1}(\hat{n}\cdot\boldsymbol{\sigma})$$`,
-  DexpandResult: String.raw`$$D(\hat{n}, \theta) = \cos\frac{\theta}{2}\,I - i\sin\frac{\theta}{2}\,(\hat{n}\cdot\boldsymbol{\sigma})$$`,
-
-  /* §4.3 角动量耦合 */
-  Jtotal: String.raw`$$\hat{\mathbf{J}} = \hat{\mathbf{J}}_1 + \hat{\mathbf{J}}_2$$`,
-  J1hat: String.raw`$\hat{\mathbf{J}}_1$`,
-  J2hat: String.raw`$\hat{\mathbf{J}}_2$`,
-  Jhat: String.raw`$\hat{\mathbf{J}}$`,
-  uncoupledBasis: String.raw`$|j_1, m_1; j_2, m_2\rangle$`,
-  coupledBasis: String.raw`$|j, m; j_1, j_2\rangle$`,
-  coupledBasisShort: String.raw`$|j, m\rangle$`,
-  triangleIneq: String.raw`$$|j_1 - j_2| \leq j \leq j_1 + j_2$$`,
-  mAddition: String.raw`$m = m_1 + m_2$`,
-  CGdef: String.raw`$$|j, m\rangle = \sum_{m_1, m_2} \langle j_1, m_1; j_2, m_2 | j, m\rangle\,|j_1, m_1; j_2, m_2\rangle$$`,
-  CGinverse: String.raw`$$|j_1, m_1; j_2, m_2\rangle = \sum_{j} \langle j, m | j_1, m_1; j_2, m_2\rangle\,|j, m\rangle$$`,
-  CGortho1: String.raw`$$\sum_{m_1, m_2} \langle j_1, m_1; j_2, m_2 | j, m\rangle\langle j_1, m_1; j_2, m_2 | j', m'\rangle = \delta_{jj'}\delta_{mm'}$$`,
-  CGortho2: String.raw`$$\sum_{j, m} \langle j_1, m_1; j_2, m_2 | j, m\rangle\langle j, m | j_1, m_1'; j_2, m_2'\rangle = \delta_{m_1 m_1'}\delta_{m_2 m_2'}$$`,
-  dimCheck: String.raw`$$\sum_{j=|j_1-j_2|}^{j_1+j_2}(2j+1) = (2j_1+1)(2j_2+1)$$`,
-  halfHalf: String.raw`$j_1 = j_2 = 1/2$`,
-  jValues: String.raw`$j = 0, 1$`,
-  triplet1: String.raw`$|1, 1\rangle = |\!\uparrow\uparrow\rangle$`,
-  triplet0: String.raw`$|1, 0\rangle = \frac{1}{\sqrt{2}}(|\!\uparrow\downarrow\rangle + |\!\downarrow\uparrow\rangle)$`,
-  tripletM1: String.raw`$|1, -1\rangle = |\!\downarrow\downarrow\rangle$`,
-  singlet: String.raw`$|0, 0\rangle = \frac{1}{\sqrt{2}}(|\!\uparrow\downarrow\rangle - |\!\downarrow\uparrow\rangle)$`,
-  tripletSym: String.raw`三重态（$j = 1$，对称）`,
-  singletAnti: String.raw`单态（$j = 0$，反对称）`,
-  JminusOnTrip: String.raw`$$\hat{J}_-|1, 1\rangle = (\hat{J}_{1-} + \hat{J}_{2-})|\!\uparrow\uparrow\rangle = \hbar|\!\downarrow\uparrow\rangle + \hbar|\!\uparrow\downarrow\rangle = \hbar\sqrt{2}\,|1, 0\rangle$$`,
-  CGsymmetry1: String.raw`$$\langle j_1, m_1; j_2, m_2 | j, m\rangle = (-1)^{j_1+j_2-j}\langle j_2, m_2; j_1, m_1 | j, m\rangle$$`,
-  CGsymmetry2: String.raw`$$\langle j_1, m_1; j_2, m_2 | j, m\rangle = (-1)^{j_1+j_2-j}\langle j_1, -m_1; j_2, -m_2 | j, -m\rangle$$`,
-  mConstraint: String.raw`$m_1 + m_2 \neq m$`,
-  CGvanish: String.raw`$\langle j_1, m_1; j_2, m_2 | j, m\rangle = 0$`,
-  JcommFund: String.raw`$[\hat{J}_i, \hat{J}_j] = i\hbar\varepsilon_{ijk}\hat{J}_k$`,
-  J1J2comm: String.raw`$[\hat{J}_{1i}, \hat{J}_{2j}] = 0$`,
-  cscoUncoupled: String.raw`$\{\hat{J}_1^2, \hat{J}_{1z}, \hat{J}_2^2, \hat{J}_{2z}\}$`,
-  cscoCoupled: String.raw`$\{\hat{J}_1^2, \hat{J}_2^2, \hat{J}^2, \hat{J}_z\}$`,
-  S2triplet: String.raw`$\hat{\mathbf{S}}^2 = \hat{\mathbf{S}}_1^2 + \hat{\mathbf{S}}_2^2 + 2\hat{\mathbf{S}}_1\cdot\hat{\mathbf{S}}_2$`,
-  S1dotS2triplet: String.raw`$\langle\hat{\mathbf{S}}_1\cdot\hat{\mathbf{S}}_2\rangle = \frac{1}{2}[s(s+1) - s_1(s_1+1) - s_2(s_2+1)]\hbar^2$`,
-  S1dotS2val1: String.raw`$\langle\hat{\mathbf{S}}_1\cdot\hat{\mathbf{S}}_2\rangle_{j=1} = +\frac{\hbar^2}{4}$`,
-  S1dotS2val0: String.raw`$\langle\hat{\mathbf{S}}_1\cdot\hat{\mathbf{S}}_2\rangle_{j=0} = -\frac{3\hbar^2}{4}$`,
-  J2commJ1z: String.raw`$\hat{J}^2$ 与 $\hat{J}_{1z}$, $\hat{J}_{2z}$`,
-  JzSumJ1zJ2z: String.raw`$\hat{J}_z = \hat{J}_{1z} + \hat{J}_{2z}$`,
-  hilbertDim: String.raw`$(2j_1 + 1)(2j_2 + 1)$`,
-  JminusDef: String.raw`$\hat{J}_- = \hat{J}_{1-} + \hat{J}_{2-}$`,
-  CGphase: String.raw`$(-1)^{j_1+j_2-j}$`,
-
-  /* §4.3 推导用 */
-  maxMket: String.raw`$|j_1, j_1; j_2, j_2\rangle$`,
-  maxMval: String.raw`$m = m_1 + m_2 = j_1 + j_2$`,
-  maxJket: String.raw`$|j = j_1 + j_2, m = j_1 + j_2\rangle$`,
-  mMinus1ket1: String.raw`$|j_1, j_1-1; j_2, j_2\rangle$`,
-  mMinus1ket2: String.raw`$|j_1, j_1; j_2, j_2-1\rangle$`,
-  j11ket: String.raw`$|1, 1\rangle$`,
-  JminusJ1J2: String.raw`$\hat{J}_- = \hat{J}_{1-} + \hat{J}_{2-}$`,
-  j10ket: String.raw`$|1, 0\rangle$`,
-  j10orthog: String.raw`$|1, 0\rangle = \frac{1}{\sqrt{2}}(|\!\uparrow\downarrow\rangle + |\!\downarrow\uparrow\rangle)$`,
-
-  /* §4.3 表示论 */
-  Dj1rep: String.raw`$D^{(j_1)}$`,
-  Dj2rep: String.raw`$D^{(j_2)}$`,
-  dimJ1: String.raw`$(2j_1+1)$`,
-  dimJ2: String.raw`$(2j_2+1)$`,
-  CGdecomp: String.raw`$$D^{(j_1)} \otimes D^{(j_2)} = \bigoplus_{j=|j_1-j_2|}^{j_1+j_2} D^{(j)}$$`,
-  SU3CG: String.raw`$\mathrm{SU}(3)$`,
-
-  /* 本章小结用 */
-  eigenJJ: String.raw`$\hbar^2 j(j+1)$`,
-  jAllowed: String.raw`$j = 0, 1/2, 1, 3/2, 2, \ldots$`,
-  Lrp: String.raw`$\hat{\mathbf{L}} = \hat{\mathbf{r}} \times \hat{\mathbf{p}}$`,
-  SU2iso: String.raw`$\mathrm{SU}(2)$`,
-  SO3iso: String.raw`$\mathrm{SO}(3)$`,
-
-  /* 通用 */
-  epsilonDef: String.raw`$\varepsilon_{ijk}$`,
-  lmKet: String.raw`$|l, m\rangle$`,
-  SU2: String.raw`$\mathrm{SU}(2)$`,
-  SO3: String.raw`$\mathrm{SO}(3)$`,
-  SU2toSO3: String.raw`$\mathrm{SU}(2) / \mathbb{Z}_2 \cong \mathrm{SO}(3)$`,
-};
----
-
-<ChapterLayout title="第四章 角动量理论" courseId="qm" chapterId="ch04">
-
-  <h1>第四章 角动量理论</h1>
+const content = String.raw`<h1>第四章 角动量理论</h1>
 
   <p>
     角动量是物理学中最基本的物理量之一。在经典力学中，角动量与旋转对称性通过 Noether 定理相联系；
@@ -217,13 +11,13 @@ const defined = {
     Clebsch-Gordan 系数。
   </p>
 
-  <InsightBox title="角动量理论的核心地位">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>角动量理论的核心地位</span></div>
     <p>
       角动量理论在量子力学中具有独特的地位。在原子物理中，角动量量子数决定了谱线的分类与选择定则；
       在粒子物理中，自旋决定了粒子的统计性质（费米子 vs. 玻色子）；在量子信息中，自旋-1/2 系统
       是量子比特（qubit）的物理原型。理解角动量理论是掌握这一切的基础。
     </p>
-  </InsightBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 4.1 轨道角动量 -->
@@ -233,15 +27,15 @@ const defined = {
   <h3>轨道角动量算符的定义</h3>
 
   <p>
-    经典力学中轨道角动量为 <Fragment set:html={defined.LclassicalDef} />。量子力学中，
+    经典力学中轨道角动量为 $\mathbf{L} = \mathbf{r} \times \mathbf{p}$。量子力学中，
     用正则量子化将位置和动量替换为算符，得到<strong>轨道角动量算符</strong>：
   </p>
 
-  <Fragment set:html={defined.Ldef} />
+  $$\hat{\mathbf{L}} = \hat{\mathbf{r}} \times \hat{\mathbf{p}}$$
 
   <p>其三个分量的显式表达为：</p>
 
-  <Fragment set:html={defined.Lcomponents} />
+  $$\hat{L}_x = \hat{y}\hat{p}_z - \hat{z}\hat{p}_y, \quad \hat{L}_y = \hat{z}\hat{p}_x - \hat{x}\hat{p}_z, \quad \hat{L}_z = \hat{x}\hat{p}_y - \hat{y}\hat{p}_x$$
 
   <h3>基本对易关系</h3>
 
@@ -249,17 +43,17 @@ const defined = {
     轨道角动量分量之间满足<strong>基本对易关系</strong>：
   </p>
 
-  <Fragment set:html={defined.LcommFund} />
+  $$[\hat{L}_i, \hat{L}_j] = i\hbar\,\varepsilon_{ijk}\hat{L}_k$$
 
   <p>
-    其中 <Fragment set:html={defined.epsilonDef} /> 是 Levi-Civita 全反对称张量。
+    其中 $\varepsilon_{ijk}$ 是 Levi-Civita 全反对称张量。
     写成分量形式即：
   </p>
 
   <p>
-    <Fragment set:html={defined.LxLy} />，
-    <Fragment set:html={defined.LyLz} />，
-    <Fragment set:html={defined.LzLx} />
+    $[\hat{L}_x, \hat{L}_y] = i\hbar\hat{L}_z$，
+    $[\hat{L}_y, \hat{L}_z] = i\hbar\hat{L}_x$，
+    $[\hat{L}_z, \hat{L}_x] = i\hbar\hat{L}_y$
   </p>
 
   <p>
@@ -267,59 +61,59 @@ const defined = {
     $\hat L_x$, $\hat L_y$, $\hat L_z$ 三者的共同本征态的量子态。
   </p>
 
-  <Derivation title="推导 [L̂_x, L̂_y] = iℏL̂_z">
+  <details class="derivation-block"><summary class="derivation-toggle">推导 [L̂_x, L̂_y] = iℏL̂_z</summary><div class="derivation-content">
     <p>
-      利用 <Fragment set:html={defined.LxDef} />，<Fragment set:html={defined.LyDef} />，展开：
+      利用 $\hat{L}_x = \hat{y}\hat{p}_z - \hat{z}\hat{p}_y$，$\hat{L}_y = \hat{z}\hat{p}_x - \hat{x}\hat{p}_z$，展开：
     </p>
-    <p><Fragment set:html={defined.LxLyDeriv1} /></p>
-    <p><Fragment set:html={defined.LxLyDeriv2} /></p>
+    <p>$$[\hat{L}_x, \hat{L}_y] = [\hat{y}\hat{p}_z - \hat{z}\hat{p}_y,\;\hat{z}\hat{p}_x - \hat{x}\hat{p}_z]$$</p>
+    <p>$$= [\hat{y}\hat{p}_z, \hat{z}\hat{p}_x] - [\hat{y}\hat{p}_z, \hat{x}\hat{p}_z] - [\hat{z}\hat{p}_y, \hat{z}\hat{p}_x] + [\hat{z}\hat{p}_y, \hat{x}\hat{p}_z]$$</p>
     <p>
-      利用正则对易关系 <Fragment set:html={defined.canonCommDelta} />，
-      逐项计算。注意不同方向的坐标与动量算符对易（如 <Fragment set:html={defined.commYPx} />），
-      而同方向的不对易（如 <Fragment set:html={defined.commZPz} />）。
-    </p>
-    <p>
-      第一项：<Fragment set:html={defined.LxLyDeriv3} />
+      利用正则对易关系 $[\hat{x}_i, \hat{p}_j] = i\hbar\delta_{ij}$，
+      逐项计算。注意不同方向的坐标与动量算符对易（如 $[\hat{y}, \hat{p}_x] = 0$），
+      而同方向的不对易（如 $[\hat{z}, \hat{p}_z] = i\hbar$）。
     </p>
     <p>
-      第四项：<Fragment set:html={defined.LxLyDeriv4} />
+      第一项：$[\hat{y}\hat{p}_z, \hat{z}\hat{p}_x] = \hat{y}[\hat{p}_z, \hat{z}]\hat{p}_x = -i\hbar\,\hat{y}\hat{p}_x$
     </p>
     <p>
-      第二项和第三项为零：<Fragment set:html={defined.LxLyDeriv5} />，<Fragment set:html={defined.LxLyDeriv6} />
+      第四项：$[\hat{z}\hat{p}_y, \hat{x}\hat{p}_z] = \hat{x}[\hat{z}, \hat{p}_z]\hat{p}_y = i\hbar\,\hat{x}\hat{p}_y$
+    </p>
+    <p>
+      第二项和第三项为零：$[\hat{y}\hat{p}_z, \hat{x}\hat{p}_z] = 0$，$[\hat{z}\hat{p}_y, \hat{z}\hat{p}_x] = 0$
       （因为 $\hat y$ 与 $\hat x$ 对易，$\hat p_y$ 与 $\hat p_x$ 对易）。
     </p>
     <p>因此：</p>
-    <p><Fragment set:html={defined.LxLyDeriv7} /></p>
+    <p>$$[\hat{L}_x, \hat{L}_y] = -i\hbar\,\hat{y}\hat{p}_x + i\hbar\,\hat{x}\hat{p}_y = i\hbar(\hat{x}\hat{p}_y - \hat{y}\hat{p}_x) = i\hbar\hat{L}_z$$</p>
     <p>
       其余两个对易关系可由循环置换 $x \to y \to z \to x$ 立即得到。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>$\hat L^2$ 与 $\hat L_z$ 的对易</h3>
 
   <p>
-    定义角动量平方算符 <Fragment set:html={defined.L2def} />。可以证明 $\hat L^2$ 与每一个分量都对易：
+    定义角动量平方算符 $\hat{L}^2 = \hat{L}_x^2 + \hat{L}_y^2 + \hat{L}_z^2$。可以证明 $\hat L^2$ 与每一个分量都对易：
   </p>
 
-  <Fragment set:html={defined.L2commLi} />
+  $$[\hat{L}^2, \hat{L}_i] = 0, \quad i = x, y, z$$
 
   <p>
     这意味着可以找到 $\hat L^2$ 和 $\hat L_z$（选择 $z$ 分量是约定）的<strong>共同本征态</strong>。
     习惯上选取 $\hat L^2$ 和 $\hat L_z$ 作为描述轨道角动量状态的一组对易可观测量。
   </p>
 
-  <Derivation title="证明 [L̂², L̂_i] = 0">
+  <details class="derivation-block"><summary class="derivation-toggle">证明 [L̂², L̂_i] = 0</summary><div class="derivation-content">
     <p>以 $\hat L_x$ 为例：</p>
-    <p><Fragment set:html={defined.L2LxDeriv1} /></p>
+    <p>$$[\hat{L}^2, \hat{L}_x] = [\hat{L}_x^2, \hat{L}_x] + [\hat{L}_y^2, \hat{L}_x] + [\hat{L}_z^2, \hat{L}_x]$$</p>
     <p>
-      显然 <Fragment set:html={defined.L2LxDeriv2} />。利用恒等式 <Fragment set:html={defined.L2commIdent} />：
+      显然 $[\hat{L}_x^2, \hat{L}_x] = 0$。利用恒等式 $[\hat{A}^2, \hat{B}] = \hat{A}[\hat{A}, \hat{B}] + [\hat{A}, \hat{B}]\hat{A}$：
     </p>
-    <p><Fragment set:html={defined.L2LxDeriv3} /></p>
-    <p><Fragment set:html={defined.L2LxDeriv4} /></p>
+    <p>$[\hat{L}_y^2, \hat{L}_x] = \hat{L}_y[\hat{L}_y, \hat{L}_x] + [\hat{L}_y, \hat{L}_x]\hat{L}_y = -i\hbar(\hat{L}_y\hat{L}_z + \hat{L}_z\hat{L}_y)$</p>
+    <p>$[\hat{L}_z^2, \hat{L}_x] = \hat{L}_z[\hat{L}_z, \hat{L}_x] + [\hat{L}_z, \hat{L}_x]\hat{L}_z = i\hbar(\hat{L}_z\hat{L}_y + \hat{L}_y\hat{L}_z)$</p>
     <p>
-      两项相加恰好抵消：<Fragment set:html={defined.L2LxDeriv5} />。对 $\hat L_y$, $\hat L_z$ 的证明完全类似。
+      两项相加恰好抵消：$[\hat{L}^2, \hat{L}_x] = 0$。对 $\hat L_y$, $\hat L_z$ 的证明完全类似。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>升降算符</h3>
 
@@ -328,18 +122,18 @@ const defined = {
   </p>
 
   <p>
-    <Fragment set:html={defined.LplusDef} />，<Fragment set:html={defined.LminusDef} />
+    $\hat{L}_+ = \hat{L}_x + i\hat{L}_y$，$\hat{L}_- = \hat{L}_x - i\hat{L}_y$
   </p>
 
   <p>它们满足对易关系：</p>
 
   <p>
-    <Fragment set:html={defined.LpmComm} />，<Fragment set:html={defined.LpLmComm} />
+    $[\hat{L}_z, \hat{L}_\pm] = \pm\hbar\hat{L}_\pm$，$[\hat{L}_+, \hat{L}_-] = 2\hbar\hat{L}_z$
   </p>
 
   <p>以及有用的关系：</p>
 
-  <p><Fragment set:html={defined.L2fromLpm} /></p>
+  <p>$\hat{L}^2 = \hat{L}_-\hat{L}_+ + \hat{L}_z^2 + \hbar\hat{L}_z = \hat{L}_+\hat{L}_- + \hat{L}_z^2 - \hbar\hat{L}_z$</p>
 
   <p>
     升降算符的核心作用是：$\hat L_+$ 将 $\hat L_z$ 的量子数 $m$ 升高一个单位，
@@ -349,66 +143,66 @@ const defined = {
   <h3>本征值谱的代数推导</h3>
 
   <p>
-    设 <Fragment set:html={defined.lmKet} /> 是 $\hat L^2$ 和 $\hat L_z$ 的共同本征态，本征值分别记为
-    <Fragment set:html={defined.hbar2lambda} /> 和 $\hbar m$（其中 $\lambda$ 和 $m$ 待定）。
+    设 $|l, m\rangle$ 是 $\hat L^2$ 和 $\hat L_z$ 的共同本征态，本征值分别记为
+    $\hbar^2\lambda$ 和 $\hbar m$（其中 $\lambda$ 和 $m$ 待定）。
   </p>
 
-  <Derivation title="用升降算符推导角动量本征值">
+  <details class="derivation-block"><summary class="derivation-toggle">用升降算符推导角动量本征值</summary><div class="derivation-content">
     <p>
       <strong>第一步</strong>：证明 $\hat L_\pm$ 的升降作用。由对易关系
-      <Fragment set:html={defined.LpmComm} />：
+      $[\hat{L}_z, \hat{L}_\pm] = \pm\hbar\hat{L}_\pm$：
     </p>
-    <p><Fragment set:html={defined.LzOnLpPsi} /></p>
+    <p>$$\hat{L}_z(\hat{L}_+|l, m\rangle) = (\hat{L}_+\hat{L}_z + \hbar\hat{L}_+)|l, m\rangle = \hbar(m+1)(\hat{L}_+|l, m\rangle)$$</p>
     <p>
-      这表明 <Fragment set:html={defined.LplusLmKet} /> 是 $\hat L_z$ 属于本征值 $\hbar(m+1)$ 的本征态，
+      这表明 $\hat{L}_+|l, m\rangle$ 是 $\hat L_z$ 属于本征值 $\hbar(m+1)$ 的本征态，
       即 $\hat L_+$ 将 $m$ 升高一个单位。类似地，$\hat L_-$ 将 $m$ 降低一个单位。
     </p>
     <p>
       <strong>第二步</strong>：确定 $m$ 的范围。由于
-      <Fragment set:html={defined.L2minusLz2} />
-      （Hermite 算符平方的期望值非负），有 <Fragment set:html={defined.lambdaMinusM2} />，即 <Fragment set:html={defined.mBound} />。
+      $\hat{L}^2 - \hat{L}_z^2 = \hat{L}_x^2 + \hat{L}_y^2 \geq 0$
+      （Hermite 算符平方的期望值非负），有 $\lambda - m^2 \geq 0$，即 $|m| \leq \sqrt{\lambda}$。
       因此 $m$ 有上界和下界。
     </p>
     <p>
       设 $m$ 的最大值为 $l$（某个非负数）。由于不能再升高，必须
-      <Fragment set:html={defined.LplusOnMax} />。将 $\hat L_-$ 作用于此式：
+      $\hat{L}_+|l, l\rangle = 0$。将 $\hat L_-$ 作用于此式：
     </p>
-    <p><Fragment set:html={defined.LpLmOnMax} /></p>
+    <p>$$\langle l, l|\hat{L}_-\hat{L}_+|l, l\rangle = \langle l, l|(\hat{L}^2 - \hat{L}_z^2 - \hbar\hat{L}_z)|l, l\rangle = \hbar^2[\lambda - l^2 - l] = 0$$</p>
     <p>
-      其中 <Fragment set:html={defined.hbar2lambda} /> 是 $\hat L^2$ 的本征值，$\hbar l$ 是最大 $m$ 值。由此得
-      <Fragment set:html={defined.lambdaResult} />。
+      其中 $\hbar^2\lambda$ 是 $\hat L^2$ 的本征值，$\hbar l$ 是最大 $m$ 值。由此得
+      $\lambda = l(l+1)$。
     </p>
     <p>
-      <strong>第三步</strong>：确定 $m$ 的最小值。类似地，从 <Fragment set:html={defined.LminusOnMin} />
+      <strong>第三步</strong>：确定 $m$ 的最小值。类似地，从 $\hat{L}_-|l, -l\rangle = 0$
       出发，可得 $m$ 的最小值为 $-l$。由于升降算符每次改变 $m$ 一个单位，从 $-l$ 到 $l$ 必须经过
       整数步，因此 $2l$ 必须是非负整数，即 $l = 0, 1/2, 1, 3/2, 2, \ldots$
     </p>
     <p>
       <strong>第四步</strong>：对于<strong>轨道</strong>角动量，$l$ 仅取非负整数值
-      <Fragment set:html={defined.lInteger} />。这是因为在坐标表象中，
-      波函数必须满足 <Fragment set:html={defined.psiSingleVal} /> 的单值条件，
-      由 $\hat L_z = -i\hbar\partial/\partial\varphi$ 的本征函数 <Fragment set:html={defined.LzEigenFunc} /> 的周期性要求
+      $l = 0, 1, 2, \ldots$。这是因为在坐标表象中，
+      波函数必须满足 $\psi(\varphi + 2\pi) = \psi(\varphi)$ 的单值条件，
+      由 $\hat L_z = -i\hbar\partial/\partial\varphi$ 的本征函数 $e^{im\varphi}$ 的周期性要求
       $m$（从而 $l$）必须为整数。半整数的 $l$ 值对应的是<strong>自旋</strong>角动量。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
-    综合以上分析，$\hat L^2$ 和 $\hat L_z$ 的共同本征态 <Fragment set:html={defined.lmKet} /> 满足：
+    综合以上分析，$\hat L^2$ 和 $\hat L_z$ 的共同本征态 $|l, m\rangle$ 满足：
   </p>
 
-  <Fragment set:html={defined.L2eigen} />
-  <Fragment set:html={defined.Lzeigen} />
+  $$\hat{L}^2|l, m\rangle = \hbar^2 l(l+1)|l, m\rangle$$
+  $$\hat{L}_z|l, m\rangle = \hbar m|l, m\rangle$$
 
   <p>
-    其中 <Fragment set:html={defined.lInteger} />，<Fragment set:html={defined.mRange} />。
-    对于给定的 $l$，$m$ 有 <Fragment set:html={defined.degeneracy2lp1} /> 个取值，
-    对应 <Fragment set:html={defined.degeneracy2lp1} /> 重简并。
+    其中 $l = 0, 1, 2, \ldots$，$m = -l, -l+1, \ldots, l-1, l$。
+    对于给定的 $l$，$m$ 有 $2l + 1$ 个取值，
+    对应 $2l + 1$ 重简并。
   </p>
 
   <p>升降算符的作用为：</p>
 
-  <Fragment set:html={defined.LplusAction} />
-  <Fragment set:html={defined.LminusAction} />
+  $$\hat{L}_+|l, m\rangle = \hbar\sqrt{l(l+1) - m(m+1)}\,|l, m+1\rangle$$
+  $$\hat{L}_-|l, m\rangle = \hbar\sqrt{l(l+1) - m(m-1)}\,|l, m-1\rangle$$
 
   <h3>球谐函数</h3>
 
@@ -416,29 +210,29 @@ const defined = {
     在球坐标中，$\hat L_z$ 和 $\hat L^2$ 的微分算符形式为：
   </p>
 
-  <p><Fragment set:html={defined.LzDiffOp} /></p>
-  <Fragment set:html={defined.L2DiffOp} />
+  <p>$\hat{L}_z = -i\hbar\frac{\partial}{\partial\varphi}$</p>
+  $$\hat{L}^2 = -\hbar^2\left[\frac{1}{\sin\theta}\frac{\partial}{\partial\theta}\left(\sin\theta\frac{\partial}{\partial\theta}\right) + \frac{1}{\sin^2\theta}\frac{\partial^2}{\partial\varphi^2}\right]$$
 
   <p>
-    $\hat L^2$ 和 $\hat L_z$ 的共同本征函数就是<strong>球谐函数</strong> <Fragment set:html={defined.Ylm} />，
+    $\hat L^2$ 和 $\hat L_z$ 的共同本征函数就是<strong>球谐函数</strong> $Y_l^m(\theta, \varphi)$，
     其具体表达式为：
   </p>
 
-  <Fragment set:html={defined.YlmDef} />
+  $$Y_l^m(\theta, \varphi) = (-1)^m \sqrt{\frac{2l+1}{4\pi}\frac{(l-m)!}{(l+m)!}}\,P_l^m(\cos\theta)\,e^{im\varphi}$$
 
   <p>
-    其中 <Fragment set:html={defined.Plm} /> 是缔合 Legendre 多项式。球谐函数满足正交归一关系：
+    其中 $P_l^m$ 是缔合 Legendre 多项式。球谐函数满足正交归一关系：
   </p>
 
-  <Fragment set:html={defined.YlmOrtho} />
+  $$\int_0^{2\pi}d\varphi\int_0^{\pi}\sin\theta\,d\theta\;Y_{l'}^{m'*}(\theta,\varphi)\,Y_l^m(\theta,\varphi) = \delta_{l'l}\,\delta_{m'm}$$
 
   <p>
     最低阶的几个球谐函数为：
   </p>
 
   <ul>
-    <li>$l = 0$：<Fragment set:html={defined.Y00} />（各向同性，$s$ 轨道）</li>
-    <li>$l = 1$：<Fragment set:html={defined.Y10} />，<Fragment set:html={defined.Y1pm1} />（$p$ 轨道）</li>
+    <li>$l = 0$：$Y_0^0 = \frac{1}{\sqrt{4\pi}}$（各向同性，$s$ 轨道）</li>
+    <li>$l = 1$：$Y_1^0 = \sqrt{\frac{3}{4\pi}}\cos\theta$，$Y_1^{\pm1} = \mp\sqrt{\frac{3}{8\pi}}\sin\theta\,e^{\pm i\varphi}$（$p$ 轨道）</li>
   </ul>
 
   <p>
@@ -447,25 +241,25 @@ const defined = {
     波函数的角度部分完全由球谐函数给出。
   </p>
 
-  <InsightBox title="角动量代数的普遍性">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>角动量代数的普遍性</span></div>
     <p>
-      本节的本征值推导中，从对易关系 <Fragment set:html={defined.LcommFund} /> 出发
+      本节的本征值推导中，从对易关系 $$[\hat{L}_i, \hat{L}_j] = i\hbar\,\varepsilon_{ijk}\hat{L}_k$$ 出发
       到得到本征值 $\hbar^2 l(l+1)$ 和 $\hbar m$ 的全过程，只用了代数运算（对易关系和升降算符），
       <strong>完全没有涉及</strong>角动量算符的具体微分算符形式。这意味着本征值谱完全由
-      Lie 代数 <Fragment set:html={defined.su2Lie} /> 的结构决定。这一代数推导的结果适用于<strong>一切</strong>
+      Lie 代数 $\mathfrak{su}(2)$ 的结构决定。这一代数推导的结果适用于<strong>一切</strong>
       满足相同对易关系的角动量——包括轨道角动量、自旋角动量以及它们的耦合。
       所不同的只是：轨道角动量由于波函数单值性的限制只允许整数 $l$，
       而一般角动量（如自旋）也可以取半整数值。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.3.5-3.6：轨道角动量与球谐函数</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.4.3：角动量</li>
       <li>曾谨言,《量子力学》卷I, 第五章 &sect;5.1-5.3：轨道角动量的本征值与本征函数</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 4.2 自旋 -->
@@ -481,15 +275,15 @@ const defined = {
   </p>
 
   <p>
-    银原子基态为 <Fragment set:html={defined.silverState} />，轨道角动量 $l = 0$。实验中的两条痕迹
-    对应 <Fragment set:html={defined.twoSpots} />，即角动量 $s = 1/2$。这是<strong>整数轨道角动量无法解释</strong>的——
+    银原子基态为 $^2S_{1/2}$，轨道角动量 $l = 0$。实验中的两条痕迹
+    对应 $m_s = \pm 1/2$，即角动量 $s = 1/2$。这是<strong>整数轨道角动量无法解释</strong>的——
     轨道角动量 $l$ 为整数，$2l + 1$ 总是奇数，不可能给出偶数条劈裂。
     这一实验直接证明了<strong>自旋</strong>（spin）的存在：一种内禀角动量，其量子数可以取半整数值。
   </p>
 
   <p>
     Stern-Gerlach 实验的原理：非均匀磁场对磁矩产生力
-    <Fragment set:html={defined.SGforce} />，$\mu_z$ 的离散取值导致粒子束在空间中分裂为离散的几股。
+    $F_z = \mu_z \frac{\partial B_z}{\partial z}$，$\mu_z$ 的离散取值导致粒子束在空间中分裂为离散的几股。
     这一实验后来成为量子力学教学中最重要的思想实验之一，
     连续 Stern-Gerlach 装置的级联分析深刻揭示了量子力学测量的本质。
   </p>
@@ -497,18 +291,18 @@ const defined = {
   <h3>自旋的代数结构</h3>
 
   <p>
-    自旋算符 <Fragment set:html={defined.ShatBold} /> 满足与轨道角动量完全相同的对易关系：
+    自旋算符 $\hat{\mathbf{S}}$ 满足与轨道角动量完全相同的对易关系：
   </p>
 
-  <Fragment set:html={defined.ScommFund} />
+  $$[\hat{S}_i, \hat{S}_j] = i\hbar\,\varepsilon_{ijk}\hat{S}_k$$
 
   <p>
-    因此前一节中由代数推导得到的全部结果都适用。<Fragment set:html={defined.S2Sz} /> 的共同本征态
-    <Fragment set:html={defined.smsBasis} /> 满足：
+    因此前一节中由代数推导得到的全部结果都适用。$\hat{S}^2$ 和 $\hat{S}_z$ 的共同本征态
+    $|s, m_s\rangle$ 满足：
   </p>
 
-  <Fragment set:html={defined.S2eigen} />
-  <Fragment set:html={defined.Szeigen} />
+  $$\hat{S}^2|s, m_s\rangle = \hbar^2 s(s+1)|s, m_s\rangle$$
+  $$\hat{S}_z|s, m_s\rangle = \hbar m_s|s, m_s\rangle$$
 
   <p>
     其中 $s$ 可以取非负整数或半整数值（$s = 0, 1/2, 1, 3/2, \ldots$），
@@ -517,51 +311,51 @@ const defined = {
     $\Delta$ 重子的 $s = 3/2$。
   </p>
 
-  <ThinkingBox title="自旋没有经典对应">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>自旋没有经典对应</span></div>
     <p>
       自旋与轨道角动量有本质区别。轨道角动量是粒子在空间中运动产生的，可以用
-      <Fragment set:html={defined.LrpDef} /> 表达，其本征值限于整数。
+      $\hat{\mathbf{L}} = \hat{\mathbf{r}} \times \hat{\mathbf{p}}$ 表达，其本征值限于整数。
       自旋则是粒子的<strong>内禀属性</strong>，不能表示为坐标和动量的函数，
       不依赖于任何空间运动，是<strong>纯量子效应</strong>。虽然我们常说"电子在自转"，
       但这只是一个不恰当的经典类比——将电子视为旋转的小球会导致表面速度超过光速等荒谬结论。
       自旋的正确理解是：它是 Hilbert 空间中额外的内部自由度，其数学结构完全由
-      <Fragment set:html={defined.su2Lie} /> Lie 代数决定。
+      $\mathfrak{su}(2)$ Lie 代数决定。
     </p>
-  </ThinkingBox>
+  </div>
 
   <h3>自旋-1/2 与 Pauli 矩阵</h3>
 
   <p>
-    自旋-1/2（<Fragment set:html={defined.sHalf} />）是最简单也最重要的自旋系统。
-    态空间是二维的，基矢为 <Fragment set:html={defined.spinUpKet} /> 和 <Fragment set:html={defined.spinDownKet} />，
+    自旋-1/2（$s = 1/2$）是最简单也最重要的自旋系统。
+    态空间是二维的，基矢为 $|\!\uparrow\rangle = |1/2, +1/2\rangle$ 和 $|\!\downarrow\rangle = |1/2, -1/2\rangle$，
     在 $\hat S_z$ 的本征表象中表示为列向量：
   </p>
 
   <p>
-    <Fragment set:html={defined.spinUpCol} />，<Fragment set:html={defined.spinDownCol} />
+    $|\!\uparrow\rangle \doteq \begin{pmatrix} 1 \\ 0 \end{pmatrix}$，$|\!\downarrow\rangle \doteq \begin{pmatrix} 0 \\ 1 \end{pmatrix}$
   </p>
 
   <p>
     自旋算符与 <strong>Pauli 矩阵</strong>的关系为：
   </p>
 
-  <Fragment set:html={defined.SiPauli} />
+  $$\hat{S}_i = \frac{\hbar}{2}\sigma_i$$
 
   <p>其中三个 Pauli 矩阵为：</p>
 
-  <Fragment set:html={defined.sigmaX} />
-  <Fragment set:html={defined.sigmaY} />
-  <Fragment set:html={defined.sigmaZ} />
+  $$\sigma_x = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$$
+  $$\sigma_y = \begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}$$
+  $$\sigma_z = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}$$
 
   <p>Pauli 矩阵满足重要的代数关系：</p>
 
   <ul>
-    <li><strong>对易关系</strong>：<Fragment set:html={defined.pauliComm} /></li>
-    <li><strong>反对易关系</strong>：<Fragment set:html={defined.pauliAnticomm} /></li>
-    <li><strong>乘积关系</strong>（合并上两条）：<Fragment set:html={defined.pauliProduct} /></li>
+    <li><strong>对易关系</strong>：$[\sigma_i, \sigma_j] = 2i\varepsilon_{ijk}\sigma_k$</li>
+    <li><strong>反对易关系</strong>：$\{\sigma_i, \sigma_j\} = 2\delta_{ij}I$</li>
+    <li><strong>乘积关系</strong>（合并上两条）：$$\sigma_i\sigma_j = \delta_{ij}I + i\varepsilon_{ijk}\sigma_k$$</li>
   </ul>
 
-  <p>此外，每个 Pauli 矩阵满足 <Fragment set:html={defined.pauliSqTr} />。</p>
+  <p>此外，每个 Pauli 矩阵满足 $\sigma_i^2 = I$，$\mathrm{tr}(\sigma_i) = 0$，$\det(\sigma_i) = -1$。</p>
 
   <h3>Bloch 球表示</h3>
 
@@ -569,7 +363,7 @@ const defined = {
     自旋-1/2 的一般纯态可以参数化为：
   </p>
 
-  <Fragment set:html={defined.generalSpin} />
+  $$|\chi\rangle = \cos\frac{\theta}{2}\,|\!\uparrow\rangle + e^{i\varphi}\sin\frac{\theta}{2}\,|\!\downarrow\rangle$$
 
   <p>
     其中 $\theta \in [0, \pi]$，$\varphi \in [0, 2\pi)$。这个参数化给出了态空间到<strong>Bloch 球</strong>
@@ -577,15 +371,15 @@ const defined = {
   </p>
 
   <p>
-    Bloch 球上的点与自旋期望值的方向一致：对于态 <Fragment set:html={defined.chiKet} />，
-    自旋算符的期望值为 <Fragment set:html={defined.expectNhat} />，
-    其中 <Fragment set:html={defined.nhatDef} />
+    Bloch 球上的点与自旋期望值的方向一致：对于态 $|\chi\rangle$，
+    自旋算符的期望值为 $\langle\hat{\mathbf{S}}\rangle = \frac{\hbar}{2}\hat{n}$，
+    其中 $\hat{n} = (\sin\theta\cos\varphi,\;\sin\theta\sin\varphi,\;\cos\theta)$
     正是 Bloch 球上对应点的径矢方向。
   </p>
 
   <p>
-    注意 Bloch 球的北极（$\theta = 0$）对应 <Fragment set:html={defined.spinUpKet} />（自旋向上），
-    南极（$\theta = \pi$）对应 <Fragment set:html={defined.spinDownKet} />（自旋向下），
+    注意 Bloch 球的北极（$\theta = 0$）对应 $|\!\uparrow\rangle = |1/2, +1/2\rangle$（自旋向上），
+    南极（$\theta = \pi$）对应 $|\!\downarrow\rangle = |1/2, -1/2\rangle$（自旋向下），
     赤道上的点对应 $\hat S_x$ 或 $\hat S_y$ 方向的本征态。
     正交的量子态对应 Bloch 球上的<strong>对径点</strong>（antipodal points），
     这与经典直觉中正交方向成 90 度不同——量子态的"正交"在 Bloch 球上是 180 度。
@@ -594,28 +388,28 @@ const defined = {
   <h3>自旋在磁场中的进动</h3>
 
   <p>
-    带有磁矩 <Fragment set:html={defined.muDef} /> 的自旋粒子在外磁场中的 Hamilton 量为：
+    带有磁矩 $\hat{\boldsymbol{\mu}} = \gamma\hat{\mathbf{S}}$ 的自旋粒子在外磁场中的 Hamilton 量为：
   </p>
 
-  <Fragment set:html={defined.HmagField} />
+  $$\hat{H} = -\hat{\boldsymbol{\mu}} \cdot \mathbf{B} = -\gamma\hat{\mathbf{S}} \cdot \mathbf{B}$$
 
   <p>
-    其中 <Fragment set:html={defined.gyroRatio} /> 为旋磁比。
-    对于沿 $z$ 方向的均匀磁场 <Fragment set:html={defined.BzField} />：
+    其中 $\gamma$ 为旋磁比。
+    对于沿 $z$ 方向的均匀磁场 $\mathbf{B} = B_0\hat{z}$：
   </p>
 
-  <p><Fragment set:html={defined.HBz} /></p>
+  <p>$\hat{H} = -\gamma B_0 \hat{S}_z = -\frac{\omega_0}{2}\hbar\sigma_z$</p>
 
   <p>
-    其中 <Fragment set:html={defined.omega0} /> 是 <strong>Larmor 频率</strong>。
-    初始态为一般自旋态 <Fragment set:html={defined.chiT0} /> 时，时间演化给出：
+    其中 $\omega_0 = \gamma B_0$ 是 <strong>Larmor 频率</strong>。
+    初始态为一般自旋态 $|\chi(0)\rangle$ 时，时间演化给出：
   </p>
 
-  <Fragment set:html={defined.larmorEvolve} />
+  $$|\chi(t)\rangle = \cos\frac{\theta}{2}\,e^{i\omega_0 t/2}|\!\uparrow\rangle + e^{i\varphi}\sin\frac{\theta}{2}\,e^{-i\omega_0 t/2}|\!\downarrow\rangle$$
 
   <p>
     这表明自旋的极角 $\theta$ 保持不变，而方位角随时间线性变化：
-    <Fragment set:html={defined.larmorPhase} />。
+    $\varphi(t) = \varphi - \omega_0 t$。
     在 Bloch 球上，自旋矢量绕 $z$ 轴以角频率 $\omega_0$ 做<strong>匀速进动</strong>（Larmor 进动），
     完全类比经典陀螺在重力场中的进动。
   </p>
@@ -626,74 +420,74 @@ const defined = {
     绕任意轴 $\hat n$ 旋转角度 $\theta$ 的旋转算符为：
   </p>
 
-  <Fragment set:html={defined.DrotDef} />
+  $$D(\hat{n}, \theta) = \exp\!\left(-\frac{i\theta\,\hat{n}\cdot\hat{\mathbf{S}}}{\hbar}\right) = \exp\!\left(-\frac{i\theta}{2}\hat{n}\cdot\boldsymbol{\sigma}\right)$$
 
   <p>
-    利用 <Fragment set:html={defined.nSigmaSquared} />
+    利用 $(\hat{n}\cdot\boldsymbol{\sigma})^2 = I$
     和指数函数的 Taylor 展开，可以得到封闭形式：
   </p>
 
-  <Fragment set:html={defined.DrotExplicit} />
+  $$D(\hat{n}, \theta) = \cos\frac{\theta}{2}\,I - i\sin\frac{\theta}{2}\,(\hat{n}\cdot\boldsymbol{\sigma})$$
 
-  <Derivation title="推导自旋-1/2 旋转算符的封闭形式">
+  <details class="derivation-block"><summary class="derivation-toggle">推导自旋-1/2 旋转算符的封闭形式</summary><div class="derivation-content">
     <p>
       将指数展开：
     </p>
     <p>
-      <Fragment set:html={defined.DexpandSum} />
+      $$D(\hat{n}, \theta) = \sum_{k=0}^{\infty} \frac{1}{k!}\left(-\frac{i\theta}{2}\right)^k (\hat{n}\cdot\boldsymbol{\sigma})^k$$
     </p>
     <p>
-      由 <Fragment set:html={defined.nSigmaSquared} />，有
-      <Fragment set:html={defined.nSigma2k} />，
-      <Fragment set:html={defined.nSigma2k1} />。
+      由 $(\hat{n}\cdot\boldsymbol{\sigma})^2 = I$，有
+      $(\hat{n}\cdot\boldsymbol{\sigma})^{2k} = I$，
+      $(\hat{n}\cdot\boldsymbol{\sigma})^{2k+1} = \hat{n}\cdot\boldsymbol{\sigma}$。
       将偶数项和奇数项分开求和：
     </p>
     <p>
-      <Fragment set:html={defined.DexpandSplit} />
+      $$D = \sum_{k=0}^{\infty}\frac{(-1)^k}{(2k)!}\left(\frac{\theta}{2}\right)^{2k} I - i\sum_{k=0}^{\infty}\frac{(-1)^k}{(2k+1)!}\left(\frac{\theta}{2}\right)^{2k+1}(\hat{n}\cdot\boldsymbol{\sigma})$$
     </p>
     <p>
       识别出 $\cos$ 和 $\sin$ 的 Taylor 级数：
     </p>
     <p>
-      <Fragment set:html={defined.DexpandResult} />
+      $$D(\hat{n}, \theta) = \cos\frac{\theta}{2}\,I - i\sin\frac{\theta}{2}\,(\hat{n}\cdot\boldsymbol{\sigma})$$
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
     这个旋转算符有一个深刻的性质：旋转 $2\pi$（即绕轴转一整圈）后，
   </p>
 
   <p>
-    <Fragment set:html={defined.Drot2pi} />
+    $D(\hat{n}, 2\pi) = -I$
   </p>
 
   <p>
     态矢量获得了一个<strong>负号</strong>！这是整数角动量（如轨道角动量）所不具有的性质——
     对于整数 $l$，$2\pi$ 旋转后态矢不变。自旋-1/2 粒子需要旋转 $4\pi$（两整圈）才能回到原来的态：
-    <Fragment set:html={defined.Drot4pi} />。
+    $D(\hat{n}, 4\pi) = +I$。
   </p>
 
-  <InsightBox title="SU(2) 与 SO(3) 的关系">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>SU(2) 与 SO(3) 的关系</span></div>
     <p>
-      $2\pi$ 旋转产生负号这一现象揭示了旋转群的深层结构。三维空间的旋转群 <Fragment set:html={defined.SO3} />
+      $2\pi$ 旋转产生负号这一现象揭示了旋转群的深层结构。三维空间的旋转群 $\mathrm{SO}(3)$
       的元素是 $3 \times 3$ 正交矩阵，$2\pi$ 旋转对应恒等变换。但自旋-1/2 的旋转由
-      $2 \times 2$ 幺正矩阵描述，构成群 <Fragment set:html={defined.SU2} />。<Fragment set:html={defined.SU2} /> 是
-      <Fragment set:html={defined.SO3} /> 的<strong>双覆盖</strong>（double cover）：
-      <Fragment set:html={defined.SU2toSO3} />。<Fragment set:html={defined.SU2} /> 中的两个元素
-      $\pm U$ 对应 <Fragment set:html={defined.SO3} /> 中的同一个旋转。
-      整数自旋的粒子只"看到" <Fragment set:html={defined.SO3} />，
-      而半整数自旋的粒子"看到"了完整的 <Fragment set:html={defined.SU2} />。
+      $2 \times 2$ 幺正矩阵描述，构成群 $\mathrm{SU}(2)$。$\mathrm{SU}(2)$ 是
+      $\mathrm{SO}(3)$ 的<strong>双覆盖</strong>（double cover）：
+      $\mathrm{SU}(2) / \mathbb{Z}_2 \cong \mathrm{SO}(3)$。$\mathrm{SU}(2)$ 中的两个元素
+      $\pm U$ 对应 $\mathrm{SO}(3)$ 中的同一个旋转。
+      整数自旋的粒子只"看到" $\mathrm{SO}(3)$，
+      而半整数自旋的粒子"看到"了完整的 $\mathrm{SU}(2)$。
       $2\pi$ 旋转的符号变化已在中子干涉实验（Rauch 等人，1975）中被实验证实。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.3.1-3.3：旋转与角动量，自旋-1/2 系统</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.4.4：自旋</li>
       <li>曾谨言,《量子力学》卷I, 第五章 &sect;5.4-5.5：自旋及其描述</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 4.3 角动量耦合与CG系数 -->
@@ -703,21 +497,21 @@ const defined = {
   <h3>两个角动量的耦合</h3>
 
   <p>
-    在许多物理问题中，我们需要处理两个角动量的耦合。例如：电子的轨道角动量 <Fragment set:html={defined.LhatBold} /> 与
-    自旋 <Fragment set:html={defined.ShatBold} /> 的耦合（自旋-轨道耦合）；两个电子的自旋的耦合；原子核的角动量与
+    在许多物理问题中，我们需要处理两个角动量的耦合。例如：电子的轨道角动量 $\hat{\mathbf{L}}$ 与
+    自旋 $\hat{\mathbf{S}}$ 的耦合（自旋-轨道耦合）；两个电子的自旋的耦合；原子核的角动量与
     电子总角动量的耦合（超精细结构）。
   </p>
 
   <p>
-    考虑两个独立的角动量 <Fragment set:html={defined.J1hat} /> 和 <Fragment set:html={defined.J2hat} />，它们分别满足角动量对易关系
-    <Fragment set:html={defined.JcommFund} />，且属于不同子空间因而互相对易：<Fragment set:html={defined.J1J2comm} />。
+    考虑两个独立的角动量 $\hat{\mathbf{J}}_1$ 和 $\hat{\mathbf{J}}_2$，它们分别满足角动量对易关系
+    $[\hat{J}_i, \hat{J}_j] = i\hbar\varepsilon_{ijk}\hat{J}_k$，且属于不同子空间因而互相对易：$[\hat{J}_{1i}, \hat{J}_{2j}] = 0$。
     总角动量定义为：
   </p>
 
-  <Fragment set:html={defined.Jtotal} />
+  $$\hat{\mathbf{J}} = \hat{\mathbf{J}}_1 + \hat{\mathbf{J}}_2$$
 
   <p>
-    可以验证 <Fragment set:html={defined.Jhat} /> 同样满足角动量对易关系，因此前面的本征值理论完全适用。
+    可以验证 $\hat{\mathbf{J}}$ 同样满足角动量对易关系，因此前面的本征值理论完全适用。
   </p>
 
   <h3>无耦合基与耦合基</h3>
@@ -727,20 +521,20 @@ const defined = {
   </p>
 
   <p>
-    <strong>无耦合基</strong>（uncoupled basis）：<Fragment set:html={defined.uncoupledBasis} />，
-    是 <Fragment set:html={defined.cscoUncoupled} /> 的共同本征态。
+    <strong>无耦合基</strong>（uncoupled basis）：$|j_1, m_1; j_2, m_2\rangle$，
+    是 $\{\hat{J}_1^2, \hat{J}_{1z}, \hat{J}_2^2, \hat{J}_{2z}\}$ 的共同本征态。
   </p>
 
   <p>
-    <strong>耦合基</strong>（coupled basis）：<Fragment set:html={defined.coupledBasis} />（简记为 <Fragment set:html={defined.coupledBasisShort} />），
-    是 <Fragment set:html={defined.cscoCoupled} /> 的共同本征态。
+    <strong>耦合基</strong>（coupled basis）：$|j, m; j_1, j_2\rangle$（简记为 $|j, m\rangle$），
+    是 $\{\hat{J}_1^2, \hat{J}_2^2, \hat{J}^2, \hat{J}_z\}$ 的共同本征态。
   </p>
 
   <p>
-    注意两组基对应不同的 CSCO。关键在于 <Fragment set:html={defined.J2commJ1z} /> 一般不对易
-    （虽然 <Fragment set:html={defined.JzSumJ1zJ2z} /> 与 $\hat J^2$ 对易），
+    注意两组基对应不同的 CSCO。关键在于 $\hat{J}^2$ 与 $\hat{J}_{1z}$, $\hat{J}_{2z}$ 一般不对易
+    （虽然 $\hat{J}_z = \hat{J}_{1z} + \hat{J}_{2z}$ 与 $\hat J^2$ 对易），
     所以无法同时指定 $j$, $m_1$, $m_2$。
-    两组基都是完备的，Hilbert 空间的维度为 <Fragment set:html={defined.hilbertDim} />。
+    两组基都是完备的，Hilbert 空间的维度为 $(2j_1 + 1)(2j_2 + 1)$。
   </p>
 
   <h3>三角关系与 $m$ 的加法规则</h3>
@@ -749,36 +543,36 @@ const defined = {
     总角动量量子数 $j$ 的取值范围由<strong>三角关系</strong>（triangle rule）确定：
   </p>
 
-  <Fragment set:html={defined.triangleIneq} />
+  $$|j_1 - j_2| \leq j \leq j_1 + j_2$$
 
   <p>$j$ 取遍上述范围内的所有整数值（若 $j_1 + j_2$ 为整数）或半整数值（若 $j_1 + j_2$ 为半整数）。</p>
 
   <p>
-    磁量子数满足<strong>加法规则</strong>：<Fragment set:html={defined.mAddition} />。
+    磁量子数满足<strong>加法规则</strong>：$m = m_1 + m_2$。
   </p>
 
   <p>
     维数验证——耦合基中态的总数必须等于无耦合基的维度：
   </p>
 
-  <Fragment set:html={defined.dimCheck} />
+  $$\sum_{j=|j_1-j_2|}^{j_1+j_2}(2j+1) = (2j_1+1)(2j_2+1)$$
 
-  <Derivation title="三角关系的物理论证">
+  <details class="derivation-block"><summary class="derivation-toggle">三角关系的物理论证</summary><div class="derivation-content">
     <p>
-      <strong>上界</strong>：考虑无耦合基中 $m$ 最大的态 <Fragment set:html={defined.maxMket} />，
-      此时 <Fragment set:html={defined.maxMval} />。由于 $m \leq j$，
-      而此态是唯一具有 $m = j_1 + j_2$ 的态，它必须就是 <Fragment set:html={defined.maxJket} />。
+      <strong>上界</strong>：考虑无耦合基中 $m$ 最大的态 $|j_1, j_1; j_2, j_2\rangle$，
+      此时 $m = m_1 + m_2 = j_1 + j_2$。由于 $m \leq j$，
+      而此态是唯一具有 $m = j_1 + j_2$ 的态，它必须就是 $|j = j_1 + j_2, m = j_1 + j_2\rangle$。
       因此 $j$ 的最大值为 $j_1 + j_2$。
     </p>
     <p>
       <strong>下界</strong>：$m = j_1 + j_2 - 1$ 的态有两个：
-      <Fragment set:html={defined.mMinus1ket1} /> 和 <Fragment set:html={defined.mMinus1ket2} />。
+      $|j_1, j_1-1; j_2, j_2\rangle$ 和 $|j_1, j_1; j_2, j_2-1\rangle$。
       其中一个线性组合属于 $j = j_1 + j_2$ 的多重态（由 $\hat J_-$ 从最高 $m$ 态降下来），
       另一个正交的线性组合必须属于 $j = j_1 + j_2 - 1$ 的多重态的最高 $m$ 态。
       依此类推，$j$ 依次减小 1，直到无法再构造新的 $j$ 值。
       当 $j$ 减小到 $|j_1 - j_2|$ 时，态恰好用完（维数匹配），因此 $j$ 的最小值为 $|j_1 - j_2|$。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>Clebsch-Gordan 系数</h3>
 
@@ -786,90 +580,90 @@ const defined = {
     两组基之间的变换系数称为 <strong>Clebsch-Gordan（CG）系数</strong>：
   </p>
 
-  <Fragment set:html={defined.CGdef} />
+  $$|j, m\rangle = \sum_{m_1, m_2} \langle j_1, m_1; j_2, m_2 | j, m\rangle\,|j_1, m_1; j_2, m_2\rangle$$
 
   <p>
-    其中求和受 <Fragment set:html={defined.mAddition} /> 的约束。若 <Fragment set:html={defined.mConstraint} />，
-    则 <Fragment set:html={defined.CGvanish} />。逆变换为：
+    其中求和受 $m = m_1 + m_2$ 的约束。若 $m_1 + m_2 \neq m$，
+    则 $\langle j_1, m_1; j_2, m_2 | j, m\rangle = 0$。逆变换为：
   </p>
 
-  <Fragment set:html={defined.CGinverse} />
+  $$|j_1, m_1; j_2, m_2\rangle = \sum_{j} \langle j, m | j_1, m_1; j_2, m_2\rangle\,|j, m\rangle$$
 
   <p>CG 系数满足正交归一关系：</p>
 
-  <Fragment set:html={defined.CGortho1} />
-  <Fragment set:html={defined.CGortho2} />
+  $$\sum_{m_1, m_2} \langle j_1, m_1; j_2, m_2 | j, m\rangle\langle j_1, m_1; j_2, m_2 | j', m'\rangle = \delta_{jj'}\delta_{mm'}$$
+  $$\sum_{j, m} \langle j_1, m_1; j_2, m_2 | j, m\rangle\langle j, m | j_1, m_1'; j_2, m_2'\rangle = \delta_{m_1 m_1'}\delta_{m_2 m_2'}$$
 
   <p>CG 系数还具有重要的对称性质：</p>
 
-  <p><Fragment set:html={defined.CGsymmetry1} /></p>
-  <p><Fragment set:html={defined.CGsymmetry2} /></p>
+  <p>$$\langle j_1, m_1; j_2, m_2 | j, m\rangle = (-1)^{j_1+j_2-j}\langle j_2, m_2; j_1, m_1 | j, m\rangle$$</p>
+  <p>$$\langle j_1, m_1; j_2, m_2 | j, m\rangle = (-1)^{j_1+j_2-j}\langle j_1, -m_1; j_2, -m_2 | j, -m\rangle$$</p>
 
   <p>
     CG 系数通常取为实数（Condon-Shortley 相位约定），可以从递推关系或查表得到。
     计算 CG 系数的标准方法是：从最高（或最低）$m$ 的态出发，反复应用降（升）算符
-    <Fragment set:html={defined.JminusDef} />，结合正交归一条件确定所有系数。
+    $\hat{J}_- = \hat{J}_{1-} + \hat{J}_{2-}$，结合正交归一条件确定所有系数。
   </p>
 
   <h3>具体例子：两个自旋-1/2 的耦合</h3>
 
   <p>
-    最简单也最常用的例子是两个自旋-1/2 粒子的耦合：<Fragment set:html={defined.halfHalf} />。
-    由三角关系，<Fragment set:html={defined.jValues} />。态空间维度为 $2 \times 2 = 4$，
+    最简单也最常用的例子是两个自旋-1/2 粒子的耦合：$j_1 = j_2 = 1/2$。
+    由三角关系，$j = 0, 1$。态空间维度为 $2 \times 2 = 4$，
     对应 $j = 1$ 的三重态（3 个态）加 $j = 0$ 的单态（1 个态），共 $3 + 1 = 4$。
   </p>
 
-  <Derivation title="两个自旋-1/2 耦合的 CG 系数推导">
+  <details class="derivation-block"><summary class="derivation-toggle">两个自旋-1/2 耦合的 CG 系数推导</summary><div class="derivation-content">
     <p>
       <strong>$j = 1$（三重态）：</strong>
     </p>
     <p>
-      从最高 $m$ 出发，<Fragment set:html={defined.j11ket} /> 唯一对应 $m_1 = 1/2, m_2 = 1/2$：
+      从最高 $m$ 出发，$|1, 1\rangle$ 唯一对应 $m_1 = 1/2, m_2 = 1/2$：
     </p>
     <p>
-      <Fragment set:html={defined.triplet1} />
+      $|1, 1\rangle = |\!\uparrow\uparrow\rangle$
     </p>
     <p>
-      对 <Fragment set:html={defined.j11ket} /> 施加 <Fragment set:html={defined.JminusJ1J2} />：
+      对 $|1, 1\rangle$ 施加 $\hat{J}_- = \hat{J}_{1-} + \hat{J}_{2-}$：
     </p>
-    <p><Fragment set:html={defined.JminusOnTrip} /></p>
+    <p>$$\hat{J}_-|1, 1\rangle = (\hat{J}_{1-} + \hat{J}_{2-})|\!\uparrow\uparrow\rangle = \hbar|\!\downarrow\uparrow\rangle + \hbar|\!\uparrow\downarrow\rangle = \hbar\sqrt{2}\,|1, 0\rangle$$</p>
     <p>
-      因此：<Fragment set:html={defined.triplet0} />
-    </p>
-    <p>
-      再施加 $\hat J_-$ 于 <Fragment set:html={defined.j10ket} />，得到：
+      因此：$|1, 0\rangle = \frac{1}{\sqrt{2}}(|\!\uparrow\downarrow\rangle + |\!\downarrow\uparrow\rangle)$
     </p>
     <p>
-      <Fragment set:html={defined.tripletM1} />
+      再施加 $\hat J_-$ 于 $|1, 0\rangle$，得到：
+    </p>
+    <p>
+      $|1, -1\rangle = |\!\downarrow\downarrow\rangle$
     </p>
     <p>
       <strong>$j = 0$（单态）：</strong>
     </p>
     <p>
-      <Fragment set:html={defined.coupledBasisShort} /> 中的 $|0, 0\rangle$ 必须与 <Fragment set:html={defined.j10ket} /> 正交，且处于 $m = 0$ 子空间中。
+      $|j, m\rangle$ 中的 $|0, 0\rangle$ 必须与 $|1, 0\rangle$ 正交，且处于 $m = 0$ 子空间中。
       $m = 0$ 子空间由 $|\!\uparrow\downarrow\rangle$ 和 $|\!\downarrow\uparrow\rangle$ 张成。
-      与 <Fragment set:html={defined.j10orthog} /> 正交的归一化态为：
+      与 $|1, 0\rangle = \frac{1}{\sqrt{2}}(|\!\uparrow\downarrow\rangle + |\!\downarrow\uparrow\rangle)$ 正交的归一化态为：
     </p>
     <p>
-      <Fragment set:html={defined.singlet} />
+      $|0, 0\rangle = \frac{1}{\sqrt{2}}(|\!\uparrow\downarrow\rangle - |\!\downarrow\uparrow\rangle)$
     </p>
     <p>
       （符号取负以满足 Condon-Shortley 相位约定。）
     </p>
-  </Derivation>
+  </div></details>
 
   <p>汇总结果：</p>
 
-  <p><strong><Fragment set:html={defined.tripletSym} />：</strong></p>
+  <p><strong>三重态（$j = 1$，对称）：</strong></p>
   <ul>
-    <li><Fragment set:html={defined.triplet1} /></li>
-    <li><Fragment set:html={defined.triplet0} /></li>
-    <li><Fragment set:html={defined.tripletM1} /></li>
+    <li>$|1, 1\rangle = |\!\uparrow\uparrow\rangle$</li>
+    <li>$|1, 0\rangle = \frac{1}{\sqrt{2}}(|\!\uparrow\downarrow\rangle + |\!\downarrow\uparrow\rangle)$</li>
+    <li>$|1, -1\rangle = |\!\downarrow\downarrow\rangle$</li>
   </ul>
 
-  <p><strong><Fragment set:html={defined.singletAnti} />：</strong></p>
+  <p><strong>单态（$j = 0$，反对称）：</strong></p>
   <ul>
-    <li><Fragment set:html={defined.singlet} /></li>
+    <li>$|0, 0\rangle = \frac{1}{\sqrt{2}}(|\!\uparrow\downarrow\rangle - |\!\downarrow\uparrow\rangle)$</li>
   </ul>
 
   <p>
@@ -878,9 +672,9 @@ const defined = {
     总波函数必须反对称，因此自旋三重态要求轨道部分反对称，自旋单态要求轨道部分对称。
   </p>
 
-  <ThinkingBox title="自旋单态的纠缠">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>自旋单态的纠缠</span></div>
     <p>
-      单态 <Fragment set:html={defined.singlet} />
+      单态 $|0, 0\rangle = \frac{1}{\sqrt{2}}(|\!\uparrow\downarrow\rangle - |\!\downarrow\uparrow\rangle)$
       是一个<strong>纠缠态</strong>（entangled state）——它不能写成两个粒子态的直积形式
       $|\chi_1\rangle \otimes |\chi_2\rangle$。
       在这个态中，两个粒子的自旋是完全关联的：若测量粒子 1 的 $S_z$ 得到 $+\hbar/2$，
@@ -889,15 +683,15 @@ const defined = {
       单态也是量子信息中 Bell 态（Bell state）之一，在量子隐形传态和量子密钥分发中有核心应用。
     </p>
     <p>
-      利用 <Fragment set:html={defined.S2triplet} />，可以计算两个自旋的点积期望值：
+      利用 $\hat{\mathbf{S}}^2 = \hat{\mathbf{S}}_1^2 + \hat{\mathbf{S}}_2^2 + 2\hat{\mathbf{S}}_1\cdot\hat{\mathbf{S}}_2$，可以计算两个自旋的点积期望值：
     </p>
-    <p><Fragment set:html={defined.S1dotS2triplet} /></p>
+    <p>$\langle\hat{\mathbf{S}}_1\cdot\hat{\mathbf{S}}_2\rangle = \frac{1}{2}[s(s+1) - s_1(s_1+1) - s_2(s_2+1)]\hbar^2$</p>
     <p>
-      对三重态（$s = 1$）：<Fragment set:html={defined.S1dotS2val1} />（自旋平行倾向）。
-      对单态（$s = 0$）：<Fragment set:html={defined.S1dotS2val0} />（自旋反平行倾向）。
+      对三重态（$s = 1$）：$\langle\hat{\mathbf{S}}_1\cdot\hat{\mathbf{S}}_2\rangle_{j=1} = +\frac{\hbar^2}{4}$（自旋平行倾向）。
+      对单态（$s = 0$）：$\langle\hat{\mathbf{S}}_1\cdot\hat{\mathbf{S}}_2\rangle_{j=0} = -\frac{3\hbar^2}{4}$（自旋反平行倾向）。
       这解释了为什么铁磁性（自旋平行）与反铁磁性（自旋反平行）对应不同的总自旋态。
     </p>
-  </ThinkingBox>
+  </div>
 
   <h3>CG 系数的一般性质</h3>
 
@@ -906,13 +700,13 @@ const defined = {
   </p>
 
   <ol>
-    <li><strong>选择定则</strong>：<Fragment set:html={defined.mAddition} />。若 $m \neq m_1 + m_2$，CG 系数为零。</li>
-    <li><strong>三角条件</strong>：<Fragment set:html={defined.triangleIneq} />。若 $j$ 不满足三角条件，CG 系数为零。</li>
+    <li><strong>选择定则</strong>：$m = m_1 + m_2$。若 $m \neq m_1 + m_2$，CG 系数为零。</li>
+    <li><strong>三角条件</strong>：$$|j_1 - j_2| \leq j \leq j_1 + j_2$$。若 $j$ 不满足三角条件，CG 系数为零。</li>
     <li><strong>实数性</strong>：在 Condon-Shortley 约定下，所有 CG 系数为实数。</li>
     <li><strong>正交归一性</strong>：CG 系数矩阵是正交（实幺正）矩阵。</li>
     <li>
-      <strong>对称性</strong>：交换两个角动量时，<Fragment set:html={defined.CGsymmetry1} />。
-      相位因子 <Fragment set:html={defined.CGphase} /> 在交换对称性分析中至关重要。
+      <strong>对称性</strong>：交换两个角动量时，$$\langle j_1, m_1; j_2, m_2 | j, m\rangle = (-1)^{j_1+j_2-j}\langle j_2, m_2; j_1, m_1 | j, m\rangle$$。
+      相位因子 $(-1)^{j_1+j_2-j}$ 在交换对称性分析中至关重要。
     </li>
   </ol>
 
@@ -922,31 +716,31 @@ const defined = {
     Racah 系数（$6j$ 符号）和 $9j$ 符号等更高阶的重耦合系数。
   </p>
 
-  <InsightBox title="角动量耦合与表示论">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>角动量耦合与表示论</span></div>
     <p>
-      从群论的角度看，角动量耦合本质上是 <Fragment set:html={defined.SU2} /> 群
+      从群论的角度看，角动量耦合本质上是 $\mathrm{SU}(2)$ 群
       <strong>不可约表示的直积分解</strong>（Clebsch-Gordan 分解）。
-      自旋 $j_1$ 和 $j_2$ 分别对应 <Fragment set:html={defined.SU2} /> 的 <Fragment set:html={defined.dimJ1} /> 维和 <Fragment set:html={defined.dimJ2} /> 维不可约表示
-      <Fragment set:html={defined.Dj1rep} /> 和 <Fragment set:html={defined.Dj2rep} />，其直积分解为：
+      自旋 $j_1$ 和 $j_2$ 分别对应 $\mathrm{SU}(2)$ 的 $(2j_1+1)$ 维和 $(2j_2+1)$ 维不可约表示
+      $D^{(j_1)}$ 和 $D^{(j_2)}$，其直积分解为：
     </p>
     <p>
-      <Fragment set:html={defined.CGdecomp} />
+      $$D^{(j_1)} \otimes D^{(j_2)} = \bigoplus_{j=|j_1-j_2|}^{j_1+j_2} D^{(j)}$$
     </p>
     <p>
       CG 系数正是这个分解中的变换矩阵元。这一观点将角动量耦合纳入了表示论的统一框架，
-      并且可以推广到任意 Lie 群——例如 <Fragment set:html={defined.SU3CG} /> 的 CG 系数在夸克模型和粒子物理中
+      并且可以推广到任意 Lie 群——例如 $\mathrm{SU}(3)$ 的 CG 系数在夸克模型和粒子物理中
       有广泛应用。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.3.7-3.8：角动量的耦合与 CG 系数</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.4.4.3：两个粒子的自旋耦合</li>
       <li>曾谨言,《量子力学》卷I, 第五章 &sect;5.6-5.8：角动量耦合与 CG 系数</li>
       <li>A. R. Edmonds, <em>Angular Momentum in Quantum Mechanics</em>：CG 系数的系统性处理</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 章末总结 -->
@@ -959,22 +753,22 @@ const defined = {
 
   <ol>
     <li>
-      <strong>角动量代数</strong>：角动量的全部理论由对易关系 <Fragment set:html={defined.LcommFund} />
-      唯一确定。利用升降算符的代数方法，可以推导出本征值 <Fragment set:html={defined.eigenJJ} /> 和 $\hbar m$，
-      其中 <Fragment set:html={defined.jAllowed} />，$m = -j, \ldots, j$。
+      <strong>角动量代数</strong>：角动量的全部理论由对易关系 $$[\hat{L}_i, \hat{L}_j] = i\hbar\,\varepsilon_{ijk}\hat{L}_k$$
+      唯一确定。利用升降算符的代数方法，可以推导出本征值 $\hbar^2 j(j+1)$ 和 $\hbar m$，
+      其中 $j = 0, 1/2, 1, 3/2, 2, \ldots$，$m = -j, \ldots, j$。
     </li>
     <li>
-      <strong>轨道角动量</strong>：由 <Fragment set:html={defined.Lrp} /> 定义，
-      量子数 $l$ 仅取非负整数。在球坐标中，其共同本征函数为球谐函数 <Fragment set:html={defined.Ylm} />。
+      <strong>轨道角动量</strong>：由 $\hat{\mathbf{L}} = \hat{\mathbf{r}} \times \hat{\mathbf{p}}$ 定义，
+      量子数 $l$ 仅取非负整数。在球坐标中，其共同本征函数为球谐函数 $Y_l^m(\theta, \varphi)$。
     </li>
     <li>
       <strong>自旋</strong>：粒子的内禀角动量，是纯量子效应。自旋-1/2 系统由 Pauli 矩阵描述，
-      其态空间对应 Bloch 球。$2\pi$ 旋转产生负号这一性质揭示了 <Fragment set:html={defined.SU2iso} /> 与
-      <Fragment set:html={defined.SO3iso} /> 的双覆盖关系。
+      其态空间对应 Bloch 球。$2\pi$ 旋转产生负号这一性质揭示了 $\mathrm{SU}(2)$ 与
+      $\mathrm{SO}(3)$ 的双覆盖关系。
     </li>
     <li>
-      <strong>角动量耦合</strong>：两个角动量 <Fragment set:html={defined.J1hat} /> 和 <Fragment set:html={defined.J2hat} /> 耦合成
-      总角动量 <Fragment set:html={defined.Jhat} />，$j$ 满足三角关系 <Fragment set:html={defined.triangleIneq} />。
+      <strong>角动量耦合</strong>：两个角动量 $\hat{\mathbf{J}}_1$ 和 $\hat{\mathbf{J}}_2$ 耦合成
+      总角动量 $\hat{\mathbf{J}}$，$j$ 满足三角关系 $$|j_1 - j_2| \leq j \leq j_1 + j_2$$。
       无耦合基与耦合基之间的变换由 Clebsch-Gordan 系数给出。
     </li>
   </ol>
@@ -986,7 +780,7 @@ const defined = {
     本章的结果将被反复运用。
   </p>
 
-  <ThinkingBox title="从角动量到更一般的对称性">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>从角动量到更一般的对称性</span></div>
     <p>
       角动量理论是群论在量子力学中应用的最典型范例。
       其核心思想——从对称性（旋转不变性）出发，通过 Lie 代数的表示论推导出量子数和选择定则——
@@ -994,8 +788,8 @@ const defined = {
     </p>
     <ul>
       <li>平移对称性 $\to$ 动量守恒与 Bloch 定理（固体物理）</li>
-      <li><Fragment set:html={defined.SU2iso} /> 同位旋对称性 $\to$ 强子的同位旋多重态（核物理与粒子物理）</li>
-      <li><Fragment set:html={defined.SU3CG} /> 味对称性 $\to$ 夸克模型与八重道（粒子物理）</li>
+      <li>$\mathrm{SU}(2)$ 同位旋对称性 $\to$ 强子的同位旋多重态（核物理与粒子物理）</li>
+      <li>$\mathrm{SU}(3)$ 味对称性 $\to$ 夸克模型与八重道（粒子物理）</li>
       <li>规范对称性 $\to$ 相互作用的规范场论（标准模型）</li>
     </ul>
     <p>
@@ -1003,6 +797,9 @@ const defined = {
       （unreasonable effectiveness of group theory）。
       掌握了角动量理论的对称性思维，就打开了通向现代理论物理的大门。
     </p>
-  </ThinkingBox>
+  </div>`;
+---
 
+<ChapterLayout title="第四章 角动量理论" courseId="qm" chapterId="ch04">
+  <Fragment set:html={content} />
 </ChapterLayout>

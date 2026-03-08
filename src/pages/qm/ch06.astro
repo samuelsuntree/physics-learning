@@ -1,201 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const defined = {
-  /* ── helpers: every LaTeX snippet that contains { or } lives here ── */
-
-  /* §6.1 非简并定态微扰论 */
-  Hfull: String.raw`$H = H_0 + \lambda V$`,
-  H0eigen: String.raw`$$H_0|n^{(0)}\rangle = E_n^{(0)}|n^{(0)}\rangle$$`,
-  psiExpand: String.raw`$$|n\rangle = |n^{(0)}\rangle + \lambda|n^{(1)}\rangle + \lambda^2|n^{(2)}\rangle + \cdots$$`,
-  EnExpand: String.raw`$$E_n = E_n^{(0)} + \lambda E_n^{(1)} + \lambda^2 E_n^{(2)} + \cdots$$`,
-  SchEq: String.raw`$$(H_0 + \lambda V)(|n^{(0)}\rangle + \lambda|n^{(1)}\rangle + \cdots) = (E_n^{(0)} + \lambda E_n^{(1)} + \cdots)(|n^{(0)}\rangle + \lambda|n^{(1)}\rangle + \cdots)$$`,
-  orderZero: String.raw`$$H_0|n^{(0)}\rangle = E_n^{(0)}|n^{(0)}\rangle$$`,
-  orderOne: String.raw`$$H_0|n^{(1)}\rangle + V|n^{(0)}\rangle = E_n^{(0)}|n^{(1)}\rangle + E_n^{(1)}|n^{(0)}\rangle$$`,
-  orderTwo: String.raw`$$H_0|n^{(2)}\rangle + V|n^{(1)}\rangle = E_n^{(0)}|n^{(2)}\rangle + E_n^{(1)}|n^{(1)}\rangle + E_n^{(2)}|n^{(0)}\rangle$$`,
-  En1: String.raw`$$E_n^{(1)} = \langle n^{(0)}|V|n^{(0)}\rangle$$`,
-  En1inline: String.raw`$E_n^{(1)} = \langle n^{(0)}|V|n^{(0)}\rangle$`,
-  n1ket: String.raw`$$|n^{(1)}\rangle = \sum_{m \neq n} \frac{\langle m^{(0)}|V|n^{(0)}\rangle}{E_n^{(0)} - E_m^{(0)}}|m^{(0)}\rangle$$`,
-  n1ketInline: String.raw`$|n^{(1)}\rangle = \sum_{m \neq n} \frac{\langle m^{(0)}|V|n^{(0)}\rangle}{E_n^{(0)} - E_m^{(0)}}|m^{(0)}\rangle$`,
-  En2: String.raw`$$E_n^{(2)} = \sum_{m \neq n} \frac{|\langle m^{(0)}|V|n^{(0)}\rangle|^2}{E_n^{(0)} - E_m^{(0)}}$$`,
-  En2inline: String.raw`$E_n^{(2)} = \sum_{m \neq n} \frac{|\langle m^{(0)}|V|n^{(0)}\rangle|^2}{E_n^{(0)} - E_m^{(0)}}$`,
-  projN: String.raw`$\langle n^{(0)}|$`,
-  projM: String.raw`$\langle m^{(0)}|$`,
-  mNeqN: String.raw`$m \neq n$`,
-  Vmn: String.raw`$V_{mn} = \langle m^{(0)}|V|n^{(0)}\rangle$`,
-  convergeCond: String.raw`$$\left|\frac{\langle m^{(0)}|V|n^{(0)}\rangle}{E_n^{(0)} - E_m^{(0)}}\right| \ll 1, \quad \forall\, m \neq n$$`,
-  En2ground: String.raw`$E_0^{(2)} \leq 0$`,
-  En2groundProof: String.raw`$E_0^{(0)} - E_m^{(0)} < 0$`,
-  normalizeN1: String.raw`$\langle n^{(0)}|n^{(1)}\rangle = 0$`,
-  n0ket: String.raw`$|n^{(0)}\rangle$`,
-  m0ket: String.raw`$|m^{(0)}\rangle$`,
-  En0: String.raw`$E_n^{(0)}$`,
-  Em0: String.raw`$E_m^{(0)}$`,
-  En1sym: String.raw`$E_n^{(1)}$`,
-  En2sym: String.raw`$E_n^{(2)}$`,
-  lambdaV: String.raw`$\lambda V$`,
-
-  /* §6.1 推导辅助 */
-  braM0orderOne: String.raw`$$\langle m^{(0)}|H_0|n^{(1)}\rangle + \langle m^{(0)}|V|n^{(0)}\rangle = E_n^{(0)}\langle m^{(0)}|n^{(1)}\rangle + E_n^{(1)}\delta_{mn}$$`,
-  H0hermiteM: String.raw`$\langle m^{(0)}|H_0 = E_m^{(0)}\langle m^{(0)}|$`,
-  braM0result: String.raw`$$E_m^{(0)}\langle m^{(0)}|n^{(1)}\rangle + \langle m^{(0)}|V|n^{(0)}\rangle = E_n^{(0)}\langle m^{(0)}|n^{(1)}\rangle + E_n^{(1)}\delta_{mn}$$`,
-  mEqNresult: String.raw`$E_n^{(1)} = \langle n^{(0)}|V|n^{(0)}\rangle$`,
-  mNeqNresult: String.raw`$$\langle m^{(0)}|n^{(1)}\rangle = \frac{\langle m^{(0)}|V|n^{(0)}\rangle}{E_n^{(0)} - E_m^{(0)}}$$`,
-  n2derivStart: String.raw`$\langle n^{(0)}|$`,
-  n2derivProject: String.raw`$$\langle n^{(0)}|V|n^{(1)}\rangle = E_n^{(2)}$$`,
-  n2derivSubst: String.raw`$$E_n^{(2)} = \sum_{m \neq n} \frac{\langle n^{(0)}|V|m^{(0)}\rangle\langle m^{(0)}|V|n^{(0)}\rangle}{E_n^{(0)} - E_m^{(0)}} = \sum_{m \neq n} \frac{|\langle m^{(0)}|V|n^{(0)}\rangle|^2}{E_n^{(0)} - E_m^{(0)}}$$`,
-
-  /* §6.2 简并定态微扰论 */
-  degSubspace: String.raw`$\mathcal{D}_n$`,
-  gFold: String.raw`$g$`,
-  degBasis: String.raw`$|n^{(0)}, \alpha\rangle$`,
-  alphaRange: String.raw`$\alpha = 1, 2, \ldots, g$`,
-  goodState: String.raw`$$|n^{(0)}, l\rangle = \sum_{\alpha=1}^{g} c_\alpha^{(l)}|n^{(0)}, \alpha\rangle$$`,
-  secularEq: String.raw`$$\det\!\left(V_{\alpha\beta} - E^{(1)}\delta_{\alpha\beta}\right) = 0$$`,
-  Valphabeta: String.raw`$V_{\alpha\beta} = \langle n^{(0)}, \alpha|V|n^{(0)}, \beta\rangle$`,
-  secularMatrix: String.raw`$$\sum_{\beta=1}^{g} V_{\alpha\beta}\,c_\beta^{(l)} = E^{(1)}_l\,c_\alpha^{(l)}$$`,
-  secularExplicit: String.raw`$$\begin{pmatrix} V_{11} - E^{(1)} & V_{12} & \cdots & V_{1g} \\ V_{21} & V_{22} - E^{(1)} & \cdots & V_{2g} \\ \vdots & \vdots & \ddots & \vdots \\ V_{g1} & V_{g2} & \cdots & V_{gg} - E^{(1)} \end{pmatrix} \begin{pmatrix} c_1 \\ c_2 \\ \vdots \\ c_g \end{pmatrix} = 0$$`,
-  goodQN: String.raw`$V_{\alpha\beta}$`,
-
-  /* Stark 效应 */
-  starkH: String.raw`$V = -eEz = -eEr\cos\theta$`,
-  starkHop: String.raw`$V = e\mathcal{E}z = e\mathcal{E}\,r\cos\theta$`,
-  n2states: String.raw`$|2,0,0\rangle$, $|2,1,0\rangle$, $|2,1,1\rangle$, $|2,1,-1\rangle$`,
-  n2degeneracy: String.raw`$n = 2$`,
-  starkVmatrix: String.raw`$$V = \begin{pmatrix} 0 & -e\mathcal{E}a_0\sqrt{12} & 0 & 0 \\ -e\mathcal{E}a_0\sqrt{12} & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \end{pmatrix}$$`,
-  starkMatEl: String.raw`$\langle 2,0,0|V|2,1,0\rangle = -3e\mathcal{E}a_0$`,
-  starkEigenvals: String.raw`$$E^{(1)} = 0, \quad 0, \quad +3e\mathcal{E}a_0, \quad -3e\mathcal{E}a_0$$`,
-  starkSplit: String.raw`$\Delta E = 6e\mathcal{E}a_0$`,
-  starkGoodStates: String.raw`$\frac{1}{\sqrt{2}}(|2,0,0\rangle \pm |2,1,0\rangle)$`,
-  starkParityMix: String.raw`$l = 0$`,
-  starkDipole: String.raw`$\langle 2,0,0|r\cos\theta|2,1,0\rangle = -3a_0$`,
-  a0def: String.raw`$a_0$`,
-  parityYlm: String.raw`$Y_l^m \to (-1)^l Y_l^m$`,
-  selectionL: String.raw`$\Delta l = \pm 1$`,
-
-  /* Zeeman 效应 */
-  zeemanH: String.raw`$$V = -\hat{\boldsymbol{\mu}}_L \cdot \mathbf{B} = \frac{eB}{2m_e}\hat{L}_z = \frac{eB}{2m_e}\hbar m_l$$`,
-  zeemanEn: String.raw`$$E^{(1)} = \frac{eB}{2m_e}\hbar m_l = \mu_B B m_l$$`,
-  muBdef: String.raw`$\mu_B = \frac{e\hbar}{2m_e}$`,
-  zeemanSplit: String.raw`$2l + 1$`,
-  zeemanDeltaM: String.raw`$\Delta m_l = 0, \pm 1$`,
-  zeemanThreeLines: String.raw`$\Delta E = 0, \pm\mu_B B$`,
-  muL: String.raw`$\hat{\boldsymbol{\mu}}_L = -\frac{e}{2m_e}\hat{\mathbf{L}}$`,
-
-  /* §6.2 推导辅助 */
-  degOrderOne: String.raw`$$H_0|n^{(1)}\rangle + V\left(\sum_\alpha c_\alpha|n^{(0)},\alpha\rangle\right) = E_n^{(0)}|n^{(1)}\rangle + E^{(1)}\left(\sum_\alpha c_\alpha|n^{(0)},\alpha\rangle\right)$$`,
-  degProjectBeta: String.raw`$$\sum_\alpha c_\alpha \langle n^{(0)},\beta|V|n^{(0)},\alpha\rangle = E^{(1)} c_\beta$$`,
-
-  /* §6.3 变分法 */
-  varPrinciple: String.raw`$$E_0 \leq \frac{\langle\psi_{\text{trial}}|H|\psi_{\text{trial}}\rangle}{\langle\psi_{\text{trial}}|\psi_{\text{trial}}\rangle}$$`,
-  varPrincipleShort: String.raw`$E[\psi] = \frac{\langle\psi|H|\psi\rangle}{\langle\psi|\psi\rangle} \geq E_0$`,
-  varFunctional: String.raw`$E[\psi] = \frac{\langle\psi|H|\psi\rangle}{\langle\psi|\psi\rangle}$`,
-  varExpandPsi: String.raw`$$|\psi\rangle = \sum_n c_n|n\rangle$$`,
-  varExpandE: String.raw`$$E[\psi] = \frac{\sum_n |c_n|^2 E_n}{\sum_n |c_n|^2}$$`,
-  varProof1: String.raw`$$E[\psi] - E_0 = \frac{\sum_n |c_n|^2 E_n - E_0\sum_n |c_n|^2}{\sum_n |c_n|^2} = \frac{\sum_n |c_n|^2 (E_n - E_0)}{\sum_n |c_n|^2}$$`,
-  EnMinusE0: String.raw`$E_n - E_0 \geq 0$`,
-  cn2positive: String.raw`$|c_n|^2 \geq 0$`,
-  varExcited: String.raw`$E_1 \leq \frac{\langle\psi|H|\psi\rangle}{\langle\psi|\psi\rangle}$`,
-  varExcitedCond: String.raw`$\langle\psi|0\rangle = 0$`,
-
-  /* 氦原子变分 */
-  HeH: String.raw`$$H = -\frac{\hbar^2}{2m}\nabla_1^2 - \frac{\hbar^2}{2m}\nabla_2^2 - \frac{Ze^2}{r_1} - \frac{Ze^2}{r_2} + \frac{e^2}{r_{12}}$$`,
-  HeZ: String.raw`$Z = 2$`,
-  HeTrial: String.raw`$$\psi(\mathbf{r}_1, \mathbf{r}_2) = \frac{(Z^*)^3}{\pi a_0^3}\exp\!\left(-\frac{Z^*(r_1 + r_2)}{a_0}\right)$$`,
-  Zstar: String.raw`$Z^*$`,
-  HeHdecomp: String.raw`$$H = \left(-\frac{\hbar^2}{2m}\nabla_1^2 - \frac{Z^* e^2}{r_1}\right) + \left(-\frac{\hbar^2}{2m}\nabla_2^2 - \frac{Z^* e^2}{r_2}\right) + (Z^* - Z)\frac{e^2}{r_1} + (Z^* - Z)\frac{e^2}{r_2} + \frac{e^2}{r_{12}}$$`,
-  HeEfunc: String.raw`$$E(Z^*) = 2\left(-\frac{Z^{*2} e^2}{2a_0}\right) + 2(Z^* - Z)\frac{Z^* e^2}{a_0} + \frac{5}{8}\frac{Z^* e^2}{a_0}$$`,
-  HeEsimplified: String.raw`$$E(Z^*) = \left(Z^{*2} - 2ZZ^* + \frac{5}{8}Z^*\right)\frac{e^2}{a_0}$$`,
-  HeOptimize: String.raw`$$\frac{\partial E}{\partial Z^*} = \left(2Z^* - 2Z + \frac{5}{8}\right)\frac{e^2}{a_0} = 0$$`,
-  ZstarResult: String.raw`$$Z^* = Z - \frac{5}{16} = 2 - \frac{5}{16} = \frac{27}{16} \approx 1.6875$$`,
-  HeEresult: String.raw`$$E = -\left(Z - \frac{5}{16}\right)^2\frac{e^2}{a_0} = -\left(\frac{27}{16}\right)^2 \times 13.6\;\text{eV} \approx -77.5\;\text{eV}$$`,
-  HeEexact: String.raw`$E_{\text{exact}} = -79.0\;\text{eV}$`,
-  HeScreening: String.raw`$Z^* = 27/16 < 2$`,
-  r12integral: String.raw`$\langle 1/r_{12}\rangle = \frac{5Z^*}{8a_0}$`,
-  oneOverR: String.raw`$\langle 1/r\rangle_{Z^*} = Z^*/a_0$`,
-  Ekin: String.raw`$\langle T\rangle = Z^{*2}e^2/(2a_0)$`,
-
-  /* Ritz 变分法 */
-  ritzTrial: String.raw`$$|\psi\rangle = \sum_{i=1}^{N} c_i|\phi_i\rangle$$`,
-  ritzFunc: String.raw`$$E[\{c_i\}] = \frac{\sum_{ij} c_i^* H_{ij} c_j}{\sum_{ij} c_i^* S_{ij} c_j}$$`,
-  ritzHij: String.raw`$H_{ij} = \langle\phi_i|H|\phi_j\rangle$`,
-  ritzSij: String.raw`$S_{ij} = \langle\phi_i|\phi_j\rangle$`,
-  ritzSecular: String.raw`$$\det(H_{ij} - E\,S_{ij}) = 0$$`,
-  ritzOrtho: String.raw`$S_{ij} = \delta_{ij}$`,
-  ritzOrthoSecular: String.raw`$$\det(H_{ij} - E\,\delta_{ij}) = 0$$`,
-  ritzVariation: String.raw`$$\frac{\partial E}{\partial c_k^*} = 0 \implies \sum_j H_{kj} c_j = E \sum_j S_{kj} c_j$$`,
-
-  /* §6.4 WKB 近似 */
-  classicalP: String.raw`$p(x) = \sqrt{2m(E - V(x))}$`,
-  wkbAllowed: String.raw`$$\psi(x) \approx \frac{A}{\sqrt{p(x)}}\exp\!\left(\frac{i}{\hbar}\int^x p(x')\,dx'\right) + \frac{B}{\sqrt{p(x)}}\exp\!\left(-\frac{i}{\hbar}\int^x p(x')\,dx'\right)$$`,
-  wkbForbidden: String.raw`$$\psi(x) \approx \frac{C}{\sqrt{|p(x)|}}\exp\!\left(\frac{1}{\hbar}\int^x |p(x')|\,dx'\right) + \frac{D}{\sqrt{|p(x)|}}\exp\!\left(-\frac{1}{\hbar}\int^x |p(x')|\,dx'\right)$$`,
-  wkbCondition: String.raw`$$\left|\frac{d\lambda_{\text{dB}}}{dx}\right| = \left|\frac{d}{dx}\frac{2\pi\hbar}{p(x)}\right| \ll 1$$`,
-  wkbCondInline: String.raw`$\left|\frac{dp/dx}{p^2/\hbar}\right| \ll 1$`,
-  lambdaDB: String.raw`$\lambda_{\text{dB}} = 2\pi\hbar/p$`,
-  turnPoint: String.raw`$E = V(x_0)$`,
-  airyEq: String.raw`$$\frac{d^2\psi}{d\xi^2} - \xi\,\psi = 0$$`,
-  xiDef: String.raw`$\xi = (x - x_0)/l$`,
-  lScale: String.raw`$l = \left(\frac{\hbar^2}{2mV'(x_0)}\right)^{1/3}$`,
-  airyAi: String.raw`$\text{Ai}(\xi)$`,
-  airyBi: String.raw`$\text{Bi}(\xi)$`,
-
-  /* 连接公式 */
-  connFormula1: String.raw`$$\frac{2}{\sqrt{|p(x)|}}\cos\!\left(\frac{1}{\hbar}\int_{x}^{x_2} p\,dx' - \frac{\pi}{4}\right) \longleftrightarrow \frac{1}{\sqrt{|p(x)|}}\exp\!\left(-\frac{1}{\hbar}\int_{x_2}^{x}|p|\,dx'\right)$$`,
-  connFormula2: String.raw`$$\frac{1}{\sqrt{|p(x)|}}\sin\!\left(\frac{1}{\hbar}\int_{x}^{x_2} p\,dx' - \frac{\pi}{4}\right) \longleftrightarrow -\frac{1}{\sqrt{|p(x)|}}\exp\!\left(\frac{1}{\hbar}\int_{x_2}^{x}|p|\,dx'\right)$$`,
-  connFormulaLeft: String.raw`$$\frac{2}{\sqrt{|p(x)|}}\cos\!\left(\frac{1}{\hbar}\int_{x_1}^{x} p\,dx' - \frac{\pi}{4}\right) \longleftrightarrow \frac{1}{\sqrt{|p(x)|}}\exp\!\left(-\frac{1}{\hbar}\int_{x}^{x_1}|p|\,dx'\right)$$`,
-
-  /* Bohr-Sommerfeld */
-  bohrSommerfeld: String.raw`$$\oint p\,dx = \left(n + \frac{1}{2}\right)2\pi\hbar, \quad n = 0, 1, 2, \ldots$$`,
-  bohrSommerfeldAlt: String.raw`$$\int_{x_1}^{x_2} p(x)\,dx = \left(n + \frac{1}{2}\right)\pi\hbar$$`,
-  bohrSommerfeldClassical: String.raw`$\oint p\,dx = n \cdot 2\pi\hbar$`,
-
-  /* WKB 推导用 */
-  wkbAnsatz: String.raw`$$\psi(x) = A(x)\,e^{iS(x)/\hbar}$$`,
-  wkbSE: String.raw`$$-\frac{\hbar^2}{2m}\psi'' + V\psi = E\psi$$`,
-  wkbSubst: String.raw`$$\frac{1}{2m}(S')^2 + V - E - \frac{i\hbar}{2m}S'' = 0$$`,
-  wkbSubstFull: String.raw`$$-\frac{\hbar^2}{2m}\left[A'' + \frac{2iA'S'}{\hbar} + \frac{iAS''}{\hbar} - \frac{A(S')^2}{\hbar^2}\right]e^{iS/\hbar} + VA\,e^{iS/\hbar} = EA\,e^{iS/\hbar}$$`,
-  SexpandEq: String.raw`$$S(x) = S_0(x) + \hbar S_1(x) + \cdots$$`,
-  S0eq: String.raw`$$(S_0')^2 = 2m(E - V) = p^2(x)$$`,
-  S0sol: String.raw`$$S_0(x) = \pm\int^x p(x')\,dx'$$`,
-  S1eq: String.raw`$$2S_0' S_1' + iS_0'' = 0$$`,
-  S1sol: String.raw`$$S_1 = -\frac{i}{2}\ln S_0' = -\frac{i}{2}\ln p(x) + \text{const}$$`,
-  wkbResult: String.raw`$$\psi \sim \frac{1}{\sqrt{p(x)}}\exp\!\left(\pm\frac{i}{\hbar}\int^x p(x')\,dx'\right)$$`,
-
-  /* 隧穿 */
-  tunnelCoeff: String.raw`$$T \approx \exp\!\left(-\frac{2}{\hbar}\int_{x_1}^{x_2}|p(x)|\,dx\right)$$`,
-  tunnelGamow: String.raw`$$T \approx \exp\!\left(-\frac{2}{\hbar}\int_{x_1}^{x_2}\sqrt{2m(V(x) - E)}\,dx\right)$$`,
-  alphaDecayT: String.raw`$$T \approx \exp\!\left(-\frac{2}{\hbar}\int_R^{r_0}\sqrt{2m\!\left(\frac{Z_1 Z_2 e^2}{r} - E\right)}\,dx\right)$$`,
-
-  /* Bohr-Sommerfeld 推导 */
-  bsTwoTurning: String.raw`$x_1$, $x_2$`,
-  bsPhaseLeft: String.raw`$$\psi \sim \frac{2}{\sqrt{p}}\cos\!\left(\frac{1}{\hbar}\int_{x_1}^{x}p\,dx' - \frac{\pi}{4}\right)$$`,
-  bsPhaseRight: String.raw`$$\psi \sim \frac{2}{\sqrt{p}}\cos\!\left(\frac{1}{\hbar}\int_{x}^{x_2}p\,dx' - \frac{\pi}{4}\right)$$`,
-  bsConsistency: String.raw`$$\frac{1}{\hbar}\int_{x_1}^{x_2}p\,dx' - \frac{\pi}{4} = n\pi + \frac{\pi}{2} - \left(\frac{1}{\hbar}\int_{x}^{x_2}p\,dx' - \frac{\pi}{4}\right)$$`,
-  bsSimplify: String.raw`$$\frac{1}{\hbar}\int_{x_1}^{x_2}p\,dx = \left(n + \frac{1}{2}\right)\pi$$`,
-
-  /* WKB 示例 */
-  sho: String.raw`$V = \frac{1}{2}m\omega^2 x^2$`,
-  shoP: String.raw`$p(x) = \sqrt{2m(E - \frac{1}{2}m\omega^2 x^2)} = m\omega\sqrt{x_0^2 - x^2}$`,
-  shoX0: String.raw`$x_0 = \sqrt{2E/(m\omega^2)}$`,
-  shoIntegral: String.raw`$$\int_{-x_0}^{x_0}m\omega\sqrt{x_0^2 - x^2}\,dx = \frac{\pi}{2}m\omega x_0^2 = \frac{\pi E}{\omega}$$`,
-  shoResult: String.raw`$$E_n = \left(n + \frac{1}{2}\right)\hbar\omega$$`,
-
-  /* 通用 */
-  hbar: String.raw`$\hbar$`,
-  psi: String.raw`$\psi$`,
-  H0: String.raw`$H_0$`,
-  lambdaSym: String.raw`$\lambda$`,
-  Vsym: String.raw`$V$`,
-};
----
-
-<ChapterLayout title="第六章 近似方法" courseId="qm" chapterId="ch06">
-
-  <h1>第六章 近似方法</h1>
+const content = String.raw`<h1>第六章 近似方法</h1>
 
   <p>
     量子力学中能够精确求解的问题屈指可数——自由粒子、无限深方势阱、谐振子、氢原子等寥寥数例。
@@ -206,7 +12,7 @@ const defined = {
     这些方法构成了量子力学应用于原子、分子、固体和核物理等领域的核心工具。
   </p>
 
-  <InsightBox title="近似方法的互补性">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>近似方法的互补性</span></div>
     <p>
       四种方法各有适用范围：微扰论要求扰动"小"，且依赖于已知的精确解；
       变分法不需要小参数，但只给出能量（主要是基态能量）的近似值；
@@ -214,7 +20,7 @@ const defined = {
       实际研究中，往往需要根据问题的具体特点选择最合适的方法，
       甚至将多种方法结合使用。例如，变分法给出一个初始近似后，可以在此基础上进行微扰展开。
     </p>
-  </InsightBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 6.1 非简并定态微扰论 -->
@@ -224,138 +30,138 @@ const defined = {
   <h3>基本框架</h3>
 
   <p>
-    考虑 Hamilton 量 <Fragment set:html={defined.Hfull} />，其中 <Fragment set:html={defined.H0} /> 是
-    已知系统（其全部本征值和本征态已知），<Fragment set:html={defined.lambdaV} /> 是"小"的微扰。
-    参数 <Fragment set:html={defined.lambdaSym} /> 是无量纲的微扰强度参数（最终令 $\lambda = 1$），
+    考虑 Hamilton 量 $H = H_0 + \lambda V$，其中 $H_0$ 是
+    已知系统（其全部本征值和本征态已知），$\lambda V$ 是"小"的微扰。
+    参数 $\lambda$ 是无量纲的微扰强度参数（最终令 $\lambda = 1$），
     用于跟踪各阶微扰的贡献。
   </p>
 
   <p>
-    <Fragment set:html={defined.H0} /> 的本征值问题已经解决：
+    $H_0$ 的本征值问题已经解决：
   </p>
 
-  <Fragment set:html={defined.H0eigen} />
+  $$H_0|n^{(0)}\rangle = E_n^{(0)}|n^{(0)}\rangle$$
 
   <p>
-    其中 <Fragment set:html={defined.n0ket} /> 构成完备正交归一基。
-    本节假设 <Fragment set:html={defined.H0} /> 的能谱是<strong>非简并</strong>的，即每个本征值
-    <Fragment set:html={defined.En0} /> 只有一个本征态。
+    其中 $|n^{(0)}\rangle$ 构成完备正交归一基。
+    本节假设 $H_0$ 的能谱是<strong>非简并</strong>的，即每个本征值
+    $E_n^{(0)}$ 只有一个本征态。
   </p>
 
   <p>
-    将完整 Hamilton 量 $H$ 的本征态和本征值按 <Fragment set:html={defined.lambdaSym} /> 的幂次展开：
+    将完整 Hamilton 量 $H$ 的本征态和本征值按 $\lambda$ 的幂次展开：
   </p>
 
-  <Fragment set:html={defined.psiExpand} />
-  <Fragment set:html={defined.EnExpand} />
+  $$|n\rangle = |n^{(0)}\rangle + \lambda|n^{(1)}\rangle + \lambda^2|n^{(2)}\rangle + \cdots$$
+  $$E_n = E_n^{(0)} + \lambda E_n^{(1)} + \lambda^2 E_n^{(2)} + \cdots$$
 
   <p>
     代入 Schrodinger 方程 $H|n\rangle = E_n|n\rangle$：
   </p>
 
-  <Fragment set:html={defined.SchEq} />
+  $$(H_0 + \lambda V)(|n^{(0)}\rangle + \lambda|n^{(1)}\rangle + \cdots) = (E_n^{(0)} + \lambda E_n^{(1)} + \cdots)(|n^{(0)}\rangle + \lambda|n^{(1)}\rangle + \cdots)$$
 
   <p>
-    按 <Fragment set:html={defined.lambdaSym} /> 的幂次逐阶比较两端系数，得到各阶微扰方程。
+    按 $\lambda$ 的幂次逐阶比较两端系数，得到各阶微扰方程。
   </p>
 
   <h3>逐阶方程</h3>
 
   <p>
-    <strong>零阶</strong>（<Fragment set:html={defined.lambdaSym} /> 的零次方）——即未微扰问题：
+    <strong>零阶</strong>（$\lambda$ 的零次方）——即未微扰问题：
   </p>
 
-  <Fragment set:html={defined.orderZero} />
+  $$H_0|n^{(0)}\rangle = E_n^{(0)}|n^{(0)}\rangle$$
 
-  <p><strong>一阶</strong>（<Fragment set:html={defined.lambdaSym} /> 的一次方）：</p>
+  <p><strong>一阶</strong>（$\lambda$ 的一次方）：</p>
 
-  <Fragment set:html={defined.orderOne} />
+  $$H_0|n^{(1)}\rangle + V|n^{(0)}\rangle = E_n^{(0)}|n^{(1)}\rangle + E_n^{(1)}|n^{(0)}\rangle$$
 
-  <p><strong>二阶</strong>（<Fragment set:html={defined.lambdaSym} /> 的二次方）：</p>
+  <p><strong>二阶</strong>（$\lambda$ 的二次方）：</p>
 
-  <Fragment set:html={defined.orderTwo} />
+  $$H_0|n^{(2)}\rangle + V|n^{(1)}\rangle = E_n^{(0)}|n^{(2)}\rangle + E_n^{(1)}|n^{(1)}\rangle + E_n^{(2)}|n^{(0)}\rangle$$
 
   <h3>一阶能量修正</h3>
 
   <p>
-    对一阶方程两端左乘 <Fragment set:html={defined.projN} />，利用
-    <Fragment set:html={defined.normalizeN1} />（归一化约定）和 $H_0$ 的 Hermite 性质，
+    对一阶方程两端左乘 $\langle n^{(0)}|$，利用
+    $\langle n^{(0)}|n^{(1)}\rangle = 0$（归一化约定）和 $H_0$ 的 Hermite 性质，
     立即得到：
   </p>
 
-  <Fragment set:html={defined.En1} />
+  $$E_n^{(1)} = \langle n^{(0)}|V|n^{(0)}\rangle$$
 
-  <InsightBox title="一阶修正的物理含义">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>一阶修正的物理含义</span></div>
     <p>
-      一阶能量修正 <Fragment set:html={defined.En1inline} /> 就是微扰势 $V$ 在未微扰态
-      <Fragment set:html={defined.n0ket} /> 上的<strong>期望值</strong>。
+      一阶能量修正 $E_n^{(1)} = \langle n^{(0)}|V|n^{(0)}\rangle$ 就是微扰势 $V$ 在未微扰态
+      $|n^{(0)}\rangle$ 上的<strong>期望值</strong>。
       这在物理上非常直观——系统"感受到"的扰动，在最低阶近似下就是扰动在原始态上的平均效果。
       这个结果在原子物理中极为常用，例如计算电场对能级的微扰修正。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>一阶态修正</h3>
 
   <p>
-    对一阶方程两端左乘 <Fragment set:html={defined.projM} />（其中 <Fragment set:html={defined.mNeqN} />），利用
-    <Fragment set:html={defined.H0hermiteM} />，得到态的一阶修正展开系数，从而：
+    对一阶方程两端左乘 $\langle m^{(0)}|$（其中 $m \neq n$），利用
+    $\langle m^{(0)}|H_0 = E_m^{(0)}\langle m^{(0)}|$，得到态的一阶修正展开系数，从而：
   </p>
 
-  <Fragment set:html={defined.n1ket} />
+  $$|n^{(1)}\rangle = \sum_{m \neq n} \frac{\langle m^{(0)}|V|n^{(0)}\rangle}{E_n^{(0)} - E_m^{(0)}}|m^{(0)}\rangle$$
 
   <p>
-    态的一阶修正将未微扰态 <Fragment set:html={defined.n0ket} /> 与其他所有态
-    <Fragment set:html={defined.m0ket} /> 混合。混合系数正比于矩阵元 <Fragment set:html={defined.Vmn} />，
-    反比于能量差 <Fragment set:html={defined.En0} /> $-$ <Fragment set:html={defined.Em0} />。
+    态的一阶修正将未微扰态 $|n^{(0)}\rangle$ 与其他所有态
+    $|m^{(0)}\rangle$ 混合。混合系数正比于矩阵元 $V_{mn} = \langle m^{(0)}|V|n^{(0)}\rangle$，
+    反比于能量差 $E_n^{(0)}$ $-$ $E_m^{(0)}$。
     能量间隔越小的能级受到的混合越强——这就是为什么非简并微扰论要求能级不简并。
   </p>
 
   <h3>二阶能量修正</h3>
 
   <p>
-    对二阶方程左乘 <Fragment set:html={defined.projN} />，并将一阶态修正的表达式代入，得到：
+    对二阶方程左乘 $\langle n^{(0)}|$，并将一阶态修正的表达式代入，得到：
   </p>
 
-  <Fragment set:html={defined.En2} />
+  $$E_n^{(2)} = \sum_{m \neq n} \frac{|\langle m^{(0)}|V|n^{(0)}\rangle|^2}{E_n^{(0)} - E_m^{(0)}}$$
 
-  <Derivation title="一阶和二阶微扰公式的完整推导">
+  <details class="derivation-block"><summary class="derivation-toggle">一阶和二阶微扰公式的完整推导</summary><div class="derivation-content">
     <p>
       将能量和态的展开代入 Schrodinger 方程后，一阶方程为：
     </p>
-    <Fragment set:html={defined.orderOne} />
+    $$H_0|n^{(1)}\rangle + V|n^{(0)}\rangle = E_n^{(0)}|n^{(1)}\rangle + E_n^{(1)}|n^{(0)}\rangle$$
     <p>
-      左乘 <Fragment set:html={defined.projM} />（<Fragment set:html={defined.m0ket} /> 是 <Fragment set:html={defined.H0} /> 的本征态），
-      利用 <Fragment set:html={defined.H0hermiteM} />：
+      左乘 $\langle m^{(0)}|$（$|m^{(0)}\rangle$ 是 $H_0$ 的本征态），
+      利用 $\langle m^{(0)}|H_0 = E_m^{(0)}\langle m^{(0)}|$：
     </p>
-    <Fragment set:html={defined.braM0result} />
+    $$E_m^{(0)}\langle m^{(0)}|n^{(1)}\rangle + \langle m^{(0)}|V|n^{(0)}\rangle = E_n^{(0)}\langle m^{(0)}|n^{(1)}\rangle + E_n^{(1)}\delta_{mn}$$
     <p>
       当 $m = n$ 时，左端第一项与右端第一项抵消，给出一阶能量修正：
     </p>
     <p>
-      <Fragment set:html={defined.mEqNresult} />
+      $E_n^{(1)} = \langle n^{(0)}|V|n^{(0)}\rangle$
     </p>
     <p>
-      当 <Fragment set:html={defined.mNeqN} /> 时，$\delta_{mn} = 0$，整理得：
+      当 $m \neq n$ 时，$\delta_{mn} = 0$，整理得：
     </p>
-    <Fragment set:html={defined.mNeqNresult} />
+    $$\langle m^{(0)}|n^{(1)}\rangle = \frac{\langle m^{(0)}|V|n^{(0)}\rangle}{E_n^{(0)} - E_m^{(0)}}$$
     <p>
-      将 <Fragment set:html={defined.n0ket} /> 上的完备基展开
+      将 $|n^{(0)}\rangle$ 上的完备基展开
       $|n^{(1)}\rangle = \sum_{m \neq n} \langle m^{(0)}|n^{(1)}\rangle|m^{(0)}\rangle$，代入上式即得一阶态修正。
     </p>
     <p>
-      对于二阶能量修正，对二阶方程左乘 <Fragment set:html={defined.n2derivStart} />，
-      利用 <Fragment set:html={defined.normalizeN1} />：
+      对于二阶能量修正，对二阶方程左乘 $\langle n^{(0)}|$，
+      利用 $\langle n^{(0)}|n^{(1)}\rangle = 0$：
     </p>
-    <Fragment set:html={defined.n2derivProject} />
+    $$\langle n^{(0)}|V|n^{(1)}\rangle = E_n^{(2)}$$
     <p>
       将一阶态修正代入：
     </p>
-    <Fragment set:html={defined.n2derivSubst} />
+    $$E_n^{(2)} = \sum_{m \neq n} \frac{\langle n^{(0)}|V|m^{(0)}\rangle\langle m^{(0)}|V|n^{(0)}\rangle}{E_n^{(0)} - E_m^{(0)}} = \sum_{m \neq n} \frac{|\langle m^{(0)}|V|n^{(0)}\rangle|^2}{E_n^{(0)} - E_m^{(0)}}$$
     <p>
       最后一步利用了 $V$ 的 Hermite 性：$\langle n^{(0)}|V|m^{(0)}\rangle = \langle m^{(0)}|V|n^{(0)}\rangle^*$，
       从而 $\langle n^{(0)}|V|m^{(0)}\rangle\langle m^{(0)}|V|n^{(0)}\rangle = |\langle m^{(0)}|V|n^{(0)}\rangle|^2$。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>收敛条件与重要性质</h3>
 
@@ -363,11 +169,11 @@ const defined = {
     微扰展开有意义（收敛或渐近收敛）的必要条件是微扰矩阵元远小于能级间隔：
   </p>
 
-  <Fragment set:html={defined.convergeCond} />
+  $$\left|\frac{\langle m^{(0)}|V|n^{(0)}\rangle}{E_n^{(0)} - E_m^{(0)}}\right| \ll 1, \quad \forall\, m \neq n$$
 
   <p>
     这就是"小微扰"的精确含义——不仅微扰本身要小，还要与能级间隔相比较。
-    当两个能级接近简并时（<Fragment set:html={defined.En0} /> $\approx$ <Fragment set:html={defined.Em0} />），
+    当两个能级接近简并时（$E_n^{(0)}$ $\approx$ $E_m^{(0)}$），
     分母趋于零，非简并微扰论失效，必须改用简并微扰论。
   </p>
 
@@ -375,9 +181,9 @@ const defined = {
 
   <ol>
     <li>
-      <strong>基态能量的二阶修正恒非正</strong>：<Fragment set:html={defined.En2ground} />。
+      <strong>基态能量的二阶修正恒非正</strong>：$E_0^{(2)} \leq 0$。
       因为对基态 $E_0^{(0)}$ 而言，所有
-      <Fragment set:html={defined.En2groundProof} />（$m \geq 1$），故求和的每一项都是非正的。
+      $E_0^{(0)} - E_m^{(0)} < 0$（$m \geq 1$），故求和的每一项都是非正的。
       这意味着二阶微扰总是<strong>降低</strong>基态能量——微扰使基态"更稳定"。
     </li>
     <li>
@@ -387,7 +193,7 @@ const defined = {
     </li>
   </ol>
 
-  <ThinkingBox title="微扰论的本质：级数展开的力量与局限">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>微扰论的本质：级数展开的力量与局限</span></div>
     <p>
       微扰论本质上是将物理量按小参数展开的级数。其优势在于系统性——可以逐阶计算到任意精度；
       但也有根本性的局限。首先，微扰级数通常是<strong>渐近级数</strong>（asymptotic series），
@@ -396,16 +202,16 @@ const defined = {
       在 $\lambda = 0$ 处有本性奇点，其 Taylor 展开恒为零。
       这类"非微扰效应"需要 WKB 等其他方法来处理。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.5.1-5.2：非简并微扰论</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.7.1：非简并微扰论</li>
       <li>曾谨言,《量子力学》卷I, 第七章 &sect;7.1：非简并定态微扰论</li>
       <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, &sect;38：非简并能级的微扰</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 6.2 简并定态微扰论 -->
@@ -415,13 +221,13 @@ const defined = {
   <h3>简并的困难</h3>
 
   <p>
-    当 <Fragment set:html={defined.H0} /> 的某个能级 <Fragment set:html={defined.En0} /> 是
-    <Fragment set:html={defined.gFold} /> 重简并的，即存在 <Fragment set:html={defined.gFold} /> 个线性无关的
-    本征态 <Fragment set:html={defined.degBasis} />（<Fragment set:html={defined.alphaRange} />）
-    属于同一能量 <Fragment set:html={defined.En0} />，非简并微扰论的公式将出现分母为零的发散。
-    物理上，在简并子空间 <Fragment set:html={defined.degSubspace} /> 中，未微扰的 <Fragment set:html={defined.H0} />
-    无法确定一组"好的"基矢——任何线性组合都是 <Fragment set:html={defined.H0} /> 的本征态。
-    微扰 $V$ 的作用恰好是打破这种简并，在 <Fragment set:html={defined.degSubspace} /> 中选出"正确的"零阶态。
+    当 $H_0$ 的某个能级 $E_n^{(0)}$ 是
+    $g$ 重简并的，即存在 $g$ 个线性无关的
+    本征态 $|n^{(0)}, \alpha\rangle$（$\alpha = 1, 2, \ldots, g$）
+    属于同一能量 $E_n^{(0)}$，非简并微扰论的公式将出现分母为零的发散。
+    物理上，在简并子空间 $\mathcal{D}_n$ 中，未微扰的 $H_0$
+    无法确定一组"好的"基矢——任何线性组合都是 $H_0$ 的本征态。
+    微扰 $V$ 的作用恰好是打破这种简并，在 $\mathcal{D}_n$ 中选出"正确的"零阶态。
   </p>
 
   <h3>久期方程</h3>
@@ -430,85 +236,85 @@ const defined = {
     正确的零阶态应该是简并子空间中微扰矩阵的本征态。设正确的零阶态为：
   </p>
 
-  <Fragment set:html={defined.goodState} />
+  $$|n^{(0)}, l\rangle = \sum_{\alpha=1}^{g} c_\alpha^{(l)}|n^{(0)}, \alpha\rangle$$
 
   <p>
     将展开代入一阶微扰方程，再向简并子空间内的基矢投影，得到：
   </p>
 
-  <Fragment set:html={defined.secularMatrix} />
+  $$\sum_{\beta=1}^{g} V_{\alpha\beta}\,c_\beta^{(l)} = E^{(1)}_l\,c_\alpha^{(l)}$$
 
   <p>
-    其中 <Fragment set:html={defined.Valphabeta} /> 是微扰 $V$ 在简并子空间中的矩阵元。
-    这是一个 <Fragment set:html={defined.gFold} /> 维的矩阵本征值问题。
+    其中 $V_{\alpha\beta} = \langle n^{(0)}, \alpha|V|n^{(0)}, \beta\rangle$ 是微扰 $V$ 在简并子空间中的矩阵元。
+    这是一个 $g$ 维的矩阵本征值问题。
     写成矩阵形式：
   </p>
 
-  <Fragment set:html={defined.secularExplicit} />
+  $$\begin{pmatrix} V_{11} - E^{(1)} & V_{12} & \cdots & V_{1g} \\ V_{21} & V_{22} - E^{(1)} & \cdots & V_{2g} \\ \vdots & \vdots & \ddots & \vdots \\ V_{g1} & V_{g2} & \cdots & V_{gg} - E^{(1)} \end{pmatrix} \begin{pmatrix} c_1 \\ c_2 \\ \vdots \\ c_g \end{pmatrix} = 0$$
 
   <p>
     非平凡解的存在条件为<strong>久期方程</strong>（secular equation）：
   </p>
 
-  <Fragment set:html={defined.secularEq} />
+  $$\det\!\left(V_{\alpha\beta} - E^{(1)}\delta_{\alpha\beta}\right) = 0$$
 
   <p>
-    这个 <Fragment set:html={defined.gFold} /> 次代数方程给出 <Fragment set:html={defined.gFold} /> 个一阶能量修正
+    这个 $g$ 次代数方程给出 $g$ 个一阶能量修正
     $E_l^{(1)}$（$l = 1, \ldots, g$），对应的本征矢量 $c_\alpha^{(l)}$ 确定了"好的"零阶基矢。
   </p>
 
-  <Derivation title="简并微扰论的久期方程推导">
+  <details class="derivation-block"><summary class="derivation-toggle">简并微扰论的久期方程推导</summary><div class="derivation-content">
     <p>
       在简并情形下，正确的零阶态是简并子空间中的某个线性组合
       $|n^{(0)}\rangle_{\text{good}} = \sum_\alpha c_\alpha|n^{(0)}, \alpha\rangle$。
       一阶微扰方程为：
     </p>
-    <Fragment set:html={defined.degOrderOne} />
+    $$H_0|n^{(1)}\rangle + V\left(\sum_\alpha c_\alpha|n^{(0)},\alpha\rangle\right) = E_n^{(0)}|n^{(1)}\rangle + E^{(1)}\left(\sum_\alpha c_\alpha|n^{(0)},\alpha\rangle\right)$$
     <p>
       用简并子空间内的基矢 $\langle n^{(0)}, \beta|$ 投影，注意
       $\langle n^{(0)}, \beta|H_0 = E_n^{(0)}\langle n^{(0)}, \beta|$，以及
       $\langle n^{(0)}, \beta|n^{(1)}\rangle$ 项两端抵消（因为 $H_0$ 在简并子空间中作用为
       $E_n^{(0)}$ 乘以单位算符），得到：
     </p>
-    <Fragment set:html={defined.degProjectBeta} />
+    $$\sum_\alpha c_\alpha \langle n^{(0)},\beta|V|n^{(0)},\alpha\rangle = E^{(1)} c_\beta$$
     <p>
-      这正是在简并子空间中对角化微扰矩阵 <Fragment set:html={defined.goodQN} /> 的本征值问题。
+      这正是在简并子空间中对角化微扰矩阵 $V_{\alpha\beta}$ 的本征值问题。
       久期方程是其特征方程。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>"好量子数"的选择</h3>
 
   <p>
-    实际计算中，如果能找到与 <Fragment set:html={defined.H0} /> 和 $V$ <strong>都对易</strong>的
+    实际计算中，如果能找到与 $H_0$ 和 $V$ <strong>都对易</strong>的
     可观测量 $A$（即 $[H_0, A] = 0$ 且 $[V, A] = 0$），
     那么 $A$ 的本征值就是"好量子数"。在 $A$ 的本征基下，
-    <Fragment set:html={defined.goodQN} /> 自动成为对角矩阵（或块对角矩阵），大大简化计算。
+    $V_{\alpha\beta}$ 自动成为对角矩阵（或块对角矩阵），大大简化计算。
     物理上，"好量子数"对应的是整个 Hamilton 量 $H = H_0 + V$ 的对称性。
   </p>
 
-  <InsightBox title="对称性是简化的钥匙">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>对称性是简化的钥匙</span></div>
     <p>
       选择好量子数的本质是利用对称性。如果微扰 $V$ 保持某种对称性（如旋转对称性的某个子群），
       那么该对称性的量子数在微扰下守恒，不同量子数的态之间微扰矩阵元为零。
       例如，如果 $V$ 与 $\hat{L}_z$ 对易，则不同 $m_l$ 的态之间 $V$ 无矩阵元，
       $m_l$ 就是好量子数。这一原理在原子物理中被反复运用。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>实例一：线性 Stark 效应（氢原子 $n = 2$）</h3>
 
   <p>
     将氢原子置于沿 $z$ 方向的均匀外电场 $\mathcal{E}$ 中，微扰为
-    <Fragment set:html={defined.starkHop} />。
-    氢原子 <Fragment set:html={defined.n2degeneracy} /> 能级有四重简并：
-    <Fragment set:html={defined.n2states} />。
+    $V = e\mathcal{E}z = e\mathcal{E}\,r\cos\theta$。
+    氢原子 $n = 2$ 能级有四重简并：
+    $|2,0,0\rangle$, $|2,1,0\rangle$, $|2,1,1\rangle$, $|2,1,-1\rangle$。
   </p>
 
   <p>
     由宇称（parity）选择定则，$V = e\mathcal{E}\,r\cos\theta$ 是奇宇称算符，
-    球谐函数在宇称变换下 <Fragment set:html={defined.parityYlm} />，因此 $V$ 的矩阵元只有在
-    <Fragment set:html={defined.selectionL} /> 时才不为零。同时 $V$ 与 $\hat{L}_z$ 对易
+    球谐函数在宇称变换下 $Y_l^m \to (-1)^l Y_l^m$，因此 $V$ 的矩阵元只有在
+    $\Delta l = \pm 1$ 时才不为零。同时 $V$ 与 $\hat{L}_z$ 对易
     （因为 $\cos\theta = Y_1^0 \sqrt{4\pi/3}$ 不含 $\varphi$），所以 $m_l$ 是好量子数，不同 $m_l$ 之间
     矩阵元为零。
   </p>
@@ -517,9 +323,9 @@ const defined = {
     综合以上选择定则，四维简并子空间中唯一不为零的非对角矩阵元是：
   </p>
 
-  <p><Fragment set:html={defined.starkMatEl} /></p>
+  <p>$\langle 2,0,0|V|2,1,0\rangle = -3e\mathcal{E}a_0$</p>
 
-  <Derivation title="Stark 效应矩阵元的计算">
+  <details class="derivation-block"><summary class="derivation-toggle">Stark 效应矩阵元的计算</summary><div class="derivation-content">
     <p>
       需要计算 $\langle 2,0,0|e\mathcal{E}\,r\cos\theta|2,1,0\rangle$。
       利用径向波函数 $R_{20}(r) = \frac{1}{2\sqrt{2}}\left(\frac{1}{a_0}\right)^{3/2}(2 - r/a_0)e^{-r/(2a_0)}$
@@ -533,32 +339,32 @@ const defined = {
     </p>
     <p>
       径向积分：$\int_0^\infty R_{20}(r)\,r\,R_{21}(r)\,r^2\,dr = -3\sqrt{6}\,a_0$。
-      将径向和角度部分合并，即得 <Fragment set:html={defined.starkDipole} />，
+      将径向和角度部分合并，即得 $\langle 2,0,0|r\cos\theta|2,1,0\rangle = -3a_0$，
       从而 $\langle 2,0,0|V|2,1,0\rangle = -3e\mathcal{E}a_0$。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
     微扰矩阵为（按 $|2,0,0\rangle$, $|2,1,0\rangle$, $|2,1,1\rangle$, $|2,1,-1\rangle$ 排列）：
   </p>
 
-  <Fragment set:html={defined.starkVmatrix} />
+  $$V = \begin{pmatrix} 0 & -e\mathcal{E}a_0\sqrt{12} & 0 & 0 \\ -e\mathcal{E}a_0\sqrt{12} & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \\ 0 & 0 & 0 & 0 \end{pmatrix}$$
 
   <p>
     其中非对角元素 $-e\mathcal{E}a_0\sqrt{12} = -3e\mathcal{E}a_0 \times (2/\sqrt{12}) \cdot \sqrt{12}$——
     更准确地说，非零块的对角化给出一阶能量修正：
   </p>
 
-  <Fragment set:html={defined.starkEigenvals} />
+  $$E^{(1)} = 0, \quad 0, \quad +3e\mathcal{E}a_0, \quad -3e\mathcal{E}a_0$$
 
   <p>
     原来的四重简并被部分解除：$|2,1,\pm1\rangle$ 态不受影响（$E^{(1)} = 0$），
     而 $|2,0,0\rangle$ 和 $|2,1,0\rangle$ 的混合产生能量劈裂
-    <Fragment set:html={defined.starkSplit} />，线性依赖于电场强度。
-    对应的"好态"为 <Fragment set:html={defined.starkGoodStates} />。
+    $\Delta E = 6e\mathcal{E}a_0$，线性依赖于电场强度。
+    对应的"好态"为 $\frac{1}{\sqrt{2}}(|2,0,0\rangle \pm |2,1,0\rangle)$。
   </p>
 
-  <ThinkingBox title="为什么氢原子有线性 Stark 效应？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>为什么氢原子有线性 Stark 效应？</span></div>
     <p>
       大多数原子的 Stark 效应是<strong>二次的</strong>（$\propto \mathcal{E}^2$），
       因为非简并微扰论的一阶修正中 $\langle n|z|n\rangle = 0$（确定宇称态中 $z$ 的期望值为零）。
@@ -569,39 +375,39 @@ const defined = {
       这也解释了为什么在考虑了精细结构（解除了 $l$ 简并）之后，
       当电场足够弱使得 Stark 劈裂远小于精细结构劈裂时，效应就变回了二次的。
     </p>
-  </ThinkingBox>
+  </div>
 
   <h3>实例二：正常 Zeeman 效应</h3>
 
   <p>
     将原子置于沿 $z$ 方向的均匀磁场 $\mathbf{B} = B\hat{z}$ 中。
-    轨道角动量的磁矩为 <Fragment set:html={defined.muL} />，忽略自旋的贡献时，
+    轨道角动量的磁矩为 $\hat{\boldsymbol{\mu}}_L = -\frac{e}{2m_e}\hat{\mathbf{L}}$，忽略自旋的贡献时，
     微扰为：
   </p>
 
-  <Fragment set:html={defined.zeemanH} />
+  $$V = -\hat{\boldsymbol{\mu}}_L \cdot \mathbf{B} = \frac{eB}{2m_e}\hat{L}_z = \frac{eB}{2m_e}\hbar m_l$$
 
   <p>
     由于 $V \propto \hat{L}_z$，$m_l$ 是好量子数，$V$ 在
     $|n, l, m_l\rangle$ 基中已经是对角的。一阶能量修正直接为：
   </p>
 
-  <Fragment set:html={defined.zeemanEn} />
+  $$E^{(1)} = \frac{eB}{2m_e}\hbar m_l = \mu_B B m_l$$
 
   <p>
-    其中 <Fragment set:html={defined.muBdef} /> 是 <strong>Bohr 磁子</strong>。
-    原来 $m_l$ 的 <Fragment set:html={defined.zeemanSplit} /> 重简并完全解除，每个能级劈裂为
-    等间距的 <Fragment set:html={defined.zeemanSplit} /> 条子能级。
+    其中 $\mu_B = \frac{e\hbar}{2m_e}$ 是 <strong>Bohr 磁子</strong>。
+    原来 $m_l$ 的 $2l + 1$ 重简并完全解除，每个能级劈裂为
+    等间距的 $2l + 1$ 条子能级。
   </p>
 
   <p>
-    在光谱跃迁中，选择定则 <Fragment set:html={defined.zeemanDeltaM} /> 限制了可能的跃迁。
-    由此产生的谱线频移为 <Fragment set:html={defined.zeemanThreeLines} />，
+    在光谱跃迁中，选择定则 $\Delta m_l = 0, \pm 1$ 限制了可能的跃迁。
+    由此产生的谱线频移为 $\Delta E = 0, \pm\mu_B B$，
     即每条谱线分裂为等间距的三条——这就是<strong>正常 Zeeman 效应</strong>（Lorentz 三重线），
     曾是验证电子轨道运动产生磁矩的直接实验证据。
   </p>
 
-  <InsightBox title="正常与反常 Zeeman 效应">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>正常与反常 Zeeman 效应</span></div>
     <p>
       本节讨论的正常 Zeeman 效应忽略了自旋。实际上电子既有轨道磁矩又有自旋磁矩，
       且由于 Lande $g$ 因子的存在，不同 $j$ 能级的劈裂间距不同，产生更复杂的谱线分裂——
@@ -609,16 +415,16 @@ const defined = {
       加入磁场微扰，涉及更精细的简并微扰论。在强磁场（Paschen-Back）极限下，
       磁场效应远大于自旋-轨道耦合，$m_l$ 和 $m_s$ 分别成为好量子数，回到类似正常 Zeeman 的图像。
     </p>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.5.2：简并微扰论</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.7.2：简并微扰论，Ch.7.3：氢原子精细结构</li>
       <li>曾谨言,《量子力学》卷I, 第七章 &sect;7.2：简并情形的微扰论</li>
       <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, &sect;39：简并能级的微扰</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 6.3 变分法 -->
@@ -632,41 +438,41 @@ const defined = {
     对于 Hamilton 量 $H$ 的任意归一化试探态 $|\psi_{\text{trial}}\rangle$，有：
   </p>
 
-  <Fragment set:html={defined.varPrinciple} />
+  $$E_0 \leq \frac{\langle\psi_{\text{trial}}|H|\psi_{\text{trial}}\rangle}{\langle\psi_{\text{trial}}|\psi_{\text{trial}}\rangle}$$
 
   <p>
     即试探态给出的能量期望值总是不低于基态能量 $E_0$。等号成立当且仅当试探态恰好是基态。
     更一般地，对任意（不必归一化的）试探态，能量泛函
-    <Fragment set:html={defined.varFunctional} /> 满足 <Fragment set:html={defined.varPrincipleShort} />。
+    $E[\psi] = \frac{\langle\psi|H|\psi\rangle}{\langle\psi|\psi\rangle}$ 满足 $E[\psi] = \frac{\langle\psi|H|\psi\rangle}{\langle\psi|\psi\rangle} \geq E_0$。
   </p>
 
-  <Derivation title="变分原理的严格证明">
+  <details class="derivation-block"><summary class="derivation-toggle">变分原理的严格证明</summary><div class="derivation-content">
     <p>
       设 $H$ 的完备本征态为 $|n\rangle$，对应本征值 $E_n$（$E_0 \leq E_1 \leq E_2 \leq \cdots$）。
       将试探态按本征态展开：
     </p>
-    <Fragment set:html={defined.varExpandPsi} />
+    $$|\psi\rangle = \sum_n c_n|n\rangle$$
     <p>
       则能量泛函为：
     </p>
-    <Fragment set:html={defined.varExpandE} />
+    $$E[\psi] = \frac{\sum_n |c_n|^2 E_n}{\sum_n |c_n|^2}$$
     <p>
       利用 $E_n \geq E_0$（对所有 $n$），计算：
     </p>
-    <Fragment set:html={defined.varProof1} />
+    $$E[\psi] - E_0 = \frac{\sum_n |c_n|^2 E_n - E_0\sum_n |c_n|^2}{\sum_n |c_n|^2} = \frac{\sum_n |c_n|^2 (E_n - E_0)}{\sum_n |c_n|^2}$$
     <p>
-      由于 <Fragment set:html={defined.EnMinusE0} /> 且 <Fragment set:html={defined.cn2positive} />，
+      由于 $E_n - E_0 \geq 0$ 且 $|c_n|^2 \geq 0$，
       求和中的每一项都非负，因此 $E[\psi] - E_0 \geq 0$，即 $E[\psi] \geq E_0$。
     </p>
     <p>
       等号成立当且仅当所有 $E_n \neq E_0$ 对应的 $c_n = 0$，即 $|\psi\rangle$ 是基态（或基态的简并子空间中的态）。
     </p>
     <p>
-      <strong>推广</strong>：如果试探态与基态正交（<Fragment set:html={defined.varExcitedCond} />），
-      则 $c_0 = 0$，类似的论证给出 <Fragment set:html={defined.varExcited} />，
+      <strong>推广</strong>：如果试探态与基态正交（$\langle\psi|0\rangle = 0$），
+      则 $c_0 = 0$，类似的论证给出 $E_1 \leq \frac{\langle\psi|H|\psi\rangle}{\langle\psi|\psi\rangle}$，
       即可以估计第一激发态能量。但这要求精确知道基态并保证正交性，实际操作中较难实现。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>变分法的实际操作</h3>
 
@@ -692,77 +498,77 @@ const defined = {
     氦原子的 Hamilton 量为（忽略核运动）：
   </p>
 
-  <Fragment set:html={defined.HeH} />
+  $$H = -\frac{\hbar^2}{2m}\nabla_1^2 - \frac{\hbar^2}{2m}\nabla_2^2 - \frac{Ze^2}{r_1} - \frac{Ze^2}{r_2} + \frac{e^2}{r_{12}}$$
 
   <p>
-    其中 <Fragment set:html={defined.HeZ} />，$r_{12} = |\mathbf{r}_1 - \mathbf{r}_2|$ 是两个电子之间的距离。
+    其中 $Z = 2$，$r_{12} = |\mathbf{r}_1 - \mathbf{r}_2|$ 是两个电子之间的距离。
     电子-电子排斥项 $e^2/r_{12}$ 使问题无法精确求解。
   </p>
 
   <p>
-    选择试探波函数为两个类氢原子基态波函数的乘积，但以有效核电荷 <Fragment set:html={defined.Zstar} /> 为可调参数：
+    选择试探波函数为两个类氢原子基态波函数的乘积，但以有效核电荷 $Z^*$ 为可调参数：
   </p>
 
-  <Fragment set:html={defined.HeTrial} />
+  $$\psi(\mathbf{r}_1, \mathbf{r}_2) = \frac{(Z^*)^3}{\pi a_0^3}\exp\!\left(-\frac{Z^*(r_1 + r_2)}{a_0}\right)$$
 
   <p>
-    物理上，<Fragment set:html={defined.Zstar} /> 反映了一个电子对另一个电子部分屏蔽核电荷的效应。
+    物理上，$Z^*$ 反映了一个电子对另一个电子部分屏蔽核电荷的效应。
     我们期望 $Z^* &lt; Z = 2$。
   </p>
 
-  <Derivation title="氦原子变分能量的完整计算">
+  <details class="derivation-block"><summary class="derivation-toggle">氦原子变分能量的完整计算</summary><div class="derivation-content">
     <p>
-      技巧：将 $H$ 改写为以 <Fragment set:html={defined.Zstar} /> 为核电荷的两个类氢 Hamilton 量加修正项：
+      技巧：将 $H$ 改写为以 $Z^*$ 为核电荷的两个类氢 Hamilton 量加修正项：
     </p>
-    <Fragment set:html={defined.HeHdecomp} />
+    $$H = \left(-\frac{\hbar^2}{2m}\nabla_1^2 - \frac{Z^* e^2}{r_1}\right) + \left(-\frac{\hbar^2}{2m}\nabla_2^2 - \frac{Z^* e^2}{r_2}\right) + (Z^* - Z)\frac{e^2}{r_1} + (Z^* - Z)\frac{e^2}{r_2} + \frac{e^2}{r_{12}}$$
     <p>
-      括号中的前两项是以 <Fragment set:html={defined.Zstar} /> 为核电荷的类氢 Hamilton 量，
+      括号中的前两项是以 $Z^*$ 为核电荷的类氢 Hamilton 量，
       其在试探态上的期望值就是两个类氢基态能量之和：
       每个为 $-Z^{*2}e^2/(2a_0)$。
     </p>
     <p>
       第三、四项 $(Z^* - Z)e^2/r_i$ 的期望值利用类氢原子的结果
-      <Fragment set:html={defined.oneOverR} />（对于核电荷为 $Z^*$ 的 $1s$ 态），
+      $\langle 1/r\rangle_{Z^*} = Z^*/a_0$（对于核电荷为 $Z^*$ 的 $1s$ 态），
       每个电子贡献 $(Z^* - Z) \cdot Z^* e^2/a_0$，共两个电子。
     </p>
     <p>
       电子-电子排斥项的期望值是经典的双电子积分（Euler 于 1769 年就计算过类似积分）：
-      <Fragment set:html={defined.r12integral} />。
+      $\langle 1/r_{12}\rangle = \frac{5Z^*}{8a_0}$。
     </p>
     <p>
       将各项合并：
     </p>
-    <Fragment set:html={defined.HeEfunc} />
+    $$E(Z^*) = 2\left(-\frac{Z^{*2} e^2}{2a_0}\right) + 2(Z^* - Z)\frac{Z^* e^2}{a_0} + \frac{5}{8}\frac{Z^* e^2}{a_0}$$
     <p>
       化简：
     </p>
-    <Fragment set:html={defined.HeEsimplified} />
+    $$E(Z^*) = \left(Z^{*2} - 2ZZ^* + \frac{5}{8}Z^*\right)\frac{e^2}{a_0}$$
     <p>
-      对 <Fragment set:html={defined.Zstar} /> 求极小：
+      对 $Z^*$ 求极小：
     </p>
-    <Fragment set:html={defined.HeOptimize} />
+    $$\frac{\partial E}{\partial Z^*} = \left(2Z^* - 2Z + \frac{5}{8}\right)\frac{e^2}{a_0} = 0$$
     <p>
       解得：
     </p>
-    <Fragment set:html={defined.ZstarResult} />
+    $$Z^* = Z - \frac{5}{16} = 2 - \frac{5}{16} = \frac{27}{16} \approx 1.6875$$
     <p>
       代入能量表达式（注意 $e^2/a_0 = 2 \times 13.6$ eV）：
     </p>
-    <Fragment set:html={defined.HeEresult} />
-  </Derivation>
+    $$E = -\left(Z - \frac{5}{16}\right)^2\frac{e^2}{a_0} = -\left(\frac{27}{16}\right)^2 \times 13.6\;\text{eV} \approx -77.5\;\text{eV}$$
+  </div></details>
 
   <p>
-    变分结果 $-77.5$ eV 与实验值 <Fragment set:html={defined.HeEexact} /> 相比，误差约 $2\%$。
+    变分结果 $-77.5$ eV 与实验值 $E_{\text{exact}} = -79.0\;\text{eV}$ 相比，误差约 $2\%$。
     考虑到试探波函数只有一个可调参数，这个精度已经相当不错。
   </p>
 
   <p>
-    <Fragment set:html={defined.HeScreening} /> 的物理意义非常清晰：
+    $Z^* = 27/16 < 2$ 的物理意义非常清晰：
     每个电子不是感受到完整的核电荷 $Z = 2$，而是感受到被另一个电子部分屏蔽后的
     有效核电荷 $Z^* \approx 1.69$。屏蔽量 $5/16 \approx 0.31$ 反映了电子之间的平均排斥效应。
   </p>
 
-  <InsightBox title="变分法的系统改进">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>变分法的系统改进</span></div>
     <p>
       Hylleraas（1929）通过引入更多变分参数和依赖于 $r_{12}$ 的试探函数，
       将氦原子能量的精度提高到了前所未有的水平。现代计算（Pekeris, Drake 等人）
@@ -771,7 +577,7 @@ const defined = {
       这说明变分法虽然在原理上只给出上界，但通过系统地扩大试探函数空间，
       可以达到事实上任意高的精度。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>Ritz 变分法</h3>
 
@@ -780,30 +586,30 @@ const defined = {
     $|\phi_1\rangle, |\phi_2\rangle, \ldots, |\phi_N\rangle$，将试探态取为其线性组合：
   </p>
 
-  <Fragment set:html={defined.ritzTrial} />
+  $$|\psi\rangle = \sum_{i=1}^{N} c_i|\phi_i\rangle$$
 
   <p>
     能量泛函变为展开系数的函数：
   </p>
 
-  <Fragment set:html={defined.ritzFunc} />
+  $$E[\{c_i\}] = \frac{\sum_{ij} c_i^* H_{ij} c_j}{\sum_{ij} c_i^* S_{ij} c_j}$$
 
   <p>
-    其中 <Fragment set:html={defined.ritzHij} /> 和 <Fragment set:html={defined.ritzSij} />
+    其中 $H_{ij} = \langle\phi_i|H|\phi_j\rangle$ 和 $S_{ij} = \langle\phi_i|\phi_j\rangle$
     分别是 Hamilton 矩阵和重叠矩阵。对 $c_k^*$ 求变分极值（$\partial E/\partial c_k^* = 0$）：
   </p>
 
-  <Fragment set:html={defined.ritzVariation} />
+  $$\frac{\partial E}{\partial c_k^*} = 0 \implies \sum_j H_{kj} c_j = E \sum_j S_{kj} c_j$$
 
   <p>
     这就是<strong>广义本征值问题</strong>：
   </p>
 
-  <Fragment set:html={defined.ritzSecular} />
+  $$\det(H_{ij} - E\,S_{ij}) = 0$$
 
   <p>
-    若基函数是正交归一的（<Fragment set:html={defined.ritzOrtho} />），则简化为标准本征值问题
-    <Fragment set:html={defined.ritzOrthoSecular} />。
+    若基函数是正交归一的（$S_{ij} = \delta_{ij}$），则简化为标准本征值问题
+    $$\det(H_{ij} - E\,\delta_{ij}) = 0$$。
   </p>
 
   <p>
@@ -814,14 +620,14 @@ const defined = {
     Ritz 方法是现代计算物理（如量子化学中的 Hartree-Fock 方法和 Configuration Interaction 方法）的基础。
   </p>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.5.3（附录）：变分法</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.8.1-8.2：变分原理与氦原子</li>
       <li>曾谨言,《量子力学》卷I, 第七章 &sect;7.4：变分法</li>
       <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, &sect;43：Ritz 变分法</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 6.4 WKB 近似 -->
@@ -833,7 +639,7 @@ const defined = {
   <p>
     WKB（Wentzel-Kramers-Brillouin）近似是量子力学的<strong>半经典近似</strong>，
     适用于势能 $V(x)$ 变化"缓慢"的情况。直观地说，如果势在一个 de Broglie 波长
-    <Fragment set:html={defined.lambdaDB} /> 的范围内变化很小，
+    $\lambda_{\text{dB}} = 2\pi\hbar/p$ 的范围内变化很小，
     粒子可以近似视为在局部均匀势中运动，其波函数具有近似的平面波形式，
     但振幅和波矢随位置缓慢变化。
   </p>
@@ -842,11 +648,11 @@ const defined = {
     WKB 近似的有效性条件可以定量地表述为：
   </p>
 
-  <Fragment set:html={defined.wkbCondition} />
+  $$\left|\frac{d\lambda_{\text{dB}}}{dx}\right| = \left|\frac{d}{dx}\frac{2\pi\hbar}{p(x)}\right| \ll 1$$
 
   <p>
-    即 de Broglie 波长的空间变化率远小于 1，或等价地 <Fragment set:html={defined.wkbCondInline} />。
-    这在 <Fragment set:html={defined.hbar} /> $\to 0$ 的极限下自动满足，因此 WKB 近似也被称为"$\hbar$ 展开"或
+    即 de Broglie 波长的空间变化率远小于 1，或等价地 $\left|\frac{dp/dx}{p^2/\hbar}\right| \ll 1$。
+    这在 $\hbar$ $\to 0$ 的极限下自动满足，因此 WKB 近似也被称为"$\hbar$ 展开"或
     "半经典展开"。
   </p>
 
@@ -856,64 +662,64 @@ const defined = {
     考虑一维定态 Schrodinger 方程：
   </p>
 
-  <Fragment set:html={defined.wkbSE} />
+  $$-\frac{\hbar^2}{2m}\psi'' + V\psi = E\psi$$
 
   <p>
     做如下 Ansatz（设试探形式）：
   </p>
 
-  <Fragment set:html={defined.wkbAnsatz} />
+  $$\psi(x) = A(x)\,e^{iS(x)/\hbar}$$
 
   <p>
     其中 $S(x)$ 是一个（一般为复数的）函数，类比经典力学中的作用量。代入 Schrodinger 方程并整理，
-    将 $S(x)$ 按 <Fragment set:html={defined.hbar} /> 的幂次展开：
+    将 $S(x)$ 按 $\hbar$ 的幂次展开：
   </p>
 
-  <Fragment set:html={defined.SexpandEq} />
+  $$S(x) = S_0(x) + \hbar S_1(x) + \cdots$$
 
-  <Derivation title="WKB 近似的系统推导">
+  <details class="derivation-block"><summary class="derivation-toggle">WKB 近似的系统推导</summary><div class="derivation-content">
     <p>
       将 $\psi = A\,e^{iS/\hbar}$ 代入 Schrodinger 方程。
       先计算导数：$\psi' = (A' + iA S'/\hbar)e^{iS/\hbar}$，
       $\psi'' = [A'' + 2iA'S'/\hbar + iAS''/\hbar - A(S')^2/\hbar^2]e^{iS/\hbar}$。代入得：
     </p>
-    <Fragment set:html={defined.wkbSubstFull} />
+    $$-\frac{\hbar^2}{2m}\left[A'' + \frac{2iA'S'}{\hbar} + \frac{iAS''}{\hbar} - \frac{A(S')^2}{\hbar^2}\right]e^{iS/\hbar} + VA\,e^{iS/\hbar} = EA\,e^{iS/\hbar}$$
     <p>
       消去公因子 $e^{iS/\hbar}$，令 $A(x)$ 吸收进 $S(x)$（写 $\psi = e^{i\Sigma/\hbar}$，
       其中 $\Sigma$ 为复函数），方程变为：
     </p>
-    <Fragment set:html={defined.wkbSubst} />
+    $$\frac{1}{2m}(S')^2 + V - E - \frac{i\hbar}{2m}S'' = 0$$
     <p>
-      将 $S$ 按 $\hbar$ 展开 <Fragment set:html={defined.SexpandEq} />，按 $\hbar$ 的幂次逐阶比较：
+      将 $S$ 按 $\hbar$ 展开 $$S(x) = S_0(x) + \hbar S_1(x) + \cdots$$，按 $\hbar$ 的幂次逐阶比较：
     </p>
     <p>
       <strong>$\hbar^0$ 阶</strong>（经典极限）：
     </p>
-    <Fragment set:html={defined.S0eq} />
+    $$(S_0')^2 = 2m(E - V) = p^2(x)$$
     <p>
       这正是经典 Hamilton-Jacobi 方程！解为：
     </p>
-    <Fragment set:html={defined.S0sol} />
+    $$S_0(x) = \pm\int^x p(x')\,dx'$$
     <p>
-      其中 <Fragment set:html={defined.classicalP} /> 是经典动量。
+      其中 $p(x) = \sqrt{2m(E - V(x))}$ 是经典动量。
     </p>
     <p>
       <strong>$\hbar^1$ 阶</strong>（第一量子修正）：
     </p>
-    <Fragment set:html={defined.S1eq} />
+    $$2S_0' S_1' + iS_0'' = 0$$
     <p>
       解为：
     </p>
-    <Fragment set:html={defined.S1sol} />
+    $$S_1 = -\frac{i}{2}\ln S_0' = -\frac{i}{2}\ln p(x) + \text{const}$$
     <p>
       将 $S_0$ 和 $S_1$ 合并，$\psi = e^{i(S_0 + \hbar S_1 + \cdots)/\hbar}$：
     </p>
-    <Fragment set:html={defined.wkbResult} />
+    $$\psi \sim \frac{1}{\sqrt{p(x)}}\exp\!\left(\pm\frac{i}{\hbar}\int^x p(x')\,dx'\right)$$
     <p>
       振幅中的 $1/\sqrt{p(x)}$ 因子有清晰的物理含义：经典粒子在动量大的地方速度快，
       停留时间短，概率密度 $|\psi|^2 \propto 1/p \propto 1/v$ 较小——这与经典概率分布一致。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>经典允许区与经典禁区</h3>
 
@@ -921,14 +727,14 @@ const defined = {
     在<strong>经典允许区</strong>（$E &gt; V(x)$），动量 $p(x)$ 是实数，WKB 波函数为振荡形式：
   </p>
 
-  <Fragment set:html={defined.wkbAllowed} />
+  $$\psi(x) \approx \frac{A}{\sqrt{p(x)}}\exp\!\left(\frac{i}{\hbar}\int^x p(x')\,dx'\right) + \frac{B}{\sqrt{p(x)}}\exp\!\left(-\frac{i}{\hbar}\int^x p(x')\,dx'\right)$$
 
   <p>
     在<strong>经典禁区</strong>（$E &lt; V(x)$），$p(x)$ 变为纯虚数，$|p(x)| = \sqrt{2m(V - E)}$，
     波函数变为指数衰减（或增长）形式：
   </p>
 
-  <Fragment set:html={defined.wkbForbidden} />
+  $$\psi(x) \approx \frac{C}{\sqrt{|p(x)|}}\exp\!\left(\frac{1}{\hbar}\int^x |p(x')|\,dx'\right) + \frac{D}{\sqrt{|p(x)|}}\exp\!\left(-\frac{1}{\hbar}\int^x |p(x')|\,dx'\right)$$
 
   <p>
     物理上，经典禁区中的指数衰减解对应量子隧穿——粒子以指数衰减的概率出现在经典力学禁止的区域。
@@ -937,7 +743,7 @@ const defined = {
   <h3>转折点与连接公式</h3>
 
   <p>
-    在<strong>经典转折点</strong>（turning point）<Fragment set:html={defined.turnPoint} /> 处，
+    在<strong>经典转折点</strong>（turning point）$E = V(x_0)$ 处，
     $p(x_0) = 0$，WKB 波函数的振幅 $1/\sqrt{p}$ 发散——WKB 近似在转折点处失效。
     这是因为转折点附近势能变化剧烈，违反了 WKB 的缓变条件。
   </p>
@@ -947,16 +753,16 @@ const defined = {
     此时 Schrodinger 方程化为 <strong>Airy 方程</strong>：
   </p>
 
-  <Fragment set:html={defined.airyEq} />
+  $$\frac{d^2\psi}{d\xi^2} - \xi\,\psi = 0$$
 
   <p>
-    其中 <Fragment set:html={defined.xiDef} />，特征长度为 <Fragment set:html={defined.lScale} />。
-    Airy 方程的两个线性无关解是 Airy 函数 <Fragment set:html={defined.airyAi} /> 和 <Fragment set:html={defined.airyBi} />。
+    其中 $\xi = (x - x_0)/l$，特征长度为 $l = \left(\frac{\hbar^2}{2mV'(x_0)}\right)^{1/3}$。
+    Airy 方程的两个线性无关解是 Airy 函数 $\text{Ai}(\xi)$ 和 $\text{Bi}(\xi)$。
     通过匹配 Airy 函数在 $\xi \to \pm\infty$ 处的渐近行为与两侧的 WKB 解，
     可以得到贯通转折点的<strong>连接公式</strong>（connection formulas）。
   </p>
 
-  <Derivation title="连接公式的推导思路">
+  <details class="derivation-block"><summary class="derivation-toggle">连接公式的推导思路</summary><div class="derivation-content">
     <p>
       考虑右转折点 $x_2$：$x &lt; x_2$ 为经典允许区，$x &gt; x_2$ 为禁区，
       $V'(x_2) &gt; 0$。在 $x_2$ 附近线性化势能后，定态 Schrodinger 方程变为 Airy 方程。
@@ -979,20 +785,20 @@ const defined = {
       注意连接公式有方向性：从指数衰减侧到振荡侧（物理方向）是安全的，
       反方向（从振荡侧到指数侧）是不稳定的——微小的误差会从衰减解"泄漏"到指数增长解中。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
     对于右转折点 $x_2$（允许区在左，禁区在右），连接公式为：
   </p>
 
-  <Fragment set:html={defined.connFormula1} />
+  $$\frac{2}{\sqrt{|p(x)|}}\cos\!\left(\frac{1}{\hbar}\int_{x}^{x_2} p\,dx' - \frac{\pi}{4}\right) \longleftrightarrow \frac{1}{\sqrt{|p(x)|}}\exp\!\left(-\frac{1}{\hbar}\int_{x_2}^{x}|p|\,dx'\right)$$
 
   <p>
     禁区侧的指数衰减解对应允许区侧带有特定 $\pi/4$ 相移的余弦函数。
     类似地，对于左转折点 $x_1$（禁区在左，允许区在右）：
   </p>
 
-  <Fragment set:html={defined.connFormulaLeft} />
+  $$\frac{2}{\sqrt{|p(x)|}}\cos\!\left(\frac{1}{\hbar}\int_{x_1}^{x} p\,dx' - \frac{\pi}{4}\right) \longleftrightarrow \frac{1}{\sqrt{|p(x)|}}\exp\!\left(-\frac{1}{\hbar}\int_{x}^{x_1}|p|\,dx'\right)$$
 
   <p>
     连接公式中的 $\pi/4$ 相移（即 Maslov 指数）是转折点处的量子修正，
@@ -1002,31 +808,31 @@ const defined = {
   <h3>Bohr-Sommerfeld 量子化条件</h3>
 
   <p>
-    考虑一个一维束缚态问题，粒子被限制在两个转折点 <Fragment set:html={defined.bsTwoTurning} />
+    考虑一个一维束缚态问题，粒子被限制在两个转折点 $x_1$, $x_2$
     （$V(x_1) = V(x_2) = E$）之间。在允许区内，左转折点给出的 WKB 解为：
   </p>
 
-  <Fragment set:html={defined.bsPhaseLeft} />
+  $$\psi \sim \frac{2}{\sqrt{p}}\cos\!\left(\frac{1}{\hbar}\int_{x_1}^{x}p\,dx' - \frac{\pi}{4}\right)$$
 
   <p>
     右转折点给出的 WKB 解为：
   </p>
 
-  <Fragment set:html={defined.bsPhaseRight} />
+  $$\psi \sim \frac{2}{\sqrt{p}}\cos\!\left(\frac{1}{\hbar}\int_{x}^{x_2}p\,dx' - \frac{\pi}{4}\right)$$
 
   <p>
     这两个表达式必须在允许区内处处一致，由此得到相位的自洽条件：
   </p>
 
-  <Derivation title="Bohr-Sommerfeld 量子化条件的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">Bohr-Sommerfeld 量子化条件的推导</summary><div class="derivation-content">
     <p>
       从左转折点出发的 WKB 解（经连接公式确定）在允许区内为：
     </p>
-    <Fragment set:html={defined.bsPhaseLeft} />
+    $$\psi \sim \frac{2}{\sqrt{p}}\cos\!\left(\frac{1}{\hbar}\int_{x_1}^{x}p\,dx' - \frac{\pi}{4}\right)$$
     <p>
       从右转折点出发的 WKB 解为：
     </p>
-    <Fragment set:html={defined.bsPhaseRight} />
+    $$\psi \sim \frac{2}{\sqrt{p}}\cos\!\left(\frac{1}{\hbar}\int_{x}^{x_2}p\,dx' - \frac{\pi}{4}\right)$$
     <p>
       在允许区内任意一点 $x$，两个表达式描述的是同一个波函数，因此必须一致。
       将第一个表达式中的积分拆分：
@@ -1036,47 +842,47 @@ const defined = {
     <p>
       两个余弦函数一致的条件是相位之差为 $n\pi$（$n$ 为非负整数）：
     </p>
-    <Fragment set:html={defined.bsConsistency} />
+    $$\frac{1}{\hbar}\int_{x_1}^{x_2}p\,dx' - \frac{\pi}{4} = n\pi + \frac{\pi}{2} - \left(\frac{1}{\hbar}\int_{x}^{x_2}p\,dx' - \frac{\pi}{4}\right)$$
     <p>
       整理得：
     </p>
-    <Fragment set:html={defined.bsSimplify} />
+    $$\frac{1}{\hbar}\int_{x_1}^{x_2}p\,dx = \left(n + \frac{1}{2}\right)\pi$$
     <p>
       将积分写成完整的经典周期轨道（从 $x_1$ 到 $x_2$ 再返回），
       $\oint p\,dx = 2\int_{x_1}^{x_2} p\,dx$，即得 Bohr-Sommerfeld 量子化条件。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
     最终结果为著名的 <strong>Bohr-Sommerfeld 量子化条件</strong>：
   </p>
 
-  <Fragment set:html={defined.bohrSommerfeld} />
+  $$\oint p\,dx = \left(n + \frac{1}{2}\right)2\pi\hbar, \quad n = 0, 1, 2, \ldots$$
 
   <p>
     或等价地写为半周期形式：
   </p>
 
-  <Fragment set:html={defined.bohrSommerfeldAlt} />
+  $$\int_{x_1}^{x_2} p(x)\,dx = \left(n + \frac{1}{2}\right)\pi\hbar$$
 
   <p>
-    与旧量子论的 Bohr-Sommerfeld 条件 <Fragment set:html={defined.bohrSommerfeldClassical} />
+    与旧量子论的 Bohr-Sommerfeld 条件 $\oint p\,dx = n \cdot 2\pi\hbar$
     相比，WKB 给出的结果多了 $1/2$（即 Maslov 修正），这正是来自两个转折点各贡献 $\pi/4$ 的相移。
   </p>
 
-  <InsightBox title="WKB 对谐振子的精确性">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>WKB 对谐振子的精确性</span></div>
     <p>
-      将 Bohr-Sommerfeld 条件应用于一维谐振子 <Fragment set:html={defined.sho} />：
-      转折点为 $x_{1,2} = \pm x_0$（<Fragment set:html={defined.shoX0} />），
-      动量为 <Fragment set:html={defined.shoP} />。
-      积分 <Fragment set:html={defined.shoIntegral} />。
+      将 Bohr-Sommerfeld 条件应用于一维谐振子 $V = \frac{1}{2}m\omega^2 x^2$：
+      转折点为 $x_{1,2} = \pm x_0$（$x_0 = \sqrt{2E/(m\omega^2)}$），
+      动量为 $p(x) = \sqrt{2m(E - \frac{1}{2}m\omega^2 x^2)} = m\omega\sqrt{x_0^2 - x^2}$。
+      积分 $$\int_{-x_0}^{x_0}m\omega\sqrt{x_0^2 - x^2}\,dx = \frac{\pi}{2}m\omega x_0^2 = \frac{\pi E}{\omega}$$。
       Bohr-Sommerfeld 条件给出 $\pi E/\omega = (n + 1/2)\pi\hbar$，
-      即 <Fragment set:html={defined.shoResult} />——
+      即 $$E_n = \left(n + \frac{1}{2}\right)\hbar\omega$$——
       这恰好是谐振子的<strong>精确</strong>能谱！WKB 对谐振子给出精确结果并非偶然，
       而是因为谐振子势的特殊对称性使得高阶 WKB 修正全部为零。
       对于一般势阱，WKB 只给出近似结果，但对于高激发态（大 $n$）通常很精确。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>量子隧穿的 WKB 公式</h3>
 
@@ -1086,20 +892,20 @@ const defined = {
     WKB 波函数为指数衰减，隧穿透射系数为：
   </p>
 
-  <Fragment set:html={defined.tunnelCoeff} />
+  $$T \approx \exp\!\left(-\frac{2}{\hbar}\int_{x_1}^{x_2}|p(x)|\,dx\right)$$
 
   <p>
     写成更显式的形式：
   </p>
 
-  <Fragment set:html={defined.tunnelGamow} />
+  $$T \approx \exp\!\left(-\frac{2}{\hbar}\int_{x_1}^{x_2}\sqrt{2m(V(x) - E)}\,dx\right)$$
 
   <p>
     这就是 <strong>Gamow 公式</strong>。指数中的积分代表粒子穿越禁区所需"翻越"的经典作用量。
     势垒越宽或越高，隧穿概率越小——呈指数压低。
   </p>
 
-  <Derivation title="WKB 隧穿公式的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">WKB 隧穿公式的推导</summary><div class="derivation-content">
     <p>
       考虑从左向右入射的粒子遇到势垒（$x_1 &lt; x &lt; x_2$ 区域 $V &gt; E$）。
       在禁区内，WKB 波函数为：
@@ -1123,7 +929,7 @@ const defined = {
       前面的系数（包含转折点连接公式的贡献）通常是一个 $O(1)$ 量级的前因子，
       与指数因子相比可以忽略，故透射系数的主要行为由指数因子决定。
     </p>
-  </Derivation>
+  </div></details>
 
   <p>
     WKB 隧穿公式有广泛的物理应用：
@@ -1146,7 +952,7 @@ const defined = {
     </li>
   </ul>
 
-  <ThinkingBox title="WKB 与经典-量子对应">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>WKB 与经典-量子对应</span></div>
     <p>
       WKB 近似深刻地体现了量子力学与经典力学的关系。在零阶，WKB 给出的 $S_0$ 正是
       经典 Hamilton-Jacobi 方程的解——经典力学的作用量。量子效应体现在两个层面：
@@ -1161,16 +967,16 @@ const defined = {
       而 WKB 对应短波长近似（eikonal 近似）。这一类比不是偶然的——
       Hamilton 的光学-力学类比正是 Schrodinger 建立波动方程的出发点。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.5.4（补充材料）：WKB 近似</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.9：WKB 近似</li>
       <li>曾谨言,《量子力学》卷I, 第七章 &sect;7.5：准经典近似（WKB 方法）</li>
       <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, &sect;46-&sect;50：准经典近似（经典处理）</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 章末总结 -->
@@ -1183,19 +989,19 @@ const defined = {
 
   <ol>
     <li>
-      <strong>非简并定态微扰论</strong>：将 Hamilton 量分解为已知部分 <Fragment set:html={defined.H0} /> 加小扰动
-      <Fragment set:html={defined.lambdaV} />，逐阶展开能量和态矢量。
-      一阶能量修正 <Fragment set:html={defined.En1inline} /> 是微扰势的期望值；
-      二阶能量修正 <Fragment set:html={defined.En2inline} /> 总使基态能量降低。
+      <strong>非简并定态微扰论</strong>：将 Hamilton 量分解为已知部分 $H_0$ 加小扰动
+      $\lambda V$，逐阶展开能量和态矢量。
+      一阶能量修正 $E_n^{(1)} = \langle n^{(0)}|V|n^{(0)}\rangle$ 是微扰势的期望值；
+      二阶能量修正 $E_n^{(2)} = \sum_{m \neq n} \frac{|\langle m^{(0)}|V|n^{(0)}\rangle|^2}{E_n^{(0)} - E_m^{(0)}}$ 总使基态能量降低。
       适用条件是微扰矩阵元远小于能级间隔。
     </li>
     <li>
       <strong>简并定态微扰论</strong>：当能级简并时，需要先在简并子空间中对角化微扰矩阵，
-      通过久期方程确定"好态"和一阶能量修正。选择好量子数（与 <Fragment set:html={defined.H0} /> 和 $V$ 都对易的
+      通过久期方程确定"好态"和一阶能量修正。选择好量子数（与 $H_0$ 和 $V$ 都对易的
       可观测量）可以简化计算。典型应用包括线性 Stark 效应和正常 Zeeman 效应。
     </li>
     <li>
-      <strong>变分法</strong>：基于变分原理 <Fragment set:html={defined.varPrincipleShort} />，
+      <strong>变分法</strong>：基于变分原理 $E[\psi] = \frac{\langle\psi|H|\psi\rangle}{\langle\psi|\psi\rangle} \geq E_0$，
       通过优化试探波函数的参数给出基态能量的上界。
       氦原子基态的变分计算（$Z^* = 27/16$）给出 $-77.5$ eV，与实验值偏差仅约 $2\%$。
       Ritz 变分法将变分问题系统化为矩阵本征值问题。
@@ -1215,7 +1021,7 @@ const defined = {
     在后续学习散射理论和多体问题时，这些近似方法将不断以各种形式重现。
   </p>
 
-  <ThinkingBox title="近似方法的哲学">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>近似方法的哲学</span></div>
     <p>
       精确可解的模型提供了物理直觉和定性理解，而近似方法才是将量子力学应用于真实世界的桥梁。
       Richard Feynman 曾说，物理学的艺术在于"知道什么时候做什么样的近似"。
@@ -1223,6 +1029,9 @@ const defined = {
       WKB 方法则揭示了量子世界与经典世界之间的深层联系。
       掌握这些近似方法，不仅是解决具体问题的技能，更是培养物理判断力的过程。
     </p>
-  </ThinkingBox>
+  </div>`;
+---
 
+<ChapterLayout title="第六章 近似方法" courseId="qm" chapterId="ch06">
+  <Fragment set:html={content} />
 </ChapterLayout>

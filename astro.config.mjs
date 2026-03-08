@@ -1,19 +1,12 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
-import mdx from '@astrojs/mdx';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
+import mathEscapePlugin from './vite-plugin-math-escape.mjs';
 
 export default defineConfig({
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss(), mathEscapePlugin()]
   },
-  markdown: {
-    remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex],
-  },
-  integrations: [mdx()],
   i18n: {
     defaultLocale: 'zh',
     locales: ['zh', 'en'],

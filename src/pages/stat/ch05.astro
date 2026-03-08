@@ -1,24 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const boseDistribution = `$$\\langle n_k\\rangle_{\\text{BE}} = \\frac{1}{e^{\\beta(\\varepsilon_k - \\mu)} - 1}$$`;
-const fermiDistribution = `$$\\langle n_k\\rangle_{\\text{FD}} = \\frac{1}{e^{\\beta(\\varepsilon_k - \\mu)} + 1}$$`;
-const xiBosonSingle = `$$\\Xi_k^{\\text{BE}} = \\sum_{n_k=0}^{\\infty} \\left(ze^{-\\beta\\varepsilon_k}\\right)^{n_k} = \\frac{1}{1 - ze^{-\\beta\\varepsilon_k}}$$`;
-const xiFermionSingle = `$$\\Xi_k^{\\text{FD}} = \\sum_{n_k=0}^{1} \\left(ze^{-\\beta\\varepsilon_k}\\right)^{n_k} = 1 + ze^{-\\beta\\varepsilon_k}$$`;
-const xiProduct = `$$\\Xi = \\prod_k \\Xi_k$$`;
-const pvEquation = `$$PV = k_BT \\ln\\Xi = \\pm k_BT \\sum_k \\ln\\!\\left(1 \\pm ze^{-\\beta\\varepsilon_k}\\right)$$`;
-const densityOfStates3D = `$$g(\\varepsilon) = \\frac{4\\pi V(2m)^{3/2}}{h^3}\\,\\varepsilon^{1/2} = \\frac{V}{4\\pi^2}\\left(\\frac{2m}{\\hbar^2}\\right)^{3/2}\\varepsilon^{1/2}$$`;
-const sumToIntegral = `$$\\sum_k f(\\varepsilon_k) \\to \\int_0^{\\infty} g(\\varepsilon)\\,f(\\varepsilon)\\,d\\varepsilon$$`;
-const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_k} \\quad (z \\ll 1)$$`;
----
-
-<ChapterLayout title="第五章 量子统计" courseId="stat" chapterId="ch05">
-
-  <h1>第五章 量子统计</h1>
+const content = String.raw`<h1>第五章 量子统计</h1>
 
   <p>
     经典统计力学将粒子视为可分辨的，并通过 $1/N!$ 因子事后修正不可分辨性。然而，这一"修补"方案在低温或高密度下（$n\lambda_T^3 \gtrsim 1$）根本失效——量子力学要求全同粒子的波函数满足严格的交换对称性，从根本上改变了微观态的计数规则。本章将从量子力学的全同粒子原理出发，通过巨正则系综的强大框架，严格推导出Bose-Einstein分布和Fermi-Dirac分布，建立量子统计的完整理论基础。
@@ -55,11 +38,11 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
     这一关联是量子场论的深刻结果，无法在非相对论量子力学框架内证明。违反自旋-统计关联会导致因果律破坏或能量无下界。
   </p>
 
-  <InsightBox title="自旋-统计定理的物理后果">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>自旋-统计定理的物理后果</span></div>
     <p>
       自旋-统计关联的影响远超统计力学。它直接决定了：(1) 元素周期表的结构（Pauli不相容原理使电子逐层填充）；(2) 物质的稳定性（Dyson & Lenard, 1967证明了费米统计对物质稳定性的必要性——如果电子是玻色子，物质将坍缩，$E \propto -N^{7/5}$）；(3) 白矮星和中子星的存在（费米简并压支撑引力坍缩）；(4) 超导和超流（玻色子凝聚或费米子配对形成Cooper对后凝聚）。可以说，自旋-统计定理是自然界最深刻的对称性原理之一。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>Fock空间与占据数表象</h3>
   <p>
@@ -111,7 +94,7 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
     其中 $n = N/V$ 是粒子数密度，$\lambda_T = h/\sqrt{2\pi mk_BT}$ 是热de Broglie波长。条件 $n\lambda_T^3 \ll 1$ 要求粒子间平均距离 $n^{-1/3}$ 远大于量子关联长度 $\lambda_T$——即波包之间没有显著重叠。对于室温空气（$n \sim 2.5\times 10^{25}$/m$^3$，$T \sim 300$ K），$n\lambda_T^3 \sim 10^{-5}$，经典近似极好。但对于液$^4$He（$T \sim 2$ K）或金属中的传导电子（$T_F \sim 10^4$ K），量子效应不可忽略。
   </p>
 
-  <ThinkingBox title="三种统计的态计数比较">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>三种统计的态计数比较</span></div>
     <p>
       考虑2个粒子分配到2个单粒子态的简单例子。
     </p>
@@ -123,9 +106,9 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
     <p>
       这个简单例子揭示了量子统计的本质：<strong>不可分辨性减少了微观态数</strong>。MB给出4态，BE给出3态，FD仅1态。对于宏观系统，这种计数差异导致了全然不同的热力学行为——BEC、费米简并、超流超导等现象都源于此。值得注意的是，MB统计中两粒子在同一态的概率为 $2/4 = 1/2$，而BE中为 $1/3$——玻色子并非"倾向于聚在一起"（相比等概率而言实际上在同一态的概率更低），真正的玻色聚束效应需要在温度足够低时才显现。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 5.1-5.3</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 9.1-9.2</li>
@@ -133,7 +116,7 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
       <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;53-54</li>
       <li>W. Pauli, <em>Physical Review</em>, <strong>58</strong>, 716 (1940) — 自旋-统计定理</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="be-fd-distributions">5.2 Bose-Einstein与Fermi-Dirac分布</h2>
@@ -157,11 +140,11 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
     其中每个因子 $\Xi_k$ 是第 $k$ 个单粒子态的"巨配分函数"。
   </p>
 
-  <InsightBox title="巨正则系综是量子统计的天然语言">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>巨正则系综是量子统计的天然语言</span></div>
     <p>
       巨正则系综之所以是量子统计的天然框架，有深刻的物理原因。在二次量子化（second quantization）中，产生算符 $\hat{a}_k^\dagger$ 和湮灭算符 $\hat{a}_k$ 自然地改变粒子数——Fock空间中的态就是粒子数不确定的态。化学势 $\mu$ 与粒子数算符 $\hat{N} = \sum_k \hat{a}_k^\dagger\hat{a}_k$ 共轭，正如温度与能量共轭。巨配分函数 $\Xi = \text{Tr}_{\mathcal{F}}[e^{-\beta(\hat{H}-\mu\hat{N})}]$ 就是Fock空间上的迹——这与量子场论的有限温度形式体系（Matsubara形式体系）完全吻合。光子和声子的数目不守恒（$\mu = 0$），更是必须使用巨正则系综。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>Bose-Einstein分布的推导</h3>
   <p>
@@ -178,7 +161,7 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
     若取基态能量 $\varepsilon_0 = 0$，则 $\mu &lt; 0$（或 $0 &lt; z &lt; 1$）。这是玻色子化学势的根本约束。
   </p>
 
-  <Derivation title="BE分布的严格推导">
+  <details class="derivation-block"><summary class="derivation-toggle">BE分布的严格推导</summary><div class="derivation-content">
     <p>第 $k$ 个单粒子态的平均占据数为</p>
     $$
       \langle n_k\rangle = \sum_{n_k=0}^{\infty} n_k \cdot \frac{(ze^{-\beta\varepsilon_k})^{n_k}}{\Xi_k}
@@ -192,7 +175,7 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
       \langle n_k\rangle_{\text{BE}} = \frac{ze^{-\beta\varepsilon_k}}{1 - ze^{-\beta\varepsilon_k}} = \frac{1}{z^{-1}e^{\beta\varepsilon_k} - 1} = \frac{1}{e^{\beta(\varepsilon_k - \mu)} - 1}
     $$
     <p>这就是<strong>Bose-Einstein分布</strong>。当 $\mu \to \varepsilon_0^-$（即 $z \to e^{\beta\varepsilon_0}$）时，基态占据数 $\langle n_0\rangle \to \infty$——这是<strong>Bose-Einstein凝聚</strong>（BEC）的前兆。</p>
-  </Derivation>
+  </div></details>
 
   <Fragment set:html={boseDistribution} />
   <p>
@@ -208,13 +191,13 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
     注意这里没有收敛性条件——有限和总是良定义的。因此费米子的化学势 $\mu$ 没有上界限制（$z$ 可以任意大）。
   </p>
 
-  <Derivation title="FD分布的严格推导">
+  <details class="derivation-block"><summary class="derivation-toggle">FD分布的严格推导</summary><div class="derivation-content">
     <p>由 $\ln\Xi_k^{\text{FD}} = \ln(1 + ze^{-\beta\varepsilon_k})$，第 $k$ 态的平均占据数为</p>
     $$
       \langle n_k\rangle_{\text{FD}} = -\frac{1}{\beta}\frac{\partial\ln\Xi_k}{\partial\varepsilon_k} = \frac{ze^{-\beta\varepsilon_k}}{1 + ze^{-\beta\varepsilon_k}} = \frac{1}{z^{-1}e^{\beta\varepsilon_k} + 1} = \frac{1}{e^{\beta(\varepsilon_k - \mu)} + 1}
     $$
     <p>这就是<strong>Fermi-Dirac分布</strong>。注意 $0 \leq \langle n_k\rangle_{\text{FD}} \leq 1$，与Pauli原理一致——即使在数学上我们没有显式施加 $n_k \leq 1$ 的约束（它自然从费米子的反对称性中涌现）。</p>
-  </Derivation>
+  </div></details>
 
   <Fragment set:html={fermiDistribution} />
 
@@ -258,11 +241,11 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
     对于金属中的传导电子，$n \sim 10^{28}$/m$^3$，$T_F \sim 10^4$–$10^5$ K，远高于室温——因此金属中的电子即使在室温下也是高度量子简并的费米气体。
   </p>
 
-  <InsightBox title="Fermi面——凝聚态物理的核心概念">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Fermi面——凝聚态物理的核心概念</span></div>
     <p>
       Fermi面是凝聚态物理中最重要的概念之一。金属的几乎所有低能性质——电导率、比热、磁化率、超导——都由Fermi面附近 $\sim k_BT$ 能量窗口内的电子决定。Fermi面的形状（由晶格周期势决定，通常不是球形）直接控制了材料的物理性质。实验上，Fermi面可以通过de Haas-van Alphen效应（磁化率的振荡）和角分辨光电子能谱（ARPES）精确测量。理解Fermi面是理解金属、半导体、拓扑绝缘体等量子材料的基础。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>热力学量的统一表达</h3>
   <p>
@@ -304,7 +287,7 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
   </p>
   <Fragment set:html={densityOfStates3D} />
 
-  <Derivation title="态密度在不同维度的形式">
+  <details class="derivation-block"><summary class="derivation-toggle">态密度在不同维度的形式</summary><div class="derivation-content">
     <p>态密度的形式强烈依赖于空间维度 $d$ 和色散关系：</p>
     <ul>
       <li><strong>3D</strong>（$\varepsilon = \hbar^2 k^2/2m$）：$g(\varepsilon) \propto \varepsilon^{1/2}$ — 随能量增长</li>
@@ -316,7 +299,7 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
       g(\varepsilon) \propto \varepsilon^{d/s - 1}
     $$
     <p>$d=3, s=2$（非相对论）给出 $g \propto \varepsilon^{1/2}$；$d=3, s=1$（光子、声子）给出 $g \propto \varepsilon^2$。态密度的形式直接决定了量子统计的热力学行为——例如BEC是否发生就取决于 $g(\varepsilon)$ 在 $\varepsilon \to 0$ 时的行为。</p>
-  </Derivation>
+  </div></details>
 
   <p>
     利用态密度，热力学量的求和转化为积分。例如平均粒子数和状态方程变为
@@ -337,7 +320,7 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
     这一关系对BE和FD统计<strong>均成立</strong>（只要色散关系为 $\varepsilon \propto k^2$），与经典理想气体的结果形式相同。但注意 $\langle E\rangle$ 本身已包含量子统计的修正。
   </p>
 
-  <Derivation title="$PV = \frac{2}{3}E$ 的证明">
+  <details class="derivation-block"><summary class="derivation-toggle">$PV = \frac{2}{3}E$ 的证明</summary><div class="derivation-content">
     <p>对于三维自由粒子，$g(\varepsilon) = C\varepsilon^{1/2}$（$C$ 为常数）。考虑</p>
     $$
       PV = \pm k_BT\int_0^{\infty} C\varepsilon^{1/2}\ln(1\pm ze^{-\beta\varepsilon})\,d\varepsilon
@@ -355,7 +338,7 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
       \langle E\rangle = \int_0^{\infty}\frac{\varepsilon\cdot g(\varepsilon)}{e^{\beta(\varepsilon-\mu)}\mp 1}\,d\varepsilon = \int_0^{\infty}\frac{C\varepsilon^{3/2}}{e^{\beta(\varepsilon-\mu)}\mp 1}\,d\varepsilon
     $$
     <p>因此 $PV = \frac{2}{3}\langle E\rangle$。注意这一结果仅依赖于 $g(\varepsilon) \propto \varepsilon^{1/2}$（即二次色散关系），与统计类型无关。对于相对论性粒子（$\varepsilon = \hbar ck$，$g(\varepsilon) \propto \varepsilon^2$），类似的分部积分给出 $PV = \frac{1}{3}E$。</p>
-  </Derivation>
+  </div></details>
 
   <h3>经典极限的统一恢复</h3>
   <p>
@@ -384,7 +367,7 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
     $l = 1$ 项给出经典理想气体，$l \geq 2$ 项是纯量子效应。注意玻色子（下号）的 $l = 2$ 修正为 $-z^2/(2^{5/2})$——<strong>降低</strong>压力（有效吸引作用），而费米子（上号）的修正为 $+z^2/(2^{5/2})$——<strong>增加</strong>压力（有效排斥作用，Pauli排斥的热力学体现）。
   </p>
 
-  <ThinkingBox title="三种分布的深层统一与差异">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>三种分布的深层统一与差异</span></div>
     <p>
       BE、FD和MB三种分布可以统一写为
     </p>
@@ -402,9 +385,9 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
     <p>
       从信息论角度看，BE分布对应几何分布（无限可加），FD分布对应Bernoulli分布（二值），MB分布对应Poisson分布（独立稀疏事件）。在 $z \to 0$ 时三者统一——正如在经典世界中，全同粒子的量子特性变得不可见。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <InsightBox title="量子统计的实验验证里程碑">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>量子统计的实验验证里程碑</span></div>
     <p>
       量子统计的预言已在众多实验中得到精确验证：
     </p>
@@ -415,9 +398,9 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
       <li><strong>原子BEC</strong>（Cornell & Wieman; Ketterle, 1995）：在超冷碱金属原子气体中直接观测到BEC，2001年诺贝尔物理学奖。</li>
       <li><strong>费米简并气体</strong>（DeMarco & Jin, 1999）：在超冷$^{40}$K原子中观测到费米简并。</li>
     </ul>
-  </InsightBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 5.4-5.5, 6.1-6.2</li>
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 9.3-9.5, 11.1</li>
@@ -426,6 +409,9 @@ const classicalLimit = `$$\\langle n_k\\rangle \\approx ze^{-\\beta\\varepsilon_
       <li>A. Sommerfeld, <em>Zeitschrift für Physik</em>, <strong>47</strong>, 1 (1928) — 金属的自由电子理论</li>
       <li>M.H. Anderson et al., <em>Science</em>, <strong>269</strong>, 198 (1995) — 原子BEC的首次实现</li>
     </ul>
-  </ReferenceBox>
+  </div>`;
+---
 
+<ChapterLayout title="第五章 量子统计" courseId="stat" chapterId="ch05">
+  <Fragment set:html={content} />
 </ChapterLayout>

@@ -1,145 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const defined = {
-  /* ── helpers: every LaTeX snippet that contains { or } lives here ── */
-
-  /* §8.1 散射截面与散射振幅 */
-  asymptotic: String.raw`$$\psi(\mathbf{r}) \xrightarrow{r \to \infty} e^{ikz} + f(\theta, \varphi)\,\frac{e^{ikr}}{r}$$`,
-  asymptoticInline: String.raw`$\psi \to e^{ikz} + f(\theta,\varphi)\,e^{ikr}/r$`,
-  diffCross: String.raw`$$\frac{d\sigma}{d\Omega} = |f(\theta, \varphi)|^2$$`,
-  totalCross: String.raw`$$\sigma_{\text{tot}} = \int |f(\theta, \varphi)|^2\,d\Omega = \int_0^{2\pi}d\varphi\int_0^{\pi}|f(\theta,\varphi)|^2\sin\theta\,d\theta$$`,
-  fThetaPhi: String.raw`$f(\theta, \varphi)$`,
-  fTheta: String.raw`$f(\theta)$`,
-  eikz: String.raw`$e^{ikz}$`,
-  eikrOverR: String.raw`$e^{ikr}/r$`,
-  kDef: String.raw`$k = \sqrt{2mE}/\hbar$`,
-  dsigma: String.raw`$d\sigma/d\Omega$`,
-  sigmaTot: String.raw`$\sigma_{\text{tot}}$`,
-
-  /* 散射几何 */
-  jInc: String.raw`$$\mathbf{j}_{\text{inc}} = \frac{\hbar k}{m}\hat{z}$$`,
-  jSc: String.raw`$$\mathbf{j}_{\text{sc}} = \frac{\hbar k}{m}\frac{|f(\theta,\varphi)|^2}{r^2}\hat{r}$$`,
-  dsigmaDef: String.raw`$$d\sigma = \frac{|j_{\text{sc}}|}{|j_{\text{inc}}|}\,r^2\,d\Omega = |f(\theta,\varphi)|^2\,d\Omega$$`,
-  jinc: String.raw`$j_{\text{inc}}$`,
-  jsc: String.raw`$j_{\text{sc}}$`,
-  dOmega: String.raw`$d\Omega = \sin\theta\,d\theta\,d\varphi$`,
-
-  /* Lippmann-Schwinger 与 T 矩阵 */
-  LS: String.raw`$$|\psi^{(\pm)}\rangle = |\phi\rangle + \hat{G}_0^{(\pm)}\hat{V}|\psi^{(\pm)}\rangle$$`,
-  G0def: String.raw`$$\hat{G}_0^{(\pm)} = \frac{1}{E - \hat{H}_0 \pm i\epsilon}$$`,
-  G0inline: String.raw`$\hat{G}_0^{(\pm)} = (E - \hat{H}_0 \pm i\epsilon)^{-1}$`,
-  phiKet: String.raw`$|\phi\rangle$`,
-  psiPlusKet: String.raw`$|\psi^{(+)}\rangle$`,
-  Tdef: String.raw`$$\hat{T} = \hat{V} + \hat{V}\hat{G}_0^{(+)}\hat{T}$$`,
-  TdefAlt: String.raw`$$\hat{T} = \hat{V} + \hat{V}\hat{G}_0^{(+)}\hat{V} + \hat{V}\hat{G}_0^{(+)}\hat{V}\hat{G}_0^{(+)}\hat{V} + \cdots$$`,
-  fFromT: String.raw`$$f(\theta,\varphi) = -\frac{2m}{4\pi\hbar^2}\langle\mathbf{k}_f|\hat{T}|\mathbf{k}_i\rangle$$`,
-  LScoord: String.raw`$$\psi(\mathbf{r}) = e^{i\mathbf{k}\cdot\mathbf{r}} - \frac{2m}{\hbar^2}\int \frac{e^{ik|\mathbf{r}-\mathbf{r}'|}}{4\pi|\mathbf{r}-\mathbf{r}'|}\,V(\mathbf{r}')\,\psi(\mathbf{r}')\,d^3r'$$`,
-  G0coord: String.raw`$$G_0^{(+)}(\mathbf{r},\mathbf{r}') = -\frac{2m}{\hbar^2}\frac{e^{ik|\mathbf{r}-\mathbf{r}'|}}{4\pi|\mathbf{r}-\mathbf{r}'|}$$`,
-  psiVpsi: String.raw`$\langle\phi|\hat{V}|\psi^{(+)}\rangle$`,
-
-  /* §8.2 分波法 */
-  partialWaveF: String.raw`$$f(\theta) = \frac{1}{k}\sum_{l=0}^{\infty}(2l+1)\,e^{i\delta_l}\sin\delta_l\,P_l(\cos\theta)$$`,
-  partialWaveFalt: String.raw`$$f(\theta) = \sum_{l=0}^{\infty}(2l+1)\,f_l\,P_l(\cos\theta)$$`,
-  flDef: String.raw`$$f_l = \frac{e^{i\delta_l}\sin\delta_l}{k} = \frac{1}{k\cot\delta_l - ik}$$`,
-  flInline: String.raw`$f_l = e^{i\delta_l}\sin\delta_l / k$`,
-  sigmaL: String.raw`$$\sigma_l = \frac{4\pi(2l+1)}{k^2}\sin^2\delta_l$$`,
-  sigmaLmax: String.raw`$\sigma_l^{\max} = 4\pi(2l+1)/k^2$`,
-  sigmaTotal: String.raw`$$\sigma_{\text{tot}} = \sum_{l=0}^{\infty}\sigma_l = \frac{4\pi}{k^2}\sum_{l=0}^{\infty}(2l+1)\sin^2\delta_l$$`,
-  deltaL: String.raw`$\delta_l$`,
-  Pl: String.raw`$P_l(\cos\theta)$`,
-  Sl: String.raw`$S_l = e^{2i\delta_l}$`,
-  SlInline: String.raw`$S_l = e^{2i\delta_l}$`,
-
-  /* 渐近行为 */
-  freeSoln: String.raw`$$R_l^{(0)}(r) \xrightarrow{r\to\infty} \frac{1}{kr}\sin\!\left(kr - \frac{l\pi}{2}\right)$$`,
-  scattSoln: String.raw`$$R_l(r) \xrightarrow{r\to\infty} \frac{1}{kr}\sin\!\left(kr - \frac{l\pi}{2} + \delta_l\right)$$`,
-  planeExpand: String.raw`$$e^{ikz} = \sum_{l=0}^{\infty}(2l+1)\,i^l\,j_l(kr)\,P_l(\cos\theta)$$`,
-  jlAsymptotic: String.raw`$j_l(kr) \to \sin(kr - l\pi/2)/(kr)$`,
-  nlAsymptotic: String.raw`$n_l(kr) \to -\cos(kr - l\pi/2)/(kr)$`,
-  psiAsympExpand: String.raw`$$\psi(r,\theta) \xrightarrow{r\to\infty} \sum_{l=0}^{\infty}(2l+1)\,i^l\,\frac{A_l}{kr}\sin\!\left(kr - \frac{l\pi}{2} + \delta_l\right)P_l(\cos\theta)$$`,
-
-  /* 散射长度与低能 */
-  scattLength: String.raw`$$f \xrightarrow{k\to 0} -a$$`,
-  scattLengthDef: String.raw`$a = -\lim_{k\to 0} f_0 = -\lim_{k\to 0} \delta_0/k$`,
-  scattLengthSigma: String.raw`$$\sigma \xrightarrow{k\to 0} 4\pi a^2$$`,
-  effectiveRange: String.raw`$$k\cot\delta_0 = -\frac{1}{a} + \frac{1}{2}r_0 k^2 + \cdots$$`,
-  r0sym: String.raw`$r_0$`,
-  aSym: String.raw`$a$`,
-  lMax: String.raw`$l_{\max} \sim kR$`,
-
-  /* Breit-Wigner */
-  BW: String.raw`$$f_l = \frac{\Gamma/2}{E_0 - E - i\Gamma/2}$$`,
-  BWcross: String.raw`$$\sigma_l = \frac{4\pi(2l+1)}{k^2}\frac{(\Gamma/2)^2}{(E - E_0)^2 + (\Gamma/2)^2}$$`,
-  BWphase: String.raw`$$\cot\delta_l = \frac{E_0 - E}{\Gamma/2}$$`,
-  BWdeltaPi2: String.raw`$\delta_l(E_0) = \pi/2$`,
-  GammaSym: String.raw`$\Gamma$`,
-  E0sym: String.raw`$E_0$`,
-  BWlifetime: String.raw`$\tau = \hbar/\Gamma$`,
-
-  /* §8.3 Born 近似 */
-  born1: String.raw`$$f^{(1)}(\mathbf{q}) = -\frac{2m}{4\pi\hbar^2}\int V(\mathbf{r}')\,e^{-i\mathbf{q}\cdot\mathbf{r}'}\,d^3r'$$`,
-  born1inline: String.raw`$f^{(1)}(\mathbf{q}) = -(2m/4\pi\hbar^2)\int V(\mathbf{r}')e^{-i\mathbf{q}\cdot\mathbf{r}'}d^3r'$`,
-  qDef: String.raw`$$\mathbf{q} = \mathbf{k}_i - \mathbf{k}_f, \quad q = |\mathbf{q}| = 2k\sin\frac{\theta}{2}$$`,
-  qInline: String.raw`$\mathbf{q} = \mathbf{k}_i - \mathbf{k}_f$`,
-  qMag: String.raw`$q = 2k\sin(\theta/2)$`,
-  bornFourier: String.raw`$f^{(1)} \propto \widetilde{V}(\mathbf{q})$`,
-
-  /* Yukawa 势 */
-  yukawaV: String.raw`$$V(r) = V_0\,\frac{e^{-\mu r}}{\mu r}$$`,
-  yukawaF: String.raw`$$f^{(1)}(\theta) = -\frac{2mV_0}{\hbar^2 \mu}\frac{1}{q^2 + \mu^2}$$`,
-  yukawaSigma: String.raw`$$\frac{d\sigma}{d\Omega} = \left(\frac{2mV_0}{\hbar^2 \mu}\right)^2 \frac{1}{(q^2 + \mu^2)^2}$$`,
-
-  /* Coulomb Born */
-  coulombV: String.raw`$V(r) = Z_1 Z_2 e^2/r$`,
-  coulombBornF: String.raw`$$f^{(1)}(\theta) = -\frac{2m Z_1 Z_2 e^2}{\hbar^2}\frac{1}{q^2} = -\frac{Z_1 Z_2 e^2}{4E\sin^2(\theta/2)}$$`,
-  rutherford: String.raw`$$\frac{d\sigma}{d\Omega}\bigg|_{\text{Ruth}} = \left(\frac{Z_1 Z_2 e^2}{4E}\right)^2 \frac{1}{\sin^4(\theta/2)}$$`,
-  rutherfordInline: String.raw`$d\sigma/d\Omega = (Z_1 Z_2 e^2/4E)^2/\sin^4(\theta/2)$`,
-
-  /* Born 适用条件 */
-  bornCond1: String.raw`$$\frac{2mV_0 R^2}{\hbar^2} \ll 1 \quad (\text{低能}, \; kR \ll 1)$$`,
-  bornCond2: String.raw`$$\frac{2mV_0}{\hbar^2 k R} \ll 1 \quad (\text{高能}, \; kR \gg 1)$$`,
-  bornCondGeneral: String.raw`$$\left|\frac{2m}{\hbar^2}\int \frac{e^{ik|\mathbf{r}-\mathbf{r}'|}}{4\pi|\mathbf{r}-\mathbf{r}'|}\,V(\mathbf{r}')\,d^3r'\right| \ll 1$$`,
-  V0sym: String.raw`$V_0$`,
-  Rsym: String.raw`$R$`,
-
-  /* Born 球对称积分 */
-  bornSpherical: String.raw`$$f^{(1)}(\theta) = -\frac{2m}{\hbar^2 q}\int_0^{\infty} r'\,V(r')\sin(qr')\,dr'$$`,
-  bornYukawaCalc: String.raw`$$\int_0^{\infty}r'\,\frac{V_0 e^{-\mu r'}}{\mu r'}\sin(qr')\,dr' = \frac{V_0}{\mu}\frac{q}{q^2+\mu^2}$$`,
-
-  /* §8.4 光学定理 */
-  opticalThm: String.raw`$$\sigma_{\text{tot}} = \frac{4\pi}{k}\,\text{Im}\,f(\theta = 0)$$`,
-  opticalThmInline: String.raw`$\sigma_{\text{tot}} = (4\pi/k)\,\text{Im}\,f(0)$`,
-  Imf0: String.raw`$\text{Im}\,f(0)$`,
-  SmatrixDef: String.raw`$$\hat{S} = \hat{I} + 2ik\hat{f}$$`,
-  Sunitarity: String.raw`$$\hat{S}^\dagger\hat{S} = \hat{I}$$`,
-  SlUnitarity: String.raw`$$|S_l|^2 = |e^{2i\delta_l}|^2 = 1$$`,
-  SunitarityImplication: String.raw`$$\text{Im}\,f(\theta=0) = \frac{k}{4\pi}\int |f(\theta',\varphi')|^2\,d\Omega'$$`,
-  optProofStep1: String.raw`$$f(\theta=0) = \frac{1}{k}\sum_{l=0}^{\infty}(2l+1)\,e^{i\delta_l}\sin\delta_l$$`,
-  optProofStep2: String.raw`$$\text{Im}\,f(0) = \frac{1}{k}\sum_{l=0}^{\infty}(2l+1)\sin^2\delta_l$$`,
-  optProofStep3: String.raw`$$\frac{4\pi}{k}\,\text{Im}\,f(0) = \frac{4\pi}{k^2}\sum_{l=0}^{\infty}(2l+1)\sin^2\delta_l = \sigma_{\text{tot}}$$`,
-  SlPartial: String.raw`$S_l = 1 + 2ikf_l = e^{2i\delta_l}$`,
-  inelasticSl: String.raw`$|S_l| \leq 1$`,
-  inelasticSigma: String.raw`$$\sigma_l^{\text{inel}} = \frac{\pi(2l+1)}{k^2}(1 - |S_l|^2)$$`,
-  absMax: String.raw`$\sigma_l^{\text{el}} = \sigma_l^{\text{inel}} = \pi(2l+1)/k^2$`,
-
-  /* 通用 */
-  hbar: String.raw`$\hbar$`,
-  psi: String.raw`$\psi$`,
-  Vhat: String.raw`$\hat{V}$`,
-  H0hat: String.raw`$\hat{H}_0$`,
-  muSym: String.raw`$\mu$`,
-  epsilonPlus: String.raw`$+i\epsilon$`,
-};
----
-
-<ChapterLayout title="第八章 散射理论" courseId="qm" chapterId="ch08">
-
-  <h1>第八章 散射理论</h1>
+const content = String.raw`<h1>第八章 散射理论</h1>
 
   <p>
     散射实验是探索微观世界最基本的手段——从 Rutherford 发现原子核，到粒子物理中高能对撞实验，
@@ -149,15 +11,15 @@ const defined = {
     本章从散射截面的定义出发，系统介绍分波法、Born 近似与光学定理等核心内容。
   </p>
 
-  <InsightBox title="散射理论的核心逻辑">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>散射理论的核心逻辑</span></div>
     <p>
       散射理论的基本思路是一条从实验到理论的链条：实验上测量的是<strong>微分截面</strong>
-      $d\sigma/d\Omega$；理论上需要计算的是<strong>散射振幅</strong> <Fragment set:html={defined.fThetaPhi} />；
+      $d\sigma/d\Omega$；理论上需要计算的是<strong>散射振幅</strong> $f(\theta, \varphi)$；
       而散射振幅由相互作用势 $V(r)$ 决定。
       不同的计算方法——分波法适用于低能与短程力，Born 近似适用于弱势或高能——
-      本质上都是在建立从 $V(r)$ 到 <Fragment set:html={defined.fThetaPhi} /> 的映射。
+      本质上都是在建立从 $V(r)$ 到 $f(\theta, \varphi)$ 的映射。
     </p>
-  </InsightBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 8.1 散射截面与散射振幅 -->
@@ -169,105 +31,105 @@ const defined = {
   <p>
     考虑一个定态散射过程：质量为 $m$ 的粒子从远处以动量 $\hbar\mathbf{k}$ 沿 $z$ 轴入射，
     遇到以原点为中心的局域势 $V(\mathbf{r})$（要求 $V$ 在远处比 $1/r$ 衰减得更快），
-    被散射后向各方向飞出。入射粒子用平面波 <Fragment set:html={defined.eikz} /> 描写，
-    散射波在远处为向外传播的球面波 <Fragment set:html={defined.eikrOverR} />。
+    被散射后向各方向飞出。入射粒子用平面波 $e^{ikz}$ 描写，
+    散射波在远处为向外传播的球面波 $e^{ikr}/r$。
     波函数的渐近形式为：
   </p>
 
-  <Fragment set:html={defined.asymptotic} />
+  $$\psi(\mathbf{r}) \xrightarrow{r \to \infty} e^{ikz} + f(\theta, \varphi)\,\frac{e^{ikr}}{r}$$
 
   <p>
-    其中 <Fragment set:html={defined.kDef} /> 是入射波矢，
-    <Fragment set:html={defined.fThetaPhi} /> 称为<strong>散射振幅</strong>，
+    其中 $k = \sqrt{2mE}/\hbar$ 是入射波矢，
+    $f(\theta, \varphi)$ 称为<strong>散射振幅</strong>，
     它包含了散射过程的全部动力学信息。
-    对于中心力场 $V(r)$，散射振幅与方位角 $\varphi$ 无关，简写为 <Fragment set:html={defined.fTheta} />。
+    对于中心力场 $V(r)$，散射振幅与方位角 $\varphi$ 无关，简写为 $f(\theta)$。
   </p>
 
   <h3>微分散射截面</h3>
 
   <p>
-    散射实验中直接测量的物理量是<strong>微分散射截面</strong> <Fragment set:html={defined.dsigma} />，
-    定义为：单位时间内散射到 <Fragment set:html={defined.dOmega} /> 立体角内的粒子数
+    散射实验中直接测量的物理量是<strong>微分散射截面</strong> $d\sigma/d\Omega$，
+    定义为：单位时间内散射到 $d\Omega = \sin\theta\,d\theta\,d\varphi$ 立体角内的粒子数
     与入射粒子流密度之比。利用概率流密度计算入射波和散射波的流：
   </p>
 
-  <Fragment set:html={defined.jInc} />
-  <Fragment set:html={defined.jSc} />
+  $$\mathbf{j}_{\text{inc}} = \frac{\hbar k}{m}\hat{z}$$
+  $$\mathbf{j}_{\text{sc}} = \frac{\hbar k}{m}\frac{|f(\theta,\varphi)|^2}{r^2}\hat{r}$$
 
   <p>
     将散射流除以入射流并乘以 $r^2\,d\Omega$：
   </p>
 
-  <Fragment set:html={defined.dsigmaDef} />
+  $$d\sigma = \frac{|j_{\text{sc}}|}{|j_{\text{inc}}|}\,r^2\,d\Omega = |f(\theta,\varphi)|^2\,d\Omega$$
 
   <p>
     因此微分散射截面等于散射振幅模的平方：
   </p>
 
-  <Fragment set:html={defined.diffCross} />
+  $$\frac{d\sigma}{d\Omega} = |f(\theta, \varphi)|^2$$
 
   <p>
     <strong>总散射截面</strong>是对全立体角的积分：
   </p>
 
-  <Fragment set:html={defined.totalCross} />
+  $$\sigma_{\text{tot}} = \int |f(\theta, \varphi)|^2\,d\Omega = \int_0^{2\pi}d\varphi\int_0^{\pi}|f(\theta,\varphi)|^2\sin\theta\,d\theta$$
 
   <p>
     散射截面的量纲为面积，常用单位为 barn（$1\;\text{barn} = 10^{-24}\;\text{cm}^2$）。
     它反映了靶粒子对入射粒子的"有效遮挡面积"。
   </p>
 
-  <Derivation title="从概率流密度推导微分截面">
+  <details class="derivation-block"><summary class="derivation-toggle">从概率流密度推导微分截面</summary><div class="derivation-content">
     <p>
-      入射平面波 <Fragment set:html={defined.eikz} /> 的概率流密度为：
+      入射平面波 $e^{ikz}$ 的概率流密度为：
     </p>
-    <Fragment set:html={defined.jInc} />
+    $$\mathbf{j}_{\text{inc}} = \frac{\hbar k}{m}\hat{z}$$
     <p>
-      散射波 <Fragment set:html={defined.fThetaPhi} /><Fragment set:html={defined.eikrOverR} /> 的径向概率流密度为：
+      散射波 $f(\theta, \varphi)$$e^{ikr}/r$ 的径向概率流密度为：
     </p>
-    <Fragment set:html={defined.jSc} />
+    $$\mathbf{j}_{\text{sc}} = \frac{\hbar k}{m}\frac{|f(\theta,\varphi)|^2}{r^2}\hat{r}$$
     <p>
-      定义散射到 <Fragment set:html={defined.dOmega} /> 方向的微分截面为散射流通过面元 $r^2 d\Omega$ 与入射流密度之比：
+      定义散射到 $d\Omega = \sin\theta\,d\theta\,d\varphi$ 方向的微分截面为散射流通过面元 $r^2 d\Omega$ 与入射流密度之比：
     </p>
-    <Fragment set:html={defined.dsigmaDef} />
+    $$d\sigma = \frac{|j_{\text{sc}}|}{|j_{\text{inc}}|}\,r^2\,d\Omega = |f(\theta,\varphi)|^2\,d\Omega$$
     <p>
       注意 $r^2$ 恰好与散射波中的 $1/r^2$ 因子抵消，使得微分截面不依赖于探测器到散射中心的距离 $r$——
       这正是球面波 $e^{ikr}/r$ 形式的物理根源。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>Lippmann-Schwinger 方程</h3>
 
   <p>
-    散射问题可以用算符语言精确表述。设 <Fragment set:html={defined.phiKet} /> 是自由粒子平面波态
+    散射问题可以用算符语言精确表述。设 $|\phi\rangle$ 是自由粒子平面波态
     （满足 $\hat{H}_0|\phi\rangle = E|\phi\rangle$），完整 Hamiltonian 为
     $\hat{H} = \hat{H}_0 + \hat{V}$。定义自由格林算符：
   </p>
 
-  <Fragment set:html={defined.G0def} />
+  $$\hat{G}_0^{(\pm)} = \frac{1}{E - \hat{H}_0 \pm i\epsilon}$$
 
   <p>
-    其中 <Fragment set:html={defined.epsilonPlus} /> 是正无穷小量，保证选取向外传播的球面波（推迟边界条件）。
-    散射态 <Fragment set:html={defined.psiPlusKet} /> 满足 <strong>Lippmann-Schwinger 方程</strong>：
+    其中 $+i\epsilon$ 是正无穷小量，保证选取向外传播的球面波（推迟边界条件）。
+    散射态 $|\psi^{(+)}\rangle$ 满足 <strong>Lippmann-Schwinger 方程</strong>：
   </p>
 
-  <Fragment set:html={defined.LS} />
+  $$|\psi^{(\pm)}\rangle = |\phi\rangle + \hat{G}_0^{(\pm)}\hat{V}|\psi^{(\pm)}\rangle$$
 
   <p>
     这是一个积分方程——散射态等于入射态加上由势散射产生的修正。
-    在坐标表象中，利用自由格林函数 <Fragment set:html={defined.G0coord} />，Lippmann-Schwinger 方程变为：
+    在坐标表象中，利用自由格林函数 $$G_0^{(+)}(\mathbf{r},\mathbf{r}') = -\frac{2m}{\hbar^2}\frac{e^{ik|\mathbf{r}-\mathbf{r}'|}}{4\pi|\mathbf{r}-\mathbf{r}'|}$$，Lippmann-Schwinger 方程变为：
   </p>
 
-  <Fragment set:html={defined.LScoord} />
+  $$\psi(\mathbf{r}) = e^{i\mathbf{k}\cdot\mathbf{r}} - \frac{2m}{\hbar^2}\int \frac{e^{ik|\mathbf{r}-\mathbf{r}'|}}{4\pi|\mathbf{r}-\mathbf{r}'|}\,V(\mathbf{r}')\,\psi(\mathbf{r}')\,d^3r'$$
 
-  <InsightBox title="Lippmann-Schwinger 方程的物理图像">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Lippmann-Schwinger 方程的物理图像</span></div>
     <p>
       这个积分方程的物理含义极为清晰：散射波函数 = 入射平面波 + 势 $V$ 在各点
-      <Fragment set:html={defined.psi} /> 作为"源"所发出的球面波经格林函数传播的叠加。
-      整个方程是自洽的——右端的 <Fragment set:html={defined.psi} /> 正是左端的未知函数。
+      $\psi$ 作为"源"所发出的球面波经格林函数传播的叠加。
+      整个方程是自洽的——右端的 $\psi$ 正是左端的未知函数。
       这种自洽结构体现了多次散射的效果，是 Born 级数展开的出发点。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>T 矩阵</h3>
 
@@ -276,32 +138,32 @@ const defined = {
     $\hat{T}$ 满足：
   </p>
 
-  <Fragment set:html={defined.Tdef} />
+  $$\hat{T} = \hat{V} + \hat{V}\hat{G}_0^{(+)}\hat{T}$$
 
   <p>
     迭代求解得到 Born 级数：
   </p>
 
-  <Fragment set:html={defined.TdefAlt} />
+  $$\hat{T} = \hat{V} + \hat{V}\hat{G}_0^{(+)}\hat{V} + \hat{V}\hat{G}_0^{(+)}\hat{V}\hat{G}_0^{(+)}\hat{V} + \cdots$$
 
   <p>
     散射振幅由 T 矩阵的在壳矩阵元给出：
   </p>
 
-  <Fragment set:html={defined.fFromT} />
+  $$f(\theta,\varphi) = -\frac{2m}{4\pi\hbar^2}\langle\mathbf{k}_f|\hat{T}|\mathbf{k}_i\rangle$$
 
   <p>
     T 矩阵的 Born 级数第一项 $\hat{T} \approx \hat{V}$ 就给出第一 Born 近似。
   </p>
 
-  <ReferenceBox title="参考教材">
+  <div class="reference-box"><div class="box-header ref-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" /></svg><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, Chapter 6 (§6.1–6.2): Lippmann-Schwinger 方程与 T 矩阵的系统推导</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, §11.1: 散射截面的物理定义与直观图像</li>
       <li>曾谨言,《量子力学》卷二, 第十三章: 散射问题的一般理论</li>
       <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, §123: 散射问题的一般表述</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 8.2 分波法 -->
@@ -315,36 +177,36 @@ const defined = {
     可以将入射平面波按球面波展开（Rayleigh 展开）：
   </p>
 
-  <Fragment set:html={defined.planeExpand} />
+  $$e^{ikz} = \sum_{l=0}^{\infty}(2l+1)\,i^l\,j_l(kr)\,P_l(\cos\theta)$$
 
   <p>
-    其中 $j_l(kr)$ 是球 Bessel 函数，<Fragment set:html={defined.Pl} /> 是 Legendre 多项式。
+    其中 $j_l(kr)$ 是球 Bessel 函数，$P_l(\cos\theta)$ 是 Legendre 多项式。
     在远处，自由球面波的径向部分渐近为：
   </p>
 
-  <Fragment set:html={defined.freeSoln} />
+  $$R_l^{(0)}(r) \xrightarrow{r\to\infty} \frac{1}{kr}\sin\!\left(kr - \frac{l\pi}{2}\right)$$
 
   <p>
-    当存在散射势时，每个分波的径向波函数在远处只是多了一个<strong>相移</strong> <Fragment set:html={defined.deltaL} />：
+    当存在散射势时，每个分波的径向波函数在远处只是多了一个<strong>相移</strong> $\delta_l$：
   </p>
 
-  <Fragment set:html={defined.scattSoln} />
+  $$R_l(r) \xrightarrow{r\to\infty} \frac{1}{kr}\sin\!\left(kr - \frac{l\pi}{2} + \delta_l\right)$$
 
   <p>
-    散射势的全部效应——对于第 $l$ 个分波而言——就是将渐近波函数的相位平移了 <Fragment set:html={defined.deltaL} />。
+    散射势的全部效应——对于第 $l$ 个分波而言——就是将渐近波函数的相位平移了 $\delta_l$。
     这就是<strong>分波相移</strong>。
   </p>
 
-  <ThinkingBox title="为什么散射只改变相位？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>为什么散射只改变相位？</span></div>
     <p>
       在散射势作用区域之外（$r > R$），径向 Schrodinger 方程退化为自由方程。
       其通解是 $j_l(kr)$ 和 $n_l(kr)$ 的线性组合，或等价地写成
       $\sin(kr - l\pi/2 + \delta_l)/(kr)$。
       与束缚态不同，散射态的能量为正且连续，不需要额外的量子化条件，
-      因此势的唯一效应就是改变相位角 <Fragment set:html={defined.deltaL} />。
+      因此势的唯一效应就是改变相位角 $\delta_l$。
       不同的 $l$ 分波各自独立获得相移——这正是分波法的威力所在。
     </p>
-  </ThinkingBox>
+  </div>
 
   <h3>散射振幅的分波展开</h3>
 
@@ -352,35 +214,35 @@ const defined = {
     比较渐近波函数的入射波+散射波形式与分波展开形式，可以提取出散射振幅为：
   </p>
 
-  <Fragment set:html={defined.partialWaveF} />
+  $$f(\theta) = \frac{1}{k}\sum_{l=0}^{\infty}(2l+1)\,e^{i\delta_l}\sin\delta_l\,P_l(\cos\theta)$$
 
   <p>
-    或引入分波振幅 <Fragment set:html={defined.flInline} />：
+    或引入分波振幅 $f_l = e^{i\delta_l}\sin\delta_l / k$：
   </p>
 
-  <Fragment set:html={defined.partialWaveFalt} />
+  $$f(\theta) = \sum_{l=0}^{\infty}(2l+1)\,f_l\,P_l(\cos\theta)$$
 
   <p>
     每个分波的散射截面为：
   </p>
 
-  <Fragment set:html={defined.sigmaL} />
+  $$\sigma_l = \frac{4\pi(2l+1)}{k^2}\sin^2\delta_l$$
 
   <p>
     总截面为各分波截面之和（利用 Legendre 多项式的正交性，交叉项积分为零）：
   </p>
 
-  <Fragment set:html={defined.sigmaTotal} />
+  $$\sigma_{\text{tot}} = \sum_{l=0}^{\infty}\sigma_l = \frac{4\pi}{k^2}\sum_{l=0}^{\infty}(2l+1)\sin^2\delta_l$$
 
-  <Derivation title="分波散射振幅的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">分波散射振幅的推导</summary><div class="derivation-content">
     <p>
       远处散射态波函数为入射波加散射波：
     </p>
-    <Fragment set:html={defined.asymptotic} />
+    $$\psi(\mathbf{r}) \xrightarrow{r \to \infty} e^{ikz} + f(\theta, \varphi)\,\frac{e^{ikr}}{r}$$
     <p>
       将入射平面波 Rayleigh 展开，并将每个分波的渐近形式写成含相移的形式：
     </p>
-    <Fragment set:html={defined.psiAsympExpand} />
+    $$\psi(r,\theta) \xrightarrow{r\to\infty} \sum_{l=0}^{\infty}(2l+1)\,i^l\,\frac{A_l}{kr}\sin\!\left(kr - \frac{l\pi}{2} + \delta_l\right)P_l(\cos\theta)$$
     <p>
       利用 $\sin(\alpha + \delta) = \sin\alpha\cos\delta + \cos\alpha\sin\delta$，
       将含相移的渐近形式拆成"无散射"的 $\sin(kr - l\pi/2)$ 部分和"散射修正"部分。
@@ -391,23 +253,23 @@ const defined = {
     <p>
       对于分波截面，利用 Legendre 多项式的正交关系 $\int_{-1}^{1}P_l(x)P_{l'}(x)\,dx = 2\delta_{ll'}/(2l+1)$：
     </p>
-    <Fragment set:html={defined.sigmaL} />
-  </Derivation>
+    $$\sigma_l = \frac{4\pi(2l+1)}{k^2}\sin^2\delta_l$$
+  </div></details>
 
   <h3>S 矩阵与分波</h3>
 
   <p>
-    定义第 $l$ 个分波的 S 矩阵元为 <Fragment set:html={defined.SlInline} />。
+    定义第 $l$ 个分波的 S 矩阵元为 $S_l = e^{2i\delta_l}$。
     幺正性要求 $|S_l| = 1$（弹性散射）。分波振幅与 $S_l$ 的关系为：
   </p>
 
   <p>
-    <Fragment set:html={defined.SlPartial} />
+    $S_l = 1 + 2ikf_l = e^{2i\delta_l}$
   </p>
 
   <p>
-    <Fragment set:html={defined.deltaL} /> 为实数等价于 $|S_l| = 1$，即概率守恒（弹性散射）。
-    当存在非弹性过程（吸收）时，<Fragment set:html={defined.inelasticSl} />，
+    $\delta_l$ 为实数等价于 $|S_l| = 1$，即概率守恒（弹性散射）。
+    当存在非弹性过程（吸收）时，$|S_l| \leq 1$，
     相移变为复数。
   </p>
 
@@ -417,35 +279,35 @@ const defined = {
     在低能极限 $kR \ll 1$（$R$ 为势的力程）下，
     高 $l$ 分波的经典碰撞参数 $b \sim l/k$ 远大于力程，几乎不受势的影响，因此
     $\delta_l \to 0$（$l \geq 1$），只有<strong>s 波</strong>（$l = 0$）起主导作用。
-    半定量地，有效分波数为 <Fragment set:html={defined.lMax} />。
+    半定量地，有效分波数为 $l_{\max} \sim kR$。
   </p>
 
   <p>
-    在 $k \to 0$ 的极限下，s 波分波振幅趋于一个常数，定义<strong>散射长度</strong> <Fragment set:html={defined.aSym} />：
+    在 $k \to 0$ 的极限下，s 波分波振幅趋于一个常数，定义<strong>散射长度</strong> $a$：
   </p>
 
-  <Fragment set:html={defined.scattLength} />
+  $$f \xrightarrow{k\to 0} -a$$
 
   <p>
-    即 <Fragment set:html={defined.scattLengthDef} />。
+    即 $a = -\lim_{k\to 0} f_0 = -\lim_{k\to 0} \delta_0/k$。
     低能总截面为：
   </p>
 
-  <Fragment set:html={defined.scattLengthSigma} />
+  $$\sigma \xrightarrow{k\to 0} 4\pi a^2$$
 
   <p>
     更精确的低能展开称为<strong>有效程展开</strong>：
   </p>
 
-  <Fragment set:html={defined.effectiveRange} />
+  $$k\cot\delta_0 = -\frac{1}{a} + \frac{1}{2}r_0 k^2 + \cdots$$
 
   <p>
-    其中 <Fragment set:html={defined.r0sym} /> 是有效力程。散射长度 <Fragment set:html={defined.aSym} /> 的符号
+    其中 $r_0$ 是有效力程。散射长度 $a$ 的符号
     蕴含着深刻的物理信息：$a > 0$ 通常意味着势中存在刚好未能束缚的虚能级（弱吸引或排斥势），
     而 $a < 0$ 意味着势已足够强以支持束缚态（或者弱吸引势无束缚态的情形需要具体分析）。
   </p>
 
-  <InsightBox title="散射长度与束缚态的关系">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>散射长度与束缚态的关系</span></div>
     <p>
       对于恰好能支持一个浅束缚态（束缚能 $E_B$ 很小）的吸引势，
       散射长度与束缚能的关系为 $a \approx \hbar/\sqrt{2mE_B} > 0$，即散射长度很大且为正。
@@ -454,38 +316,38 @@ const defined = {
       单重态散射长度 $a_s \approx -23.7\;\text{fm}$ 为负且绝对值极大，
       表明单重态几乎但尚未能形成束缚态。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>共振散射与 Breit-Wigner 公式</h3>
 
   <p>
-    当入射能量接近势中某个准束缚态（共振态）的能量 <Fragment set:html={defined.E0sym} /> 时，
-    对应分波的相移 <Fragment set:html={defined.deltaL} /> 快速经过 $\pi/2$。
+    当入射能量接近势中某个准束缚态（共振态）的能量 $E_0$ 时，
+    对应分波的相移 $\delta_l$ 快速经过 $\pi/2$。
     在共振能量附近，相移的能量依赖可以参数化为：
   </p>
 
-  <Fragment set:html={defined.BWphase} />
+  $$\cot\delta_l = \frac{E_0 - E}{\Gamma/2}$$
 
   <p>
-    其中 <Fragment set:html={defined.GammaSym} /> 是共振宽度。对应的分波振幅为：
+    其中 $\Gamma$ 是共振宽度。对应的分波振幅为：
   </p>
 
-  <Fragment set:html={defined.BW} />
+  $$f_l = \frac{\Gamma/2}{E_0 - E - i\Gamma/2}$$
 
   <p>
     分波截面呈现典型的 <strong>Breit-Wigner（Lorentz）共振线型</strong>：
   </p>
 
-  <Fragment set:html={defined.BWcross} />
+  $$\sigma_l = \frac{4\pi(2l+1)}{k^2}\frac{(\Gamma/2)^2}{(E - E_0)^2 + (\Gamma/2)^2}$$
 
   <p>
-    在共振峰处 $E = E_0$，<Fragment set:html={defined.BWdeltaPi2} />，
-    分波截面达到幺正极限 <Fragment set:html={defined.sigmaLmax} />。
-    共振宽度 <Fragment set:html={defined.GammaSym} /> 通过不确定性关系与共振态的寿命相联系：
-    <Fragment set:html={defined.BWlifetime} />。
+    在共振峰处 $E = E_0$，$\delta_l(E_0) = \pi/2$，
+    分波截面达到幺正极限 $\sigma_l^{\max} = 4\pi(2l+1)/k^2$。
+    共振宽度 $\Gamma$ 通过不确定性关系与共振态的寿命相联系：
+    $\tau = \hbar/\Gamma$。
   </p>
 
-  <ThinkingBox title="共振散射的物理起源">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>共振散射的物理起源</span></div>
     <p>
       共振散射发生在入射粒子的能量恰好匹配势阱中某个准束缚态能级时。
       粒子被势阱短暂"捕获"，形成一个长寿命的中间态，然后再"释放"出去。
@@ -495,16 +357,16 @@ const defined = {
       因此共振通常在 $l \geq 1$ 的分波中更为显著。
       粒子物理中大量的"共振粒子"（如 $\Delta(1232)$）本质上就是散射共振态。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox title="参考教材">
+  <div class="reference-box"><div class="box-header ref-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" /></svg><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, §6.4–6.5: 分波展开与相移的系统处理</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, §11.2: 分波法的基本框架</li>
       <li>曾谨言,《量子力学》卷二, 第十三章 §4–5: 分波法与共振散射</li>
       <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, §123–125, §132–134: 分波展开、散射长度、共振散射</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 8.3 Born 近似 -->
@@ -514,30 +376,30 @@ const defined = {
   <h3>第一 Born 近似</h3>
 
   <p>
-    当散射势 <Fragment set:html={defined.Vhat} /> 较弱时，可以对 Lippmann-Schwinger 方程进行迭代。
-    最低阶近似是将散射态 <Fragment set:html={defined.psiPlusKet} /> 替换为入射平面波
-    <Fragment set:html={defined.phiKet} />（相当于 T 矩阵 Born 级数的第一项 $\hat{T} \approx \hat{V}$），
+    当散射势 $\hat{V}$ 较弱时，可以对 Lippmann-Schwinger 方程进行迭代。
+    最低阶近似是将散射态 $|\psi^{(+)}\rangle$ 替换为入射平面波
+    $|\phi\rangle$（相当于 T 矩阵 Born 级数的第一项 $\hat{T} \approx \hat{V}$），
     得到<strong>第一 Born 近似</strong>：
   </p>
 
-  <Fragment set:html={defined.born1} />
+  $$f^{(1)}(\mathbf{q}) = -\frac{2m}{4\pi\hbar^2}\int V(\mathbf{r}')\,e^{-i\mathbf{q}\cdot\mathbf{r}'}\,d^3r'$$
 
   <p>
-    其中动量转移 <Fragment set:html={defined.qInline} /> 的大小为 <Fragment set:html={defined.qMag} />
+    其中动量转移 $\mathbf{q} = \mathbf{k}_i - \mathbf{k}_f$ 的大小为 $q = 2k\sin(\theta/2)$
     （弹性散射中 $|\mathbf{k}_i| = |\mathbf{k}_f| = k$）。
   </p>
 
-  <Fragment set:html={defined.qDef} />
+  $$\mathbf{q} = \mathbf{k}_i - \mathbf{k}_f, \quad q = |\mathbf{q}| = 2k\sin\frac{\theta}{2}$$
 
-  <InsightBox title="Born 近似即 Fourier 变换">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Born 近似即 Fourier 变换</span></div>
     <p>
       第一 Born 近似的核心结论极其优美：<strong>散射振幅正比于散射势的 Fourier 变换</strong>，
-      即 <Fragment set:html={defined.bornFourier} />。
+      即 $f^{(1)} \propto \widetilde{V}(\mathbf{q})$。
       动量转移 $\mathbf{q}$ 是"探测"势在该空间频率上分量的"探针"。
       这一关系是 X 射线衍射、电子衍射等结构分析技术的理论基础——
       通过测量不同散射角（对应不同 $q$）的散射截面，可以反演出靶的结构因子。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>球对称势的 Born 散射</h3>
 
@@ -545,14 +407,14 @@ const defined = {
     对于球对称势 $V(r)$，角积分可以显式完成，得到：
   </p>
 
-  <Fragment set:html={defined.bornSpherical} />
+  $$f^{(1)}(\theta) = -\frac{2m}{\hbar^2 q}\int_0^{\infty} r'\,V(r')\sin(qr')\,dr'$$
 
   <p>
     这个公式只依赖于散射角 $\theta$（通过 $q = 2k\sin(\theta/2)$），
     不依赖于方位角 $\varphi$——这是球对称势的自然结果。
   </p>
 
-  <Derivation title="球对称势 Born 振幅的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">球对称势 Born 振幅的推导</summary><div class="derivation-content">
     <p>
       对于球对称势 $V(r')$，三维 Fourier 变换中的角积分：
     </p>
@@ -568,8 +430,8 @@ const defined = {
     <p>
       代入得：
     </p>
-    <Fragment set:html={defined.bornSpherical} />
-  </Derivation>
+    $$f^{(1)}(\theta) = -\frac{2m}{\hbar^2 q}\int_0^{\infty} r'\,V(r')\sin(qr')\,dr'$$
+  </div></details>
 
   <h3>Yukawa 势与 Coulomb 极限</h3>
 
@@ -577,42 +439,42 @@ const defined = {
     <strong>Yukawa 势</strong>（又称屏蔽 Coulomb 势）：
   </p>
 
-  <Fragment set:html={defined.yukawaV} />
+  $$V(r) = V_0\,\frac{e^{-\mu r}}{\mu r}$$
 
   <p>
-    其中 <Fragment set:html={defined.muSym} /> 是势的"逆力程"。
-    代入球对称 Born 公式，利用积分 <Fragment set:html={defined.bornYukawaCalc} />，得到：
+    其中 $\mu$ 是势的"逆力程"。
+    代入球对称 Born 公式，利用积分 $$\int_0^{\infty}r'\,\frac{V_0 e^{-\mu r'}}{\mu r'}\sin(qr')\,dr' = \frac{V_0}{\mu}\frac{q}{q^2+\mu^2}$$，得到：
   </p>
 
-  <Fragment set:html={defined.yukawaF} />
+  $$f^{(1)}(\theta) = -\frac{2mV_0}{\hbar^2 \mu}\frac{1}{q^2 + \mu^2}$$
 
   <p>
     微分截面为：
   </p>
 
-  <Fragment set:html={defined.yukawaSigma} />
+  $$\frac{d\sigma}{d\Omega} = \left(\frac{2mV_0}{\hbar^2 \mu}\right)^2 \frac{1}{(q^2 + \mu^2)^2}$$
 
   <p>
-    令 <Fragment set:html={defined.muSym} /> $\to 0$（力程趋于无穷），Yukawa 势退化为 <strong>Coulomb 势</strong>
-    <Fragment set:html={defined.coulombV} />，散射振幅变为：
+    令 $\mu$ $\to 0$（力程趋于无穷），Yukawa 势退化为 <strong>Coulomb 势</strong>
+    $V(r) = Z_1 Z_2 e^2/r$，散射振幅变为：
   </p>
 
-  <Fragment set:html={defined.coulombBornF} />
+  $$f^{(1)}(\theta) = -\frac{2m Z_1 Z_2 e^2}{\hbar^2}\frac{1}{q^2} = -\frac{Z_1 Z_2 e^2}{4E\sin^2(\theta/2)}$$
 
   <p>
     微分截面就是著名的 <strong>Rutherford 散射公式</strong>：
   </p>
 
-  <Fragment set:html={defined.rutherford} />
+  $$\frac{d\sigma}{d\Omega}\bigg|_{\text{Ruth}} = \left(\frac{Z_1 Z_2 e^2}{4E}\right)^2 \frac{1}{\sin^4(\theta/2)}$$
 
-  <InsightBox title="Rutherford 公式的奇妙巧合">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Rutherford 公式的奇妙巧合</span></div>
     <p>
       Rutherford 散射公式在量子力学 Born 近似下的结果与经典力学的精确结果完全一致。
       这并非偶然——Coulomb 势的特殊性质（对称性为 $SO(4)$）使得经典轨道与量子散射之间存在精确的对应。
       此外，Coulomb 散射的精确量子计算（利用合流超几何函数）也给出与 Born 近似相同的微分截面，
       尽管散射振幅的相位不同。这种"Coulomb 巧合"在物理学中是罕见的。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>Born 近似的适用条件</h3>
 
@@ -620,22 +482,22 @@ const defined = {
     Born 近似将散射态替换为入射平面波，其有效性要求散射引起的波函数修正远小于入射波，即：
   </p>
 
-  <Fragment set:html={defined.bornCondGeneral} />
+  $$\left|\frac{2m}{\hbar^2}\int \frac{e^{ik|\mathbf{r}-\mathbf{r}'|}}{4\pi|\mathbf{r}-\mathbf{r}'|}\,V(\mathbf{r}')\,d^3r'\right| \ll 1$$
 
   <p>
-    对于力程为 <Fragment set:html={defined.Rsym} />、深度为 <Fragment set:html={defined.V0sym} /> 的势阱，
+    对于力程为 $R$、深度为 $V_0$ 的势阱，
     这一条件在不同能区有不同的简化形式：
   </p>
 
-  <Fragment set:html={defined.bornCond1} />
-  <Fragment set:html={defined.bornCond2} />
+  $$\frac{2mV_0 R^2}{\hbar^2} \ll 1 \quad (\text{低能}, \; kR \ll 1)$$
+  $$\frac{2mV_0}{\hbar^2 k R} \ll 1 \quad (\text{高能}, \; kR \gg 1)$$
 
   <p>
     低能条件本质上要求势不够强以形成束缚态；高能条件更容易满足，因为快速粒子在势的作用区域内停留时间短，
     受到的扰动相应减小。因此 <strong>Born 近似在高能时通常更加可靠</strong>。
   </p>
 
-  <ThinkingBox title="Born 近似何时失效？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>Born 近似何时失效？</span></div>
     <p>
       Born 近似在以下情况下不可靠：
       (1) <strong>强势</strong>——势足以形成束缚态时，$s$ 波相移可能大于 $\pi/2$，Born 近似无法描述共振；
@@ -644,16 +506,16 @@ const defined = {
       (3) <strong>前向散射</strong>与光学定理——Born 近似给出的 $f(0)$ 是实数，
       而光学定理要求 $\text{Im}\,f(0) > 0$，因此一阶 Born 近似不满足幺正性。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox title="参考教材">
+  <div class="reference-box"><div class="box-header ref-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" /></svg><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, §6.3: Born 近似与 T 矩阵的系统讨论</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, §11.4: Born 近似的推导与应用</li>
       <li>曾谨言,《量子力学》卷二, 第十三章 §6: Born 近似与适用条件</li>
       <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, §126–128: Born 展开与适用性判据</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ================================================================== -->
   <!-- 8.4 光学定理 -->
@@ -667,7 +529,7 @@ const defined = {
     它将<strong>总散射截面</strong>与<strong>前向散射振幅的虚部</strong>直接联系起来：
   </p>
 
-  <Fragment set:html={defined.opticalThm} />
+  $$\sigma_{\text{tot}} = \frac{4\pi}{k}\,\text{Im}\,f(\theta = 0)$$
 
   <p>
     这个定理名称源于经典光学中的消光定理（Babinet 原理的推论）——
@@ -676,31 +538,31 @@ const defined = {
 
   <h3>从分波展开的证明</h3>
 
-  <Derivation title="光学定理的分波展开证明">
+  <details class="derivation-block"><summary class="derivation-toggle">光学定理的分波展开证明</summary><div class="derivation-content">
     <p>
       将 $\theta = 0$ 代入分波展开（利用 $P_l(1) = 1$）：
     </p>
-    <Fragment set:html={defined.optProofStep1} />
+    $$f(\theta=0) = \frac{1}{k}\sum_{l=0}^{\infty}(2l+1)\,e^{i\delta_l}\sin\delta_l$$
     <p>
       取虚部（注意 $\text{Im}(e^{i\delta}\sin\delta) = \sin^2\delta$）：
     </p>
-    <Fragment set:html={defined.optProofStep2} />
+    $$\text{Im}\,f(0) = \frac{1}{k}\sum_{l=0}^{\infty}(2l+1)\sin^2\delta_l$$
     <p>
       乘以 $4\pi/k$：
     </p>
-    <Fragment set:html={defined.optProofStep3} />
+    $$\frac{4\pi}{k}\,\text{Im}\,f(0) = \frac{4\pi}{k^2}\sum_{l=0}^{\infty}(2l+1)\sin^2\delta_l = \sigma_{\text{tot}}$$
     <p>
       最后的表达式正是总散射截面的分波展开，从而证明了光学定理。
     </p>
-  </Derivation>
+  </div></details>
 
   <h3>物理含义：前向散射与概率守恒</h3>
 
   <p>
     光学定理的物理含义在于<strong>概率守恒</strong>。
     入射波通过散射区域后，前向 ($\theta = 0$) 的出射波是入射波与散射波的相干叠加。
-    概率从入射方向"流失"到其他方向，流失总量就是总截面 <Fragment set:html={defined.sigmaTot} />。
-    这个流失量恰好由前向散射振幅的虚部 <Fragment set:html={defined.Imf0} /> 来描述——
+    概率从入射方向"流失"到其他方向，流失总量就是总截面 $\sigma_{\text{tot}}$。
+    这个流失量恰好由前向散射振幅的虚部 $\text{Im}\,f(0)$ 来描述——
     因为 $\text{Im}\,f(0)$ 正是前向散射波与入射波之间的<strong>相消干涉项</strong>。
   </p>
 
@@ -708,7 +570,7 @@ const defined = {
     光学定理也可以从更一般的角度理解。散射振幅的不连续关系为：
   </p>
 
-  <Fragment set:html={defined.SunitarityImplication} />
+  $$\text{Im}\,f(\theta=0) = \frac{k}{4\pi}\int |f(\theta',\varphi')|^2\,d\Omega'$$
 
   <p>
     这正是 $\hat{S}$ 矩阵幺正性的直接推论。
@@ -720,20 +582,20 @@ const defined = {
     散射矩阵 $\hat{S}$ 将入射态映射到出射态。概率守恒要求：
   </p>
 
-  <Fragment set:html={defined.Sunitarity} />
+  $$\hat{S}^\dagger\hat{S} = \hat{I}$$
 
   <p>
     在分波基底中，弹性散射的每个分波独立满足：
   </p>
 
-  <Fragment set:html={defined.SlUnitarity} />
+  $$|S_l|^2 = |e^{2i\delta_l}|^2 = 1$$
 
   <p>
-    这保证了相移 <Fragment set:html={defined.deltaL} /> 为实数，分波截面有幺正上界
-    <Fragment set:html={defined.sigmaLmax} />（当 $\delta_l = \pi/2 + n\pi$ 时达到）。
+    这保证了相移 $\delta_l$ 为实数，分波截面有幺正上界
+    $\sigma_l^{\max} = 4\pi(2l+1)/k^2$（当 $\delta_l = \pi/2 + n\pi$ 时达到）。
   </p>
 
-  <InsightBox title="幺正性——散射理论的核心约束">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>幺正性——散射理论的核心约束</span></div>
     <p>
       幺正性 $\hat{S}^\dagger\hat{S} = \hat{I}$ 是量子力学概率守恒的数学表述，
       它对散射振幅施加了强有力的约束。光学定理是其直接推论。
@@ -743,7 +605,7 @@ const defined = {
       幺正性还要求：当存在非弹性道时，弹性道的散射必须增强——
       因为弹性散射的"暗影"必须补偿非弹性过程所损耗的概率流。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>非弹性散射与吸收</h3>
 
@@ -754,19 +616,19 @@ const defined = {
     非弹性截面为：
   </p>
 
-  <Fragment set:html={defined.inelasticSigma} />
+  $$\sigma_l^{\text{inel}} = \frac{\pi(2l+1)}{k^2}(1 - |S_l|^2)$$
 
   <p>
     完全吸收（"黑球"极限）$\eta_l = 0$ 时，弹性散射截面和非弹性截面相等：
-    <Fragment set:html={defined.absMax} />。
+    $\sigma_l^{\text{el}} = \sigma_l^{\text{inel}} = \pi(2l+1)/k^2$。
     这意味着<strong>完全吸收体也是完美的散射体</strong>——一个"黑球"对入射粒子
     不仅有吸收效应，还有同等大小的衍射散射效应。这正是原子核散射中
     "暗影散射"（shadow scattering）的来源。
   </p>
 
-  <ThinkingBox title="为什么 Born 近似违反光学定理？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>为什么 Born 近似违反光学定理？</span></div>
     <p>
-      第一 Born 近似给出的散射振幅 <Fragment set:html={defined.born1inline} /> 对于实势 $V(\mathbf{r})$
+      第一 Born 近似给出的散射振幅 $f^{(1)}(\mathbf{q}) = -(2m/4\pi\hbar^2)\int V(\mathbf{r}')e^{-i\mathbf{q}\cdot\mathbf{r}'}d^3r'$ 对于实势 $V(\mathbf{r})$
       和 $\theta = 0$（即 $\mathbf{q} = 0$）是实数。但光学定理要求
       $\text{Im}\,f(0) = k\sigma_{\text{tot}}/(4\pi) > 0$。
       矛盾的根源在于：Born 近似只保留了 T 矩阵展开的第一项 $\hat{V}$，
@@ -775,15 +637,18 @@ const defined = {
       可以验证：第二 Born 近似的散射振幅在前向确实产生了非零虚部，
       且恰好与光学定理对一阶截面的要求一致——这是微扰展开自洽性的优美体现。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox title="参考教材">
+  <div class="reference-box"><div class="box-header ref-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" /></svg><span>参考教材</span></div>
     <ul>
       <li>Sakurai, <em>Modern Quantum Mechanics</em>, §6.6–6.7: 光学定理与 S 矩阵幺正性</li>
       <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, §11.3: 分波法框架下光学定理的推导</li>
       <li>曾谨言,《量子力学》卷二, 第十三章 §7: 光学定理与散射的一般性质</li>
       <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, §125, §135: 幺正性与光学定理</li>
     </ul>
-  </ReferenceBox>
+  </div>`;
+---
 
+<ChapterLayout title="第八章 散射理论" courseId="qm" chapterId="ch08">
+  <Fragment set:html={content} />
 </ChapterLayout>

@@ -1,38 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const einsteinFluctuation = `$$W \\propto \\exp\\!\\left(\\frac{\\Delta S}{k_B}\\right)$$`;
-const entropyExpansion = `$$\\Delta S = S - S_0 = \\frac{1}{2}\\sum_{i,j}\\frac{\\partial^2 S}{\\partial x_i\\,\\partial x_j}\\bigg|_0 \\Delta x_i\\,\\Delta x_j$$`;
-const fluctuationMatrix = `$$\\langle \\Delta x_i\\,\\Delta x_j \\rangle = -k_B \\left(\\frac{\\partial^2 S}{\\partial x_i\\,\\partial x_j}\\right)^{\\!-1}$$`;
-const energyFluctuation = `$$\\langle (\\Delta E)^2 \\rangle = k_B T^2 C_V$$`;
-const volumeFluctuation = `$$\\langle (\\Delta V)^2 \\rangle = -k_B T\\left(\\frac{\\partial V}{\\partial P}\\right)_{\\!T} = k_B T V \\kappa_T$$`;
-const particleFluctuation = `$$\\langle (\\Delta N)^2 \\rangle = k_B T \\left(\\frac{\\partial N}{\\partial \\mu}\\right)_{\\!T,V} = k_B T n^2 V \\kappa_T$$`;
-const relativeEnergyFluctuation = `$$\\frac{\\sqrt{\\langle(\\Delta E)^2\\rangle}}{\\langle E\\rangle} \\sim \\frac{1}{\\sqrt{N}}$$`;
-const densityFluctuationResult = `$$\\langle |\\delta n(\\mathbf{q})|^2 \\rangle = n k_B T \\kappa_T$$`;
-const rayleighIntensity = `$$I \\propto \\frac{\\omega^4}{c^4}\\,\\langle (\\Delta n)^2 \\rangle \\propto \\frac{1}{\\lambda^4}\\,k_B T \\kappa_T$$`;
-const linearResponse = `$$\\langle \\Delta B(t) \\rangle = \\int_{-\\infty}^{t} \\chi_{BA}(t - t')\\,F(t')\\,dt'$$`;
-const kuboFormula = `$$\\chi_{BA}(t) = \\frac{i}{\\hbar}\\,\\theta(t)\\,\\langle [\\hat{B}(t),\\, \\hat{A}(0)] \\rangle_0$$`;
-const kuboClassical = `$$\\chi_{BA}(t) = -\\frac{\\theta(t)}{k_BT}\\,\\frac{d}{dt}\\langle B(t)\\,A(0)\\rangle_0$$`;
-const fluctuationDissipation = `$$\\chi''(\\omega) = \\frac{\\omega}{2k_BT}\\,S(\\omega)$$`;
-const spectralFunction = `$$S(\\omega) = \\int_{-\\infty}^{\\infty} \\langle A(t)\\,A(0)\\rangle_0\\,e^{i\\omega t}\\,dt$$`;
-const greenKubo = `$$L = \\frac{1}{k_BT}\\int_0^{\\infty}\\langle J(0)\\,J(t) \\rangle_0\\,dt$$`;
-const electricalConductivity = `$$\\sigma = \\frac{e^2 n}{3k_BT}\\int_0^{\\infty}\\langle \\mathbf{v}(0)\\cdot\\mathbf{v}(t)\\rangle_0\\,dt$$`;
-const diffusionGreenKubo = `$$D = \\frac{1}{3}\\int_0^{\\infty}\\langle \\mathbf{v}(0)\\cdot\\mathbf{v}(t)\\rangle_0\\,dt$$`;
-const nyquistTheorem = `$$\\langle V^2 \\rangle = 4k_B T R\\,\\Delta f$$`;
-const nyquistSpectral = `$$S_V(\\omega) = 4k_BTR$$`;
-const onsagerReciprocal = `$$L_{ij} = L_{ji}$$`;
-const onsagerRegression = `$$\\frac{d}{dt}\\langle \\Delta x_i(t)\\,\\Delta x_j(0) \\rangle = -\\sum_k \\Lambda_{ik}\\,\\langle \\Delta x_k(t)\\,\\Delta x_j(0) \\rangle$$`;
-const fdtQuantum = `$$\\chi''(\\omega) = \\frac{1}{2\\hbar}\\left(1 - e^{-\\beta\\hbar\\omega}\\right)S(\\omega)$$`;
-const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
----
-
-<ChapterLayout title="第九章 涨落理论" courseId="stat" chapterId="ch09">
-
-  <h1>第九章 涨落理论</h1>
+const content = String.raw`<h1>第九章 涨落理论</h1>
 
   <p>
     前面各章中，我们系统地发展了统计力学的平衡理论，重点关注热力学量的<strong>平均值</strong>。然而，任何有限系统中的物理量都不是严格取其平均值——它们在平均值附近<strong>涨落</strong>（fluctuation）。这些涨落携带着系统微观动力学的深刻信息：涨落的大小由热力学响应函数（热容、压缩率等）决定，而涨落的时间关联与系统的耗散（输运）性质直接联系。本章将建立涨落理论的完整框架——从Einstein的热力学涨落公式，到Kubo线性响应理论和涨落-耗散定理（FDT），最后到Green-Kubo关系和Onsager回归假说。这些结果构成了平衡统计力学与非平衡输运理论之间的桥梁。
@@ -70,7 +39,7 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
     这是涨落理论的核心结果：<strong>涨落的协方差矩阵等于 $k_B$ 乘以熵的Hessian矩阵之逆（取负号）</strong>。涨落的大小完全由热力学（平衡态的熵函数）决定，不需要任何关于微观动力学的信息。
   </p>
 
-  <Derivation title="涨落公式的推导——从Einstein公式到协方差矩阵">
+  <details class="derivation-block"><summary class="derivation-toggle">涨落公式的推导——从Einstein公式到协方差矩阵</summary><div class="derivation-content">
     <p>从Einstein涨落公式出发，将涨落概率归一化：</p>
     $$
       P(\{\Delta x_i\}) = \frac{1}{Z}\exp\!\left(-\frac{1}{2k_B}\sum_{i,j}\beta_{ij}\,\Delta x_i\,\Delta x_j\right)
@@ -84,7 +53,7 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
       \langle (\Delta x)^2 \rangle = \frac{k_B}{\beta_{xx}} = -k_B\left(\frac{\partial^2 S}{\partial x^2}\right)^{\!-1}
     $$
     <p>这些结果的关键在于：平衡态附近的涨落是高斯分布的（中心极限定理的体现），涨落幅度完全由热力学势的曲率决定。熵函数曲率越大（即系统对偏离平衡越"刚性"），涨落越小。</p>
-  </Derivation>
+  </div></details>
 
   <h3>具体例子</h3>
 
@@ -125,11 +94,11 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
     利用热力学恒等式 $(\partial N/\partial \mu)_{T,V} = n^2 V \kappa_T$（其中 $n = N/V$），粒子数涨落也与等温压缩率联系。对于理想气体，$\kappa_T = 1/P = 1/(nk_BT)$，给出 $\langle(\Delta N)^2\rangle = N$——即Poisson分布的特征。
   </p>
 
-  <InsightBox title="涨落与响应函数——同一硬币的两面">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>涨落与响应函数——同一硬币的两面</span></div>
     <p>
       上述结果揭示了一个深刻的普遍联系：<strong>涨落的大小由响应函数决定</strong>。能量涨落 $\propto C_V$（热容是能量对温度的响应），体积涨落 $\propto \kappa_T$（压缩率是体积对压力的响应），粒子数涨落 $\propto (\partial N/\partial \mu)_T$（粒子数对化学势的响应）。这不是巧合——统计力学中，涨落和响应在数学上等价：配分函数的对数对外参数的<strong>一阶导数</strong>给出平均值，<strong>二阶导数</strong>同时给出响应函数和涨落。这种涨落-响应对偶性是静态涨落-耗散定理的雏形，将在下一节中推广到动力学领域。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>密度涨落与光散射</h3>
   <p>
@@ -155,7 +124,7 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
     关联长度 $\xi \propto |T - T_c|^{-\nu}$ 在临界点处发散。当 $\xi$ 与可见光波长可比时（$\xi \sim \lambda \sim 500$ nm），密度涨落强烈散射所有波长的光，流体变得乳白色而不透明——这就是<strong>临界乳光</strong>（critical opalescence）。Andrews（1869）在CO$_2$临界点附近首次观察到这一现象，它是相变临界行为最直观的宏观表现。
   </p>
 
-  <ThinkingBox title="为何等温压缩率在临界点发散？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>为何等温压缩率在临界点发散？</span></div>
     <p>
       从热力学角度，临界点是液气共存线的终点。在临界点处，van der Waals方程（或更一般的状态方程）的等温线出现拐点：$(\partial P/\partial V)_T = 0$ 且 $(\partial^2 P/\partial V^2)_T = 0$。等温压缩率 $\kappa_T = -(1/V)(\partial V/\partial P)_T = [V(\partial P/\partial V)_T]^{-1}$ 的分母为零，因此 $\kappa_T$ 发散。
     </p>
@@ -165,9 +134,9 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
     <p>
       值得注意的是，Ornstein-Zernike理论给出 $\langle|\delta n(\mathbf{q})|^2\rangle \propto 1/(q^2 + \xi^{-2})$，这是一个Lorentz型结构因子。当 $\xi \to \infty$ 时，在 $q \to 0$ 处发散。对所有 $q$ 积分得到实空间涨落 $\langle(\Delta n)^2\rangle$，与 $\kappa_T$ 的发散一致。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 15.1-15.3 (Fluctuations)</li>
       <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;110-114</li>
@@ -176,7 +145,7 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
       <li>A. Einstein, <em>Annalen der Physik</em> <strong>33</strong>, 1275 (1910) &mdash; 涨落与临界乳光</li>
       <li>L.S. Ornstein & F. Zernike, <em>Proc. Acad. Sci. Amsterdam</em> <strong>17</strong>, 793 (1914) &mdash; 密度涨落理论</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="fdt">9.2 涨落-耗散定理与线性响应</h2>
@@ -203,7 +172,7 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
     Kubo公式将<strong>非平衡响应</strong>（左端）归结为<strong>平衡态关联函数</strong>（右端的对易子期望值）。这是一个非平凡的结果：要计算系统对外扰的响应，只需知道未扰动平衡态中物理量的自发涨落！
   </p>
 
-  <Derivation title="Kubo公式的推导">
+  <details class="derivation-block"><summary class="derivation-toggle">Kubo公式的推导</summary><div class="derivation-content">
     <p>系统的总Hamiltonian为 $\hat{H}(t) = \hat{H}_0 + \hat{H}'(t)$，其中 $\hat{H}'(t) = -\hat{A}\,F(t)$。在相互作用绘景中，密度算符 $\hat{\rho}_I(t)$ 满足</p>
     $$
       i\hbar\frac{\partial\hat{\rho}_I}{\partial t} = [\hat{H}'_I(t),\,\hat{\rho}_I(t)]
@@ -225,7 +194,7 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
       \chi_{BA}(t-t') = \frac{i}{\hbar}\,\theta(t-t')\,\langle[\hat{B}(t),\,\hat{A}(t')]\rangle_0
     $$
     <p>对于平衡态（时间平移不变），关联函数仅依赖时间差，故 $\chi_{BA}$ 也只依赖 $t - t'$。</p>
-  </Derivation>
+  </div></details>
 
   <p>
     在<strong>经典极限</strong>下（$\hbar \to 0$），对易子 $(i/\hbar)[\hat{B},\hat{A}]$ 退化为Poisson括号，Kubo公式变为
@@ -263,11 +232,11 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
     在高温经典极限 $\beta\hbar\omega \ll 1$ 下，$1 - e^{-\beta\hbar\omega} \approx \beta\hbar\omega$，回到经典FDT $\chi''(\omega) = (\omega/2k_BT)\,S(\omega)$。量子修正在低温或高频（$\hbar\omega \gtrsim k_BT$）时变得重要。
   </p>
 
-  <InsightBox title="FDT的深层含义——耗散来自涨落">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>FDT的深层含义——耗散来自涨落</span></div>
     <p>
       涨落-耗散定理可以这样理解：想象将一个小球放入热平衡的流体中。流体分子的随机碰撞使小球做Brown运动（涨落），同时也导致小球运动时受到粘滞阻力（耗散）。FDT断言这两个现象——随机力和阻尼力——有着严格的定量关系，因为它们有<strong>共同的微观起源</strong>：系统自由度与环境自由度之间的耦合。Einstein关系 $D = k_BT/(m\gamma)$（扩散系数 $D$ 与阻尼系数 $\gamma$ 的关系）是FDT最简单的特例。更一般地，FDT将任何广义力学量的涨落谱与对应外场的耗散响应联系起来。这个定理的普遍性在于：它不依赖于系统的具体微观模型，只要求系统处于（或接近）热平衡。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>Green-Kubo关系</h3>
   <p>
@@ -313,7 +282,7 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
     这里 $R$ 代表耗散（电阻消耗电能转化为热），$\langle V^2\rangle$ 代表涨落（热噪声）。Nyquist定理是FDT的一个精确特例：电阻（耗散）越大，热噪声（涨落）越强。它在电子学、通信工程和精密测量中具有根本重要性——设定了任何电子器件的本底噪声极限。
   </p>
 
-  <Derivation title="Nyquist定理的推导——从FDT出发">
+  <details class="derivation-block"><summary class="derivation-toggle">Nyquist定理的推导——从FDT出发</summary><div class="derivation-content">
     <p>考虑一个电阻 $R$ 与外电路串联。电流 $I$ 是"流"，电压 $V$ 是"力"，电阻定义了耗散响应：$V(\omega) = Z(\omega)\,I(\omega)$，其中阻抗 $Z(\omega)$ 对于纯电阻为 $Z = R$（实数）。</p>
     <p>将FDT应用于电流涨落：电流的功率谱密度 $S_I(\omega)$ 与阻抗的实部（耗散部分）$\text{Re}\,Z(\omega) = R$ 通过FDT关联：</p>
     $$
@@ -324,7 +293,7 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
       \langle V^2 \rangle = \int_0^{\Delta f} S_V(f)\,df = 4k_BTR\,\Delta f
     $$
     <p>这就是Nyquist公式。如果考虑量子修正，将 $k_BT$ 替换为 $(\hbar\omega/2)\coth(\hbar\omega/2k_BT)$，在 $\hbar\omega \gg k_BT$ 时给出零点噪声 $S_V = 2\hbar\omega R$。</p>
-  </Derivation>
+  </div></details>
 
   <h3>Onsager回归假说</h3>
   <p>
@@ -342,7 +311,7 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
     其中 $L_{ij}$ 是唯象输运系数矩阵（如热电效应中 Seebeck 系数与 Peltier 系数的关系）。倒易关系的根源是微观运动方程在时间反演下的对称性——它是统计力学对不可逆热力学最深刻的约束之一。Onsager因此获得1968年Nobel化学奖。
   </p>
 
-  <ThinkingBox title="涨落理论的层次结构">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>涨落理论的层次结构</span></div>
     <p>
       本章涉及的各种关系可以按层次整理：
     </p>
@@ -356,9 +325,9 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
     <p>
       这些结果层层递进，将平衡态热力学、涨落的统计描述、线性响应和不可逆热力学统一在一个连贯的理论框架中。值得注意的是，所有这些结果都严格限制在<strong>线性响应</strong>（近平衡）范围内。对于远离平衡的系统，不存在类似FDT的普遍关系——这正是非平衡统计力学至今未解决的核心困难之一。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>R. Kubo, <em>J. Phys. Soc. Japan</em> <strong>12</strong>, 570 (1957) &mdash; Kubo公式与线性响应理论</li>
       <li>L. Onsager, <em>Phys. Rev.</em> <strong>37</strong>, 405 (1931); <strong>38</strong>, 2265 (1931) &mdash; 倒易关系</li>
@@ -370,6 +339,9 @@ const einsteinRelation = `$$D = \\frac{k_BT}{m\\gamma} = \\mu\\, k_BT$$`;
       <li>M. Kardar, <em>Statistical Physics of Fields</em>, Ch. 10 (Linear Response)</li>
       <li>R. Kubo, M. Toda, N. Hashitsume, <em>Statistical Physics II: Nonequilibrium Statistical Mechanics</em>, Springer</li>
     </ul>
-  </ReferenceBox>
+  </div>`;
+---
 
+<ChapterLayout title="第九章 涨落理论" courseId="stat" chapterId="ch09">
+  <Fragment set:html={content} />
 </ChapterLayout>

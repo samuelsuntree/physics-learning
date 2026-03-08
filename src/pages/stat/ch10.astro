@@ -1,30 +1,7 @@
 ---
 import ChapterLayout from '../../layouts/ChapterLayout.astro';
-import InsightBox from '../../components/InsightBox.astro';
-import ThinkingBox from '../../components/ThinkingBox.astro';
-import Derivation from '../../components/Derivation.astro';
-import ReferenceBox from '../../components/ReferenceBox.astro';
 
-const freeEnergyDensity = `$$f(T, n) = \\lim_{\\substack{N\\to\\infty,\\, V\\to\\infty \\\\ N/V = n}} \\frac{F(T, V, N)}{N}$$`;
-const largeDeviation = `$$P(x) \\asymp e^{-N\\,I(x)}$$`;
-const rateFunction = `$$I(x) = \\sup_\\lambda \\bigl[\\lambda x - \\ln\\langle e^{\\lambda X_1}\\rangle\\bigr]$$`;
-const legendreSTF = `$$\\frac{1}{T} = \\frac{\\partial S(E,V,N)}{\\partial E}\\bigg|_{V,N} \\quad \\Longleftrightarrow \\quad F(T,V,N) = E - TS = \\inf_E\\!\\bigl[E - T\\,S(E,V,N)\\bigr]$$`;
-const legendreFPhi = `$$\\frac{\\mu}{T} = -\\frac{\\partial}{\\partial N}\\left(\\frac{F}{T}\\right)\\bigg|_{T,V} \\quad \\Longleftrightarrow \\quad \\Phi(T,V,\\mu) = F - \\mu N = \\inf_N\\!\\bigl[F(T,V,N) - \\mu N\\bigr]$$`;
-const microcanonicalEntropy = `$$S(E) = k_B \\ln \\Omega(E)$$`;
-const canonicalZ = `$$Z(\\beta) = \\int \\Omega(E)\\,e^{-\\beta E}\\,dE = \\int \\exp\\!\\bigl[S(E)/k_B - \\beta E\\bigr]\\,dE$$`;
-const saddlePoint = `$$\\frac{\\partial S}{\\partial E}\\bigg|_{E^*} = \\frac{1}{T} = k_B\\beta \\quad \\Longrightarrow \\quad E^* = E^*(\\beta)$$`;
-const freeEnergyFromSaddle = `$$F(T) = -k_BT\\ln Z \\approx E^* - T\\,S(E^*) \\quad (N\\to\\infty)$$`;
-const concavityCondition = `$$\\frac{\\partial^2 S}{\\partial E^2} \\leq 0 \\quad \\Longleftrightarrow \\quad C_V \\geq 0$$`;
-const canonicalCvPositive = `$$C_V = \\frac{\\langle(\\Delta E)^2\\rangle}{k_BT^2} \\geq 0$$`;
-const jaynesMaxEnt = `$$S[\\rho] = -k_B\\,\\text{Tr}\\,(\\hat{\\rho}\\ln\\hat{\\rho}) \\to \\max$$`;
-const jaynesResult = `$$\\hat{\\rho} = \\frac{1}{Z}\\exp\\!\\left(-\\sum_i \\lambda_i \\hat{O}_i\\right)$$`;
-const partitionEquivalence = `$$\\frac{1}{N}\\ln Z_\\text{can} = \\frac{1}{N}\\ln Z_\\text{gc} + O\\!\\left(\\frac{\\ln N}{N}\\right)$$`;
-const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \\Longrightarrow \\quad C_V = -\\frac{3}{2}Nk_B < 0$$`;
----
-
-<ChapterLayout title="第十章 系综等价性与热力学极限" courseId="stat" chapterId="ch10">
-
-  <h1>第十章 系综等价性与热力学极限</h1>
+const content = String.raw`<h1>第十章 系综等价性与热力学极限</h1>
 
   <p>
     统计力学的整座大厦建立在一个隐含而深刻的假设之上：在<strong>热力学极限</strong>（$N \to \infty$）下，微正则系综、正则系综和巨正则系综给出相同的热力学结果。前面各章中我们在不同系综之间自由切换——用正则系综计算能量，用巨正则系综处理量子气体——从未质疑其合法性。本章将严格审视这一等价性：它在什么条件下成立？什么时候会失效？热力学极限的精确数学含义是什么？最后，我们将对统计力学的逻辑体系做一次全景回顾，以Jaynes最大熵原理作为统一视角，并指出通向非平衡统计力学的开放问题。
@@ -61,11 +38,11 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     当这两个条件满足时，可以严格证明 $f(T, n)$ 存在，且作为 $T$ 和 $n$ 的函数具有良好的凸性质（$f$ 关于 $1/T$ 是凸函数，关于 $n$ 是凸函数）。
   </p>
 
-  <InsightBox title="热力学极限——为何统计力学需要N很大">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>热力学极限——为何统计力学需要N很大</span></div>
     <p>
       热力学极限不仅是数学上的便利——它是统计力学理论<strong>内在逻辑一致性</strong>的必要条件。没有热力学极限：(1) 不同系综可能给出不同结果——你无法自由选择"方便的"系综进行计算；(2) 配分函数作为有限多个指数函数之和，是关于其参数的<strong>解析函数</strong>——不可能出现热力学函数的非解析行为，因此<strong>不可能存在相变</strong>；(3) 广延量的涨落与均值可比，"热力学量"没有确定值。正是在 $N \to \infty$ 极限下，这些问题同时消除：系综变得等价，相变成为可能，涨落相对消失。热力学极限是连接微观统计力学与宏观热力学的桥梁，是"统计"变成"热力学"的数学保证。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>有限系统与相变的数学起源</h3>
   <p>
@@ -87,7 +64,7 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     相变只在热力学极限 $N \to \infty$ 下才能严格发生：无穷多个解析函数之和（$Z = \sum_n e^{-\beta E_n}$，$n$ 遍历无穷多能级）可以产生非解析行为。Lee和Yang（1952）严格证明了：<strong>相变对应于配分函数的零点在热力学极限下逼近实轴</strong>——有限系统的零点在复平面上远离实轴，不影响物理；$N \to \infty$ 时零点密集趋近实轴，产生奇异性。
   </p>
 
-  <Derivation title="配分函数零点与相变——Lee-Yang定理">
+  <details class="derivation-block"><summary class="derivation-toggle">配分函数零点与相变——Lee-Yang定理</summary><div class="derivation-content">
     <p>以巨配分函数 $\mathcal{Z}(z, T) = \sum_{N=0}^{\infty} z^N Z_N(T)$ 为例，其中 $z = e^{\beta\mu}$ 是逸度。对于有限体积 $V$，$\mathcal{Z}$ 是 $z$ 的多项式（截断到 $N_{\max}$ 项），其零点 $\{z_i\}$ 在复 $z$ 平面上。</p>
     <p>Lee-Yang定理（1952年证明了Ising模型的特殊情形）：对于许多物理系统，这些零点分布在复 $z$ 平面的某条曲线上，且与正实轴有距离。当 $V \to \infty$ 时：</p>
     <ul>
@@ -97,7 +74,7 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     </ul>
     <p>巨势密度 $\phi(z) = -(k_BT/V)\ln\mathcal{Z}$ 在零点逼近实轴的位置变得非解析——这就是相变的数学起源。对于一阶相变，零点以有限密度穿越实轴；对于连续相变，零点以特定方式趋近临界点。</p>
     <p>这一框架赋予"相变需要热力学极限"以精确的数学含义，也解释了为何有限系统的模拟和实验中相变总是"平滑的"——有限尺寸效应将真正的奇异性圆整为急剧但连续的变化。</p>
-  </Derivation>
+  </div></details>
 
   <h3>大数定律与中心极限定理的角色</h3>
   <p>
@@ -132,7 +109,7 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     <li>Legendre变换在速率函数和累积量生成函数之间的对偶性，精确对应于<strong>微正则系综与正则系综之间的关系</strong>。</li>
   </ul>
 
-  <ThinkingBox title="大偏差理论——统计力学的概率论基础">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>大偏差理论——统计力学的概率论基础</span></div>
     <p>
       大偏差理论为统计力学提供了最干净的数学基础。核心思想是：在 $N$ 很大时，宏观量 $X = (1/N)\sum_i x_i$ 的概率分布集中在均值附近（大数定律），偏离均值的概率以 $e^{-NI(x)}$ 指数衰减。速率函数 $I(x)$ 恰好就是（负的）熵密度（相对于平衡值）。
     </p>
@@ -142,9 +119,9 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     <p>
       这一观点由Ellis、Touchette等人在2000年代系统发展，为统计力学提供了数学上最严格和概念上最清晰的框架。对于有兴趣深入了解的读者，推荐Touchette的综述 <em>Physics Reports</em> <strong>478</strong>, 1 (2009)。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>D. Ruelle, <em>Statistical Mechanics: Rigorous Results</em>, World Scientific (1999) &mdash; 热力学极限的严格数学理论</li>
       <li>M.E. Fisher, <em>Arch. Rational Mech. Anal.</em> <strong>17</strong>, 377 (1964) &mdash; 自由能存在性</li>
@@ -153,7 +130,7 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
       <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 15.1-15.3</li>
       <li>H. Touchette, <em>Physics Reports</em> <strong>478</strong>, 1 (2009) &mdash; 大偏差理论与统计力学</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="equivalence">10.2 系综等价性的条件与失效</h2>
@@ -194,7 +171,7 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     其中 $\Phi = F - \mu N = -PV$ 是巨势。微观上对应于对粒子数 $N$ 的求和（巨配分函数 $\mathcal{Z} = \sum_N z^N Z_N$），在热力学极限下由最大项主导。
   </p>
 
-  <Derivation title="鞍点近似与系综等价性">
+  <details class="derivation-block"><summary class="derivation-toggle">鞍点近似与系综等价性</summary><div class="derivation-content">
     <p>考虑正则配分函数作为态密度的Laplace变换：</p>
     $$
       Z(\beta) = \int_0^{\infty} \Omega(E)\,e^{-\beta E}\,dE = \int_0^{\infty} \exp\!\bigl[N\,s(e) - N\beta e\bigr]\,N\,de
@@ -214,7 +191,7 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     $$
     <p>即 $-\beta f = s(e^*) - \beta e^*$，或 $f = e^* - Ts(e^*)$——Legendre变换。鞍点近似成立的条件是 $\phi''(e^*) = s''(e^*) < 0$，即<strong>熵是能量的严格凹函数</strong>。</p>
     <p>鞍点处 $e$ 的高斯涨落宽度为 $\sigma_e \sim 1/\sqrt{N|s''|}$，相对涨落 $\sigma_e/e^* \sim 1/\sqrt{N} \to 0$——在热力学极限下能量涨落消失，微正则和正则给出相同的能量。</p>
-  </Derivation>
+  </div></details>
 
   <h3>等价成立的条件</h3>
   <p>
@@ -238,11 +215,11 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     差异是 $O(\ln N/N)$——对于宏观系统可以忽略。
   </p>
 
-  <InsightBox title="Legendre变换的不可逆性与一阶相变">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>Legendre变换的不可逆性与一阶相变</span></div>
     <p>
       当 $S(E)$ 不是严格凹的——例如在一阶相变中 $S(E)$ 包含一段<strong>凸区域</strong>（对应相共存区域，$\partial^2 S/\partial E^2 > 0$）——Legendre变换变得不可逆。正则系综的自由能 $F(T)$ 对应于 $S(E)$ 的<strong>凹包络</strong>（concave envelope），即将凸区域替换为直线段（Maxwell等面积构造的数学本质）。从 $F(T)$ 反变换无法恢复 $S(E)$ 的凸部分——信息丢失了。然而，对于短程相互作用系统，这种"不等价"仅出现在一阶相变的共存区域内部，且两种系综对相变温度和共存态的预测仍然一致——它们只是在相变区域内以不同方式描述同一物理（微正则允许相共存态的连续描述，正则则直接跳过共存区）。这是一种"弱不等价"，通常不影响物理结论。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>系综等价失效：长程相互作用系统</h3>
   <p>
@@ -280,7 +257,7 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     <li>两种系综给出<strong>不同的相图</strong>：微正则中的连续过渡在正则中变为一阶相变；微正则相图中的某些态在正则中根本不存在。</li>
   </ul>
 
-  <ThinkingBox title="负热容——违反热力学第二定律吗？">
+  <div class="thinking-box"><div class="box-header thinking-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg><span>负热容——违反热力学第二定律吗？</span></div>
     <p>
       负热容的存在似乎与日常直觉矛盾：向系统抽取热量，温度反而升高？但这并不违反热力学定律——它只是说明了热力学教科书中隐含的假设（短程相互作用、广延性）不总是满足。
     </p>
@@ -294,9 +271,9 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     <p>
       这说明系综等价的失效不仅是数学上的微妙——它意味着系统的<strong>实际热力学行为</strong>取决于其物理边界条件（孤立还是与热库接触）。对于自引力系统（恒星、星系团），它们通常是近似孤立的，微正则描述更合适。对于实验室中通过温度控制的系统，正则描述更合适。选择哪个系综不再是"方便"的问题，而是<strong>物理</strong>的问题。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 15.5 &amp; Appendix D</li>
       <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;21, &sect;35</li>
@@ -306,7 +283,7 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
       <li>M. Costeniuc, R.S. Ellis, H. Touchette, B. Turkington, <em>J. Stat. Phys.</em> <strong>119</strong>, 1283 (2005) &mdash; 系综不等价的严格理论</li>
       <li>D. Lynden-Bell & R. Wood, <em>Mon. Not. Roy. Astron. Soc.</em> <strong>138</strong>, 495 (1968) &mdash; 自引力系统的负热容</li>
     </ul>
-  </ReferenceBox>
+  </div>
 
   <!-- ============================================================ -->
   <h2 id="unified-review">10.3 统一回顾</h2>
@@ -373,14 +350,14 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     <li><strong>巨正则</strong>：约束 $\langle E\rangle$ 和 $\langle N\rangle$ $\to$ $\hat{\rho} \propto e^{-\beta(\hat{H}-\mu\hat{N})}$。</li>
   </ul>
 
-  <InsightBox title="最大熵原理——统计力学的逻辑最简基础">
+  <div class="insight-box"><div class="box-header insight-header"><svg class="box-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" /><path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" /></svg><span>最大熵原理——统计力学的逻辑最简基础</span></div>
     <p>
       Jaynes最大熵原理将统计力学的逻辑基础从物理假说（遍历性、等概率原理）转移到了信息论的推理原则：在已知信息的约束下，选择最无偏（最大熵）的概率分布。这个方案的优点在于：(1) 不需要遍历性假说——最大熵分布不依赖于系统是否遍历，而是给定约束下逻辑上最合理的推断；(2) 所有系综自然统一——只需改变约束条件；(3) 概念清晰——熵不是物质的"属性"，而是关于系统微观状态的<strong>不确定性度量</strong>。
     </p>
     <p>
       然而，最大熵方案也面临批评：(1) 它没有解释<strong>为什么</strong>热平衡态是最大熵态——遍历性问题仍然存在；(2) 对于非平衡系统，约束条件的选择变得主观和困难；(3) 它将统计力学简化为概率推断，某种程度上回避了动力学的作用。尽管如此，作为一个组织已知结果的统一框架，最大熵原理具有不可替代的简洁性和概念清晰性。
     </p>
-  </InsightBox>
+  </div>
 
   <h3>开放问题：遍历性</h3>
   <p>
@@ -417,7 +394,7 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     <li><strong>宏观涨落理论</strong>（macroscopic fluctuation theory）：为扩散系统的大偏差建立了变分原理。</li>
   </ul>
 
-  <ThinkingBox title=""热力学是大数的力学"">
+  <div class="thinking-box"><div class="box-header thinking-header"><span>深层思考</span></div>
     <p>
       纵观统计力学的整个体系，可以用一句话概括其核心思想：<strong>热力学是大数的力学</strong>。
     </p>
@@ -433,9 +410,9 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     <p>
       统计力学的全部内容，从微正则系综到涨落-耗散定理，从Bose-Einstein凝聚到相变理论，都是这个简单事实的展开：<strong>当自由度数目足够大时，概率论的大数定律将微观的随机性转化为宏观的确定性，而罕见的偏离（涨落）蕴含着系统动力学最深刻的信息</strong>。这就是统计力学——也许是理论物理中最成功的推理范式——的本质所在。
     </p>
-  </ThinkingBox>
+  </div>
 
-  <Derivation title="Jaynes最大熵原理的推导——以正则系综为例">
+  <details class="derivation-block"><summary class="derivation-toggle">Jaynes最大熵原理的推导——以正则系综为例</summary><div class="derivation-content">
     <p>要求在约束条件 $\sum_n p_n = 1$ 和 $\sum_n p_n E_n = \langle E\rangle$ 下，最大化Shannon熵</p>
     $$
       S = -k_B\sum_n p_n \ln p_n
@@ -454,9 +431,9 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
     $$
     <p>令 $\beta/k_B = 1/(k_BT)$，即 $\beta = 1/T$，恢复正则分布 $p_n = e^{-E_n/(k_BT)}/Z$。这里 $\beta$ 不是事先假定的，而是由约束 $\langle E\rangle$ <strong>自动确定</strong>的Lagrange乘子——温度的倒数。类似地，对巨正则系综，增加约束 $\langle N\rangle$，对应的Lagrange乘子就是 $-\mu/T$。</p>
     <p>最大熵原理的优美之处在于：整个统计力学的数学结构（配分函数、自由能、系综等价性）全部从一个简单的变分问题中自然涌现。</p>
-  </Derivation>
+  </div></details>
 
-  <ReferenceBox>
+  <div class="reference-box"><div class="box-header ref-header"><span>参考教材</span></div>
     <ul>
       <li>E.T. Jaynes, <em>Phys. Rev.</em> <strong>106</strong>, 620 (1957); <strong>108</strong>, 171 (1957) &mdash; 最大熵原理与统计力学</li>
       <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 1, 3, 15 (回顾与综合)</li>
@@ -471,6 +448,9 @@ const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \
       <li>G.E. Crooks, <em>Phys. Rev. E</em> <strong>60</strong>, 2721 (1999) &mdash; Crooks涨落定理</li>
       <li>H. Touchette, <em>Physics Reports</em> <strong>478</strong>, 1 (2009) &mdash; 大偏差理论综述</li>
     </ul>
-  </ReferenceBox>
+  </div>`;
+---
 
+<ChapterLayout title="第十章 系综等价性与热力学极限" courseId="stat" chapterId="ch10">
+  <Fragment set:html={content} />
 </ChapterLayout>
