@@ -1,0 +1,470 @@
+---
+import ChapterLayout from '../../layouts/ChapterLayout.astro';
+import InsightBox from '../../components/InsightBox.astro';
+import ThinkingBox from '../../components/ThinkingBox.astro';
+import Derivation from '../../components/Derivation.astro';
+import ReferenceBox from '../../components/ReferenceBox.astro';
+---
+
+<ChapterLayout title="第三章 正则系综" courseId="stat" chapterId="ch03">
+
+  <h1>第三章 正则系综</h1>
+
+  <p>
+    正则系综描述一个与温度为 $T$ 的热库达到热平衡的系统——体积 $V$ 和粒子数 $N$ 固定，但能量可以在系统与热库之间交换。相比微正则系综，正则系综在实际计算中极为方便：配分函数 $Z(T,V,N)$ 取代态密度 $\Omega(E)$ 成为核心对象，而且 $Z$ 的乘积性质使得独立子系统的处理变得简单。本章将严格建立正则系综，分析能量涨落，并通过经典理想气体、能量均分定理、Maxwell速度分布、Einstein固体模型和顺磁性等应用展示其威力。
+  </p>
+
+  <!-- ============================================================ -->
+  <h2 id="canonical-foundation">3.1 正则系综的建立</h2>
+  <!-- ============================================================ -->
+
+  <h3>从微正则到正则的严格推导</h3>
+  <p>
+    考虑一个小系统（S）与一个大热库（R）组成的孤立总系统，总能量 $E_0 = E_S + E_R$ 守恒。在微正则系综中，总系统的每个微观态等概率出现。系统S处于其微观态 $i$（能量 $E_i$）的概率正比于热库在能量 $E_0 - E_i$ 时的微观态数：
+  </p>
+  $$
+    P_i \propto \Omega_R(E_0 - E_i)
+  $$
+
+  <Derivation title="Boltzmann分布的严格推导">
+    <p>对热库的熵做Taylor展开。由于 $E_i \ll E_0$（热库远大于系统），展开到一阶即可：</p>
+    $$
+      S_R(E_0 - E_i) = S_R(E_0) - E_i\left(\frac{\partial S_R}{\partial E_R}\right)_{V_R, N_R} + O(E_i^2/E_0)
+    $$
+    <p>由热库温度的定义 $1/T = (\partial S_R/\partial E_R)_{V_R, N_R}$，得</p>
+    $$
+      \Omega_R(E_0 - E_i) = \Omega_R(E_0)\,\exp\!\left(-\frac{E_i}{k_BT}\right) \cdot \left[1 + O\!\left(\frac{E_i^2}{E_0 k_BT}\right)\right]
+    $$
+    <p>高阶项的相对大小为 $E_i^2/(E_0 k_BT) \sim E_i/E_0 \to 0$（热力学极限下热库无穷大）。因此</p>
+    $$
+      P_i = \frac{e^{-\beta E_i}}{\displaystyle\sum_j e^{-\beta E_j}}, \qquad \beta = \frac{1}{k_BT}
+    $$
+    <p>
+      这里的求和遍历系统的所有微观态。关键假设只有两个：(1) 总系统处于微正则系综（等概率假设）；(2) 热库足够大，使Taylor展开到一阶有效。推导的严格性与系统本身的性质完全无关——系统可以是量子的、有强相互作用的、甚至是非线性的。
+    </p>
+  </Derivation>
+
+  <h3>配分函数</h3>
+  <p>
+    归一化因子就是<strong>正则配分函数</strong>：
+  </p>
+  $$
+    Z(T, V, N) = \sum_i e^{-\beta E_i}
+  $$
+  <p>
+    其中求和遍历系统的所有微观态。对于经典系统，求和替换为相空间积分：
+  </p>
+  $$
+    Z = \frac{1}{N!\,h^{3N}} \int e^{-\beta H(\mathbf{q}, \mathbf{p})}\, d\Gamma
+  $$
+  <p>
+    配分函数与态密度通过Laplace变换联系：
+  </p>
+  $$
+    Z(\beta) = \int_0^\infty \Omega(E)\,e^{-\beta E}\,dE
+  $$
+  <p>
+    这一数学关系深刻地体现了微正则与正则系综之间的对偶性。
+  </p>
+
+  <h3>核心关系：$F = -k_BT\ln Z$</h3>
+  <p>
+    正则系综的热力学势是<strong>Helmholtz自由能</strong> $F = E - TS$。它与配分函数的关系为
+  </p>
+  $$
+    F(T, V, N) = -k_BT \ln Z(T, V, N)
+  $$
+
+  <Derivation title="$F = -k_BT\ln Z$ 的证明">
+    <p>正则系综中，系统的平均能量为</p>
+    $$
+      \langle E \rangle = \sum_i E_i P_i = \frac{\sum_i E_i\,e^{-\beta E_i}}{Z} = -\frac{\partial \ln Z}{\partial \beta}
+    $$
+    <p>系统的熵为（利用Gibbs熵公式 $S = -k_B\sum_i P_i\ln P_i$）</p>
+    $$
+      S = -k_B\sum_i P_i \bigl(-\beta E_i - \ln Z\bigr) = k_B\beta\langle E\rangle + k_B\ln Z
+    $$
+    <p>因此</p>
+    $$
+      F = \langle E\rangle - TS = \langle E\rangle - T\bigl(k_B\beta\langle E\rangle + k_B\ln Z\bigr) = \langle E\rangle - \langle E\rangle - k_BT\ln Z = -k_BT\ln Z
+    $$
+  </Derivation>
+
+  <h3>由自由能推导全部热力学量</h3>
+  <p>
+    一旦知道 $F(T,V,N)$，全部热力学量均可由标准热力学关系获得：
+  </p>
+  $$
+    S = -\left(\frac{\partial F}{\partial T}\right)_{V,N}, \qquad
+    P = -\left(\frac{\partial F}{\partial V}\right)_{T,N}, \qquad
+    \mu = \left(\frac{\partial F}{\partial N}\right)_{T,V}
+  $$
+  $$
+    E = F + TS = -\frac{\partial(\beta F)}{\partial\beta} = -\frac{\partial\ln Z}{\partial\beta}
+  $$
+  $$
+    C_V = \left(\frac{\partial E}{\partial T}\right)_{V,N} = -T\left(\frac{\partial^2 F}{\partial T^2}\right)_{V,N}
+  $$
+
+  <h3>配分函数的乘积性质</h3>
+  <p>
+    若系统由两个<strong>独立</strong>子系统A和B组成（$H = H_A + H_B$，且A、B的微观态无关联），则
+  </p>
+  $$
+    Z = Z_A \cdot Z_B
+  $$
+  <p>
+    这是因为
+  </p>
+  $$
+    Z = \sum_{i,j} e^{-\beta(E_i^A + E_j^B)} = \left(\sum_i e^{-\beta E_i^A}\right)\!\left(\sum_j e^{-\beta E_j^B}\right) = Z_A\,Z_B
+  $$
+  <p>
+    相应地，$\ln Z = \ln Z_A + \ln Z_B$，$F = F_A + F_B$。这一乘积性质使得正则系综在处理可分解系统时极为方便——这是它相对于微正则系综的巨大实用优势。
+  </p>
+
+  <InsightBox title="为什么正则系综比微正则更常用？">
+    <p>
+      在微正则系综中，计算 $\Omega(E)$ 需要精确约束总能量——这意味着对相空间进行等能面上的积分，数学上通常很困难。正则系综中，配分函数 $Z$ 是无约束的全相空间积分（权重为 $e^{-\beta H}$），计算大大简化。更关键的是，乘积性质意味着独立子系统的配分函数可以直接相乘，而微正则系综中的对应运算是卷积（因为能量必须精确分配）。在热力学极限下，两种系综给出相同的热力学结果——这就是<strong>系综等价性</strong>。
+    </p>
+  </InsightBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 3.1-3.4</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 7.1-7.3</li>
+      <li>汪志诚,《热力学·统计物理》, 第6版, &sect;8.1-8.3</li>
+      <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;28, &sect;31</li>
+    </ul>
+  </ReferenceBox>
+
+  <!-- ============================================================ -->
+  <h2 id="energy-fluctuations">3.2 能量涨落与热力学稳定性</h2>
+  <!-- ============================================================ -->
+
+  <h3>能量的期望值与涨落</h3>
+  <p>
+    正则系综中，能量不再是固定值，而是一个随机变量。其期望值已由上节给出：
+  </p>
+  $$
+    \langle E \rangle = -\frac{\partial \ln Z}{\partial \beta}
+  $$
+  <p>
+    能量的二阶矩为
+  </p>
+  $$
+    \langle E^2 \rangle = \frac{1}{Z}\sum_i E_i^2\,e^{-\beta E_i} = \frac{1}{Z}\frac{\partial^2 Z}{\partial\beta^2}
+  $$
+
+  <Derivation title="能量涨落公式的推导">
+    <p>能量的方差为</p>
+    $$
+      \langle (\Delta E)^2 \rangle = \langle E^2 \rangle - \langle E \rangle^2
+    $$
+    <p>注意</p>
+    $$
+      \frac{\partial^2 \ln Z}{\partial\beta^2} = \frac{1}{Z}\frac{\partial^2 Z}{\partial\beta^2} - \left(\frac{1}{Z}\frac{\partial Z}{\partial\beta}\right)^2 = \langle E^2\rangle - \langle E\rangle^2
+    $$
+    <p>因此</p>
+    $$
+      \langle (\Delta E)^2 \rangle = \frac{\partial^2 \ln Z}{\partial\beta^2}
+    $$
+    <p>另一方面，由 $\langle E\rangle = -\partial\ln Z/\partial\beta$，</p>
+    $$
+      \langle (\Delta E)^2 \rangle = -\frac{\partial\langle E\rangle}{\partial\beta} = \frac{\partial\langle E\rangle}{\partial T}\cdot\frac{\partial T}{\partial(-\beta^{-1})^{-1}} = k_BT^2\frac{\partial\langle E\rangle}{\partial T} = k_BT^2 C_V
+    $$
+    <p>其中利用了 $\partial\beta/\partial T = -1/(k_BT^2)$。</p>
+  </Derivation>
+
+  <p>
+    这是一个极为重要的结果：
+  </p>
+  $$
+    \boxed{\langle (\Delta E)^2 \rangle = k_BT^2 C_V}
+  $$
+  <p>
+    它将<strong>微观涨落</strong>（能量的方差）与<strong>宏观响应</strong>（定容比热 $C_V$）直接联系起来。
+  </p>
+
+  <h3>相对涨落与热力学极限</h3>
+  <p>
+    对于"正常"系统（$C_V$ 正比于 $N$），相对涨落为
+  </p>
+  $$
+    \frac{\sqrt{\langle (\Delta E)^2 \rangle}}{\langle E \rangle} = \frac{\sqrt{k_BT^2 C_V}}{\langle E\rangle} \sim \frac{1}{\sqrt{N}}
+  $$
+  <p>
+    具体以理想气体为例：$\langle E\rangle = \frac{3}{2}Nk_BT$，$C_V = \frac{3}{2}Nk_B$，因此
+  </p>
+  $$
+    \frac{\sqrt{\langle (\Delta E)^2\rangle}}{\langle E\rangle} = \sqrt{\frac{2}{3N}}
+  $$
+  <p>
+    对于 $N \sim 10^{23}$ 的宏观系统，相对涨落约为 $10^{-12}$——完全不可测量。这解释了为什么宏观系统的能量可以被视为确定值，也证明了正则系综（允许能量涨落）与微正则系综（固定能量）在热力学极限下等价。
+  </p>
+
+  <InsightBox title="涨落-耗散关系的先声">
+    <p>
+      $\langle(\Delta E)^2\rangle = k_BT^2 C_V$ 将平衡态涨落与系统对外界扰动的响应联系起来。这是<strong>涨落-耗散定理</strong>（Fluctuation-Dissipation Theorem, FDT）最简单的例子。更一般地，FDT断言：任何物理量的平衡态涨落都与对应共轭外场的线性响应函数成正比。Einstein（1905年布朗运动理论）和Nyquist（1928年电阻热噪声）分别在特殊情形下发现了这一关系；Callen和Welton（1951年）给出了量子力学的一般证明。正则系综的涨落公式可视为这一深刻联系的原型。
+    </p>
+  </InsightBox>
+
+  <h3>$C_V \geq 0$ 的统计力学证明</h3>
+  <p>
+    由涨落公式
+  </p>
+  $$
+    C_V = \frac{\langle (\Delta E)^2\rangle}{k_BT^2}
+  $$
+  <p>
+    而方差 $\langle(\Delta E)^2\rangle \geq 0$（等号当且仅当能量无涨落，即只有一个能级），因此
+  </p>
+  $$
+    C_V \geq 0
+  $$
+
+  <ThinkingBox title="$C_V \geq 0$ 与热力学稳定性的深层联系">
+    <p>
+      在热力学中，$C_V \geq 0$ 是热力学稳定性的必要条件之一。若 $C_V &lt; 0$，系统失去能量后温度反而升高，会从环境吸收更多热量，导致热失控——这与热力学第二定律不相容。但在某些长程相互作用系统（如自引力系统：恒星、星系团）中，微正则系综确实可以给出 $C_V &lt; 0$，此时正则系综不再适用——系统与热库无法达到稳定平衡。这是系综<strong>不</strong>等价的著名例子。引力系统的负比热直接导致了恒星演化中的"引力热力学灾难"：恒星越辐射越热，直到核燃料耗尽。
+    </p>
+  </ThinkingBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 3.6</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 7.4</li>
+      <li>汪志诚,《热力学·统计物理》, 第6版, &sect;8.4</li>
+      <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;35</li>
+      <li>D. Lynden-Bell, <em>Monthly Notices of the Royal Astronomical Society</em>, <strong>138</strong>, 495 (1968) — 自引力系统的负比热</li>
+    </ul>
+  </ReferenceBox>
+
+  <!-- ============================================================ -->
+  <h2 id="canonical-applications">3.3 经典正则系综的应用</h2>
+  <!-- ============================================================ -->
+
+  <h3>经典理想气体的配分函数</h3>
+  <p>
+    $N$ 个全同、无相互作用的经典粒子在体积 $V$ 中，Hamilton量 $H = \sum_{i=1}^{N} \mathbf{p}_i^2/(2m)$。配分函数为
+  </p>
+
+  <Derivation title="理想气体配分函数的完整计算">
+    <p>经典配分函数为</p>
+    $$
+      Z = \frac{1}{N!\,h^{3N}}\int e^{-\beta H}\,d^{3N}q\,d^{3N}p
+    $$
+    <p>空间积分给出 $V^N$。动量积分对每个分量独立：</p>
+    $$
+      \int_{-\infty}^{\infty} e^{-\beta p^2/(2m)}\,dp = \sqrt{\frac{2\pi m}{\beta}} = \sqrt{2\pi mk_BT}
+    $$
+    <p>共 $3N$ 个动量分量，因此</p>
+    $$
+      Z = \frac{V^N}{N!\,h^{3N}} \bigl(2\pi mk_BT\bigr)^{3N/2} = \frac{1}{N!}\left(\frac{V}{\lambda_T^3}\right)^N
+    $$
+    <p>其中定义了<strong>热de Broglie波长</strong></p>
+    $$
+      \lambda_T = \frac{h}{\sqrt{2\pi mk_BT}}
+    $$
+    <p>也可以引入单粒子配分函数 $z_1 = V/\lambda_T^3$，于是 $Z = z_1^N/N!$。利用Stirling近似，自由能为</p>
+    $$
+      F = -k_BT\ln Z = -Nk_BT\left[\ln\frac{V}{N\lambda_T^3} + 1\right]
+    $$
+    <p>由此可导出全部热力学量：</p>
+    $$
+      P = -\frac{\partial F}{\partial V} = \frac{Nk_BT}{V}, \qquad
+      S = -\frac{\partial F}{\partial T} = Nk_B\left[\ln\frac{V}{N\lambda_T^3} + \frac{5}{2}\right]
+    $$
+    <p>后者正是Sackur-Tetrode公式，与微正则结果完全一致。</p>
+    $$
+      E = F + TS = \frac{3}{2}Nk_BT, \qquad C_V = \frac{3}{2}Nk_B
+    $$
+  </Derivation>
+
+  <p>
+    热de Broglie波长 $\lambda_T$ 的物理意义：它是温度 $T$ 下粒子的量子力学关联长度。当粒子间平均距离 $(V/N)^{1/3} \gg \lambda_T$ 时，经典统计力学有效；当 $(V/N)^{1/3} \sim \lambda_T$ 时，量子统计效应不可忽略（出现玻色凝聚或费米简并）。
+  </p>
+
+  <h3>能量均分定理的严格证明</h3>
+  <p>
+    <strong>定理</strong>（能量均分）：若系统的Hamilton量中包含一个二次型项 $H = \alpha\xi^2 + H'$（其中 $\xi$ 是某个广义坐标或动量，$\alpha$ 为常数，$H'$ 不含 $\xi$），且 $\xi$ 的取值范围为 $(-\infty, +\infty)$，则该二次型项对平均能量的贡献为
+  </p>
+  $$
+    \langle \alpha\xi^2 \rangle = \frac{1}{2}k_BT
+  $$
+
+  <Derivation title="均分定理的严格证明">
+    <p>在正则系综中，</p>
+    $$
+      \langle \alpha\xi^2 \rangle = \frac{\displaystyle\int \alpha\xi^2\,e^{-\beta(\alpha\xi^2 + H')}\,d\xi\,d\Gamma'}{\displaystyle\int e^{-\beta(\alpha\xi^2 + H')}\,d\xi\,d\Gamma'}
+    $$
+    <p>由于 $H'$ 不含 $\xi$，$d\Gamma'$ 上的积分在分子分母中约去：</p>
+    $$
+      \langle \alpha\xi^2 \rangle = \frac{\displaystyle\int_{-\infty}^{\infty} \alpha\xi^2\,e^{-\beta\alpha\xi^2}\,d\xi}{\displaystyle\int_{-\infty}^{\infty} e^{-\beta\alpha\xi^2}\,d\xi}
+    $$
+    <p>利用Gauss积分公式</p>
+    $$
+      \int_{-\infty}^{\infty} \xi^2\,e^{-a\xi^2}\,d\xi = \frac{1}{2}\sqrt{\frac{\pi}{a^3}}, \qquad
+      \int_{-\infty}^{\infty} e^{-a\xi^2}\,d\xi = \sqrt{\frac{\pi}{a}}
+    $$
+    <p>（其中 $a = \beta\alpha > 0$），代入得</p>
+    $$
+      \langle \alpha\xi^2 \rangle = \alpha \cdot \frac{\frac{1}{2}\sqrt{\pi/(\beta\alpha)^3}}{\sqrt{\pi/(\beta\alpha)}} = \frac{\alpha}{2\beta\alpha} = \frac{1}{2\beta} = \frac{1}{2}k_BT
+    $$
+  </Derivation>
+
+  <p>
+    <strong>适用条件的讨论</strong>：均分定理的成立要求：
+  </p>
+  <ul>
+    <li><strong>经典极限</strong>：量子能级间距 $\Delta\varepsilon \ll k_BT$。当 $k_BT \ll \hbar\omega$ 时，谐振子的能量冻结在基态，不再贡献 $k_BT$。</li>
+    <li><strong>二次型</strong>：Hamilton量中相关自由度必须是严格的二次型。非谐效应（如 $\lambda q^4$ 项）会导致偏离。</li>
+    <li><strong>无界积分</strong>：$\xi$ 的取值必须从 $-\infty$ 到 $+\infty$。若 $\xi$ 受约束（如 $\xi \geq 0$），结果会不同。</li>
+  </ul>
+
+  <InsightBox title="均分定理失效的历史意义">
+    <p>
+      均分定理的失效是推动量子力学诞生的关键线索之一。经典理论预言固体的比热为 $C_V = 3Nk_B$（Dulong-Petit定律），在常温下与实验吻合，但在低温下实验观测到比热趋于零——这是均分定理的破产。Einstein（1907年）率先用量子谐振子模型解释了比热的冻结，Debye（1912年）进一步给出了正确的 $T^3$ 低温行为。另一个著名的失败是黑体辐射的Rayleigh-Jeans灾难：均分定理给出辐射能量密度在高频端发散——正是这一灾难促使Planck提出了能量量子化假设。
+    </p>
+  </InsightBox>
+
+  <h3>Maxwell速度分布律</h3>
+  <p>
+    在正则系综中，单个粒子的动量分布可以直接从Boltzmann因子读出。粒子具有动量 $\mathbf{p}$ 的概率密度为
+  </p>
+  $$
+    f(\mathbf{p}) = \left(\frac{\beta}{2\pi m}\right)^{3/2} \exp\!\left(-\frac{\beta\,\mathbf{p}^2}{2m}\right)
+  $$
+  <p>
+    转换到速度 $\mathbf{v} = \mathbf{p}/m$：
+  </p>
+  $$
+    f(\mathbf{v}) = \left(\frac{m}{2\pi k_BT}\right)^{3/2} \exp\!\left(-\frac{m\mathbf{v}^2}{2k_BT}\right)
+  $$
+  <p>
+    这就是<strong>Maxwell速度分布律</strong>。转化到速率分布（利用球坐标积分角度部分 $4\pi v^2$）：
+  </p>
+  $$
+    f(v) = 4\pi\left(\frac{m}{2\pi k_BT}\right)^{3/2} v^2\,\exp\!\left(-\frac{mv^2}{2k_BT}\right)
+  $$
+  <p>
+    速率分布的几个特征值：
+  </p>
+  <ul>
+    <li><strong>最概然速率</strong>：$v_{\text{mp}} = \sqrt{2k_BT/m}$（$df/dv = 0$ 的解）</li>
+    <li><strong>平均速率</strong>：$\langle v\rangle = \sqrt{8k_BT/(\pi m)}$</li>
+    <li><strong>方均根速率</strong>：$v_{\text{rms}} = \sqrt{3k_BT/m}$（与均分定理 $\frac{1}{2}m\langle v^2\rangle = \frac{3}{2}k_BT$ 一致）</li>
+  </ul>
+  <p>三者的关系为 $v_{\text{mp}} &lt; \langle v\rangle &lt; v_{\text{rms}}$，反映了分布的右偏性（长尾）。</p>
+
+  <ThinkingBox title="Maxwell分布的普适性与局限">
+    <p>
+      Maxwell速度分布假设粒子间无相互作用且处于经典极限。对于稀薄气体，这是极好的近似，已被分子束实验精确验证（O. Stern, 1920; I. Estermann et al., 1947）。但在以下情况下会失效：(1) 量子简并气体（$T$ 低于费米温度或BEC温度时）——费米子遵循Fermi-Dirac分布，玻色子遵循Bose-Einstein分布；(2) 强相互作用系统（如液体）——速度分布偏离Gaussian形式；(3) 相对论性气体——需要使用Juttner分布 $f \propto \exp(-\beta\gamma mc^2)$。此外，非平衡态中的速度分布可能与Maxwell形式有显著偏差，需要用Boltzmann方程处理。
+    </p>
+  </ThinkingBox>
+
+  <h3>Einstein振动模型</h3>
+  <p>
+    Einstein（1907年）提出的固体比热模型：将固体视为 $3N$ 个<strong>独立</strong>的量子谐振子，频率均为 $\omega_E$（Einstein频率）。每个谐振子的能级为 $\varepsilon_n = (n + \frac{1}{2})\hbar\omega_E$。
+  </p>
+  <p>
+    单个量子谐振子的配分函数为
+  </p>
+  $$
+    z_1 = \sum_{n=0}^{\infty} e^{-\beta(n+1/2)\hbar\omega_E} = \frac{e^{-\beta\hbar\omega_E/2}}{1 - e^{-\beta\hbar\omega_E}}
+    = \frac{1}{2\sinh(\beta\hbar\omega_E/2)}
+  $$
+  <p>
+    $3N$ 个独立谐振子的配分函数为 $Z = z_1^{3N}$（注意：这里不除以 $N!$，因为谐振子被束缚在格点上，是可分辨的）。平均能量为
+  </p>
+  $$
+    \langle E\rangle = 3N\left(\frac{\hbar\omega_E}{2} + \frac{\hbar\omega_E}{e^{\beta\hbar\omega_E} - 1}\right)
+  $$
+  <p>
+    定义<strong>Einstein温度</strong> $\Theta_E = \hbar\omega_E/k_B$，比热为
+  </p>
+  $$
+    C_V = 3Nk_B\left(\frac{\Theta_E}{T}\right)^2 \frac{e^{\Theta_E/T}}{(e^{\Theta_E/T} - 1)^2}
+  $$
+
+  <Derivation title="Einstein比热的极限行为">
+    <p><strong>高温极限</strong>（$T \gg \Theta_E$，即 $x = \Theta_E/T \ll 1$）：</p>
+    $$
+      e^x \approx 1 + x + x^2/2, \quad \frac{x^2 e^x}{(e^x-1)^2} \approx \frac{x^2(1+x)}{x^2(1+x/2)^2} \to 1
+    $$
+    <p>因此 $C_V \to 3Nk_B$，恢复经典的Dulong-Petit定律。</p>
+    <p><strong>低温极限</strong>（$T \ll \Theta_E$，即 $x \gg 1$）：</p>
+    $$
+      C_V \approx 3Nk_B\,x^2\,e^{-x} = 3Nk_B\left(\frac{\Theta_E}{T}\right)^2 e^{-\Theta_E/T}
+    $$
+    <p>比热以<strong>指数</strong>衰减趋于零，定性地解释了比热在低温下的冻结。但实验表明固体比热在低温下按 $T^3$（而非指数）衰减——这一差异由Debye模型通过引入声子色散关系（$\omega \propto k$）修正。</p>
+  </Derivation>
+
+  <h3>顺磁性与Curie定律</h3>
+  <p>
+    考虑 $N$ 个不相互作用的磁矩 $\boldsymbol{\mu}$ 在外磁场 $\mathbf{B} = B\hat{z}$ 中。每个磁矩有 $J = 1/2$（自旋-$\frac{1}{2}$），取值 $\mu_z = \pm\mu_B$（$\mu_B$ 为Bohr磁子），能量为 $\varepsilon = -\mu_z B = \mp\mu_B B$。
+  </p>
+  <p>
+    单个自旋的配分函数为
+  </p>
+  $$
+    z_1 = e^{\beta\mu_B B} + e^{-\beta\mu_B B} = 2\cosh(\beta\mu_B B)
+  $$
+  <p>
+    $N$ 个独立自旋的配分函数为 $Z = z_1^N$。系统的磁化强度为
+  </p>
+  $$
+    M = N\langle\mu_z\rangle = N\mu_B\frac{e^{\beta\mu_B B} - e^{-\beta\mu_B B}}{e^{\beta\mu_B B} + e^{-\beta\mu_B B}} = N\mu_B\tanh(\beta\mu_B B)
+  $$
+
+  <Derivation title="Curie定律的推导与推广到一般$J$">
+    <p><strong>弱场/高温极限</strong>（$\mu_B B \ll k_BT$）：$\tanh x \approx x$ 对 $x \ll 1$，因此</p>
+    $$
+      M \approx \frac{N\mu_B^2 B}{k_BT}
+    $$
+    <p>磁化率为</p>
+    $$
+      \chi = \frac{\partial M}{\partial B}\bigg|_{B=0} = \frac{N\mu_B^2}{k_BT} = \frac{C}{T}
+    $$
+    <p>这就是<strong>Curie定律</strong>：$\chi \propto 1/T$，Curie常数 $C = N\mu_B^2/k_B$。</p>
+    <p><strong>推广到一般角动量 $J$</strong>：磁量子数 $m = -J, -J+1, \dots, J$，能量 $\varepsilon_m = -g\mu_B mB$（$g$ 为朗德因子）。配分函数为</p>
+    $$
+      z_1 = \sum_{m=-J}^{J} e^{\beta g\mu_B mB} = \frac{\sinh\!\bigl[(2J+1)x/2\bigr]}{\sinh(x/2)}
+    $$
+    <p>其中 $x = \beta g\mu_B B$。磁化强度为</p>
+    $$
+      M = Ng\mu_B J\,B_J(Jx)
+    $$
+    <p>其中 $B_J(y)$ 是<strong>Brillouin函数</strong>：</p>
+    $$
+      B_J(y) = \frac{2J+1}{2J}\coth\frac{(2J+1)y}{2J} - \frac{1}{2J}\coth\frac{y}{2J}
+    $$
+    <p>$J = 1/2$ 时 $B_{1/2}(y) = \tanh y$，回到上面的结果。弱场极限给出一般的Curie定律：</p>
+    $$
+      \chi = \frac{Ng^2\mu_B^2 J(J+1)}{3k_BT}
+    $$
+    <p>有效磁矩为 $\mu_{\text{eff}} = g\mu_B\sqrt{J(J+1)}$，而非 $g\mu_BJ$——这是量子力学效应。</p>
+  </Derivation>
+
+  <InsightBox title="Curie定律的物理图像">
+    <p>
+      顺磁性来源于热运动与磁场排列之间的竞争。在高温下（$k_BT \gg \mu B$），热涨落使磁矩几乎完全随机取向，仅有微弱的净磁化——$\chi \propto 1/T$。在低温下（$k_BT \ll \mu B$），几乎所有磁矩都沿磁场方向排列，达到饱和磁化 $M \to Ng\mu_BJ$。Curie定律的 $1/T$ 行为是实验鉴别顺磁性材料的标志性特征。注意：Curie定律假设磁矩之间<strong>无相互作用</strong>。当自旋间存在交换相互作用时，在低温下会发生铁磁或反铁磁相变，Curie定律被修正为Curie-Weiss定律 $\chi = C/(T - T_c)$，其中 $T_c$ 是Curie温度。
+    </p>
+  </InsightBox>
+
+  <ThinkingBox title="配分函数作为"母函数"的力量">
+    <p>
+      回顾本章的所有应用，它们都遵循同一模式：(1) 写出Hamilton量；(2) 计算配分函数 $Z$（通常可以分解为单粒子配分函数的乘积）；(3) 对 $\ln Z$ 求导得到全部热力学量。配分函数就像概率论中的矩生成函数——它编码了系统的全部平衡态信息。正是这种统一的计算框架，使得正则系综成为平衡态统计力学中最核心的工具。从理想气体到量子振子，从顺磁体到黑体辐射，配分函数的计算范式覆盖了几乎所有可精确求解的模型。
+    </p>
+  </ThinkingBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 3.5, 3.7-3.9</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 7.5-7.7, 8.1</li>
+      <li>汪志诚,《热力学·统计物理》, 第6版, &sect;8.5-8.8</li>
+      <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;31, &sect;33, &sect;52, &sect;59</li>
+      <li>A. Einstein, <em>Annalen der Physik</em>, <strong>22</strong>, 180 (1907) — Einstein固体模型</li>
+    </ul>
+  </ReferenceBox>
+
+</ChapterLayout>

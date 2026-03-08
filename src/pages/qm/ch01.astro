@@ -1,0 +1,930 @@
+---
+import ChapterLayout from '../../layouts/ChapterLayout.astro';
+import InsightBox from '../../components/InsightBox.astro';
+import ThinkingBox from '../../components/ThinkingBox.astro';
+import Derivation from '../../components/Derivation.astro';
+import ReferenceBox from '../../components/ReferenceBox.astro';
+---
+
+<ChapterLayout title="第一章 数学基础" courseId="qm" chapterId="ch01">
+
+  <h1>第一章 数学基础 — Hilbert空间、算符代数与Dirac符号</h1>
+
+  <p>
+    量子力学的数学框架建立在 Hilbert 空间之上。与经典力学中以相空间 $(q, p)$ 描述系统状态不同，
+    量子力学中系统的状态由 Hilbert 空间中的矢量（态矢）表示，可观测量由作用在该空间上的
+    Hermite 算符表示。本章系统建立这一数学框架，为后续全部量子力学理论奠定严格的基础。
+  </p>
+
+  <InsightBox title="为什么需要Hilbert空间？">
+    <p>
+      经典力学中粒子的状态由确定的 $(q, p)$ 给出，态空间是有限维流形。但量子力学的叠加原理
+      要求态空间是线性空间——两个物理态的线性叠加仍然是物理态。同时，Born 的概率诠释要求
+      态矢可以归一化，这就需要内积结构。再加上对极限过程的完备性要求（确保物理量的谱分解
+      收敛），我们自然到达 Hilbert 空间这一数学结构。这不是数学家的随意选择，而是量子力学
+      的物理要求所唯一确定的。
+    </p>
+  </InsightBox>
+
+  <!-- ============================================================ -->
+  <!-- 1.1 Hilbert空间与内积 -->
+  <!-- ============================================================ -->
+  <h2 id="hilbert-space">1.1 Hilbert空间与内积</h2>
+
+  <h3>线性矢量空间的公理化定义</h3>
+
+  <p>
+    一个集合 $V$ 若构成复数域 $\mathbb{C}$ 上的<strong>线性矢量空间</strong>（向量空间），
+    需满足以下公理。定义两种运算：矢量加法 $+: V \times V \to V$ 与标量乘法 $\cdot: \mathbb{C} \times V \to V$，要求：
+  </p>
+
+  <ol>
+    <li><strong>加法封闭性</strong>：若 $|\alpha\rangle, |\beta\rangle \in V$，则 $|\alpha\rangle + |\beta\rangle \in V$。</li>
+    <li><strong>加法交换律</strong>：$|\alpha\rangle + |\beta\rangle = |\beta\rangle + |\alpha\rangle$。</li>
+    <li><strong>加法结合律</strong>：$(|\alpha\rangle + |\beta\rangle) + |\gamma\rangle = |\alpha\rangle + (|\beta\rangle + |\gamma\rangle)$。</li>
+    <li><strong>零元素存在</strong>：存在 $|0\rangle \in V$ 使得 $|\alpha\rangle + |0\rangle = |\alpha\rangle$ 对所有 $|\alpha\rangle$ 成立。</li>
+    <li><strong>逆元素存在</strong>：对每个 $|\alpha\rangle$ 存在 $-|\alpha\rangle$ 使得 $|\alpha\rangle + (-|\alpha\rangle) = |0\rangle$。</li>
+    <li><strong>标量乘法封闭性</strong>：若 $c \in \mathbb{C}$，$|\alpha\rangle \in V$，则 $c|\alpha\rangle \in V$。</li>
+    <li><strong>标量乘法结合律</strong>：$a(b|\alpha\rangle) = (ab)|\alpha\rangle$。</li>
+    <li><strong>分配律</strong>：$a(|\alpha\rangle + |\beta\rangle) = a|\alpha\rangle + a|\beta\rangle$ 以及 $(a + b)|\alpha\rangle = a|\alpha\rangle + b|\alpha\rangle$。</li>
+    <li><strong>单位元</strong>：$1 \cdot |\alpha\rangle = |\alpha\rangle$。</li>
+  </ol>
+
+  <p>
+    量子力学中使用的是<strong>复</strong>线性空间，因为量子态的叠加系数一般为复数。
+    这一点对干涉现象的描述至关重要——相位是复数的辐角。
+  </p>
+
+  <h3>内积的定义与性质</h3>
+
+  <p>
+    在线性空间 $V$ 上定义<strong>内积</strong>（inner product）为映射 $(\cdot, \cdot): V \times V \to \mathbb{C}$，
+    在 Dirac 符号中记为 $\langle \phi | \psi \rangle$，满足以下性质：
+  </p>
+
+  <ol>
+    <li>
+      <strong>共轭对称性</strong>（Hermite 性）：
+      <p>$$\langle \phi | \psi \rangle = \langle \psi | \phi \rangle^*$$</p>
+      <p>其中 $*$ 表示复共轭。</p>
+    </li>
+    <li>
+      <strong>对第二个变元的线性</strong>（Dirac 约定）：
+      <p>$$\langle \phi | (a|\psi_1\rangle + b|\psi_2\rangle) = a\langle \phi | \psi_1 \rangle + b\langle \phi | \psi_2 \rangle$$</p>
+      <p>
+        由共轭对称性可推出对第一个变元的反线性（共轭线性）：
+      </p>
+      <p>$$(a\langle \phi_1| + b\langle \phi_2|)|\psi\rangle = a^*\langle \phi_1 | \psi \rangle + b^*\langle \phi_2 | \psi \rangle$$</p>
+    </li>
+    <li>
+      <strong>正定性</strong>：
+      <p>$$\langle \psi | \psi \rangle \geq 0$$</p>
+      <p>等号成立当且仅当 $|\psi\rangle = |0\rangle$（零矢量）。</p>
+    </li>
+  </ol>
+
+  <p>
+    由此可定义矢量的<strong>范数</strong>（模）：$\| |\psi\rangle \| = \sqrt{\langle \psi | \psi \rangle}$。
+    归一化条件 $\langle \psi | \psi \rangle = 1$ 在量子力学中对应概率的归一化。
+  </p>
+
+  <InsightBox title="Dirac约定 vs. 数学约定">
+    <p>
+      物理学家（Dirac 约定）规定内积对<strong>第二个</strong>变元线性，对第一个变元反线性。
+      数学家通常采用相反的约定——对第一个变元线性。这两种约定在计算中产生的差异仅在于
+      复共轭出现的位置。本书统一采用 Dirac 约定（也是 Sakurai 的约定），与物理文献保持一致。
+      使用曾谨言教材时注意其采用的也是 Dirac 约定。
+    </p>
+  </InsightBox>
+
+  <h3>Schwarz不等式</h3>
+
+  <p>
+    对任意 $|\phi\rangle, |\psi\rangle \in V$，有 <strong>Schwarz 不等式</strong>（Cauchy-Schwarz inequality）：
+  </p>
+
+  <p>$$|\langle \phi | \psi \rangle|^2 \leq \langle \phi | \phi \rangle \, \langle \psi | \psi \rangle$$</p>
+
+  <p>等号成立当且仅当 $|\phi\rangle$ 与 $|\psi\rangle$ 线性相关（即 $|\phi\rangle = c|\psi\rangle$，$c \in \mathbb{C}$）。</p>
+
+  <Derivation title="Schwarz不等式的证明">
+    <p>
+      对任意复数 $\lambda$，由正定性有：
+    </p>
+    <p>$$\langle \phi - \lambda \psi | \phi - \lambda \psi \rangle \geq 0$$</p>
+    <p>展开得：</p>
+    <p>$$\langle \phi | \phi \rangle - \lambda^* \langle \psi | \phi \rangle - \lambda \langle \phi | \psi \rangle + |\lambda|^2 \langle \psi | \psi \rangle \geq 0$$</p>
+    <p>
+      取 $\lambda = \dfrac{\langle \psi | \phi \rangle^*}{\langle \psi | \psi \rangle} = \dfrac{\langle \phi | \psi \rangle}{\langle \psi | \psi \rangle}$
+      （假设 $|\psi\rangle \neq |0\rangle$），代入化简：
+    </p>
+    <p>$$\langle \phi | \phi \rangle - \frac{|\langle \phi | \psi \rangle|^2}{\langle \psi | \psi \rangle} \geq 0$$</p>
+    <p>整理即得：</p>
+    <p>$$|\langle \phi | \psi \rangle|^2 \leq \langle \phi | \phi \rangle \, \langle \psi | \psi \rangle$$</p>
+    <p>
+      等号成立当且仅当 $|\phi - \lambda \psi\rangle = |0\rangle$，即 $|\phi\rangle = \lambda |\psi\rangle$，
+      两矢量线性相关。若 $|\psi\rangle = |0\rangle$，则两边均为零，不等式显然成立。
+    </p>
+  </Derivation>
+
+  <p>
+    Schwarz 不等式是量子力学中许多重要结果的基础，例如不确定性关系的证明就依赖于它。
+    由 Schwarz 不等式可立即推出<strong>三角不等式</strong>：
+  </p>
+  <p>$$\| |\phi\rangle + |\psi\rangle \| \leq \| |\phi\rangle \| + \| |\psi\rangle \|$$</p>
+
+  <h3>完备性：Cauchy序列收敛</h3>
+
+  <p>
+    一个赋范（有范数的）内积空间称为<strong>Hilbert空间</strong>，如果它在范数诱导的拓扑下是<strong>完备的</strong>。
+    具体地说，空间中的每个 <strong>Cauchy 序列</strong>都在空间内收敛。
+  </p>
+
+  <p>
+    回忆 Cauchy 序列的定义：序列 $\{|\psi_n\rangle\}_{n=1}^{\infty}$ 称为 Cauchy 序列，若对任意 $\epsilon > 0$，
+    存在 $N$ 使得当 $m, n > N$ 时有
+  </p>
+
+  <p>$$\| |\psi_m\rangle - |\psi_n\rangle \| < \epsilon$$</p>
+
+  <p>
+    完备性要求：存在 $|\psi\rangle \in V$ 使得 $\lim_{n \to \infty} \| |\psi_n\rangle - |\psi\rangle \| = 0$。
+  </p>
+
+  <p>
+    完备性在物理上为何重要？考虑一个物理量的本征态展开 $|\psi\rangle = \sum_{n=0}^{\infty} c_n |n\rangle$，
+    其部分和 $|\psi_N\rangle = \sum_{n=0}^{N} c_n |n\rangle$ 构成 Cauchy 序列，
+    完备性保证这个级数在 Hilbert 空间内收敛到某个态。
+    没有完备性，算符的谱分解理论将无法建立。
+  </p>
+
+  <h3>可分Hilbert空间与正交基</h3>
+
+  <p>
+    如果 Hilbert 空间 $\mathcal{H}$ 含有一个<strong>可数的稠密子集</strong>，则称其为<strong>可分的</strong>（separable）。
+    等价地，可分 Hilbert 空间拥有可数的（有限或可数无穷的）<strong>正交归一基</strong> $\{|e_n\rangle\}$，满足：
+  </p>
+
+  <p>$$\langle e_m | e_n \rangle = \delta_{mn}$$</p>
+
+  <p>
+    其中 $\delta_{mn}$ 是 Kronecker delta 符号。空间中的任意矢量可以按此基展开：
+  </p>
+
+  <p>$$|\psi\rangle = \sum_n c_n |e_n\rangle, \qquad c_n = \langle e_n | \psi \rangle$$</p>
+
+  <p>
+    量子力学中遇到的 Hilbert 空间几乎都是可分的。有限维的例子如自旋-1/2 粒子的态空间 $\mathbb{C}^2$；
+    无穷维但可数基的例子如谐振子的能量本征态空间。
+  </p>
+
+  <h3>平方可积函数空间 $L^2(\mathbb{R})$</h3>
+
+  <p>
+    量子力学中最重要的无穷维 Hilbert 空间是 $L^2(\mathbb{R})$ ——
+    实数轴上<strong>平方可积函数</strong>的集合。具体地：
+  </p>
+
+  <p>$$L^2(\mathbb{R}) = \left\{ \psi: \mathbb{R} \to \mathbb{C} \;\middle|\; \int_{-\infty}^{+\infty} |\psi(x)|^2 \, dx < \infty \right\}$$</p>
+
+  <p>其上的内积定义为：</p>
+
+  <p>$$\langle \phi | \psi \rangle = \int_{-\infty}^{+\infty} \phi^*(x) \, \psi(x) \, dx$$</p>
+
+  <p>
+    严格来说，$L^2$ 中的"函数"实际上是等价类——两个函数若仅在零测集（measure zero set）上不同，
+    则视为同一元素。这保证了正定性：$\langle \psi | \psi \rangle = 0$ 蕴含 $\psi = 0$（几乎处处）。
+  </p>
+
+  <p>
+    $L^2(\mathbb{R})$ 的完备性由 Riesz-Fischer 定理保证。一组常用的正交归一基是谐振子的
+    Hermite 函数 $\{\phi_n(x)\}_{n=0}^{\infty}$：
+  </p>
+
+  <p>$$\phi_n(x) = \left(\frac{m\omega}{\pi\hbar}\right)^{1/4} \frac{1}{\sqrt{2^n n!}} H_n\!\left(\sqrt{\frac{m\omega}{\hbar}} x\right) \exp\!\left(-\frac{m\omega x^2}{2\hbar}\right)$$</p>
+
+  <p>
+    其中 $H_n$ 是 Hermite 多项式。这组基在 $L^2(\mathbb{R})$ 中是完备的。
+  </p>
+
+  <ThinkingBox title="波函数在Hilbert空间中的地位">
+    <p>
+      许多初学者认为"波函数 $\psi(x)$ 就是量子态"。这是不精确的。量子态是 Hilbert 空间中的
+      抽象矢量 $|\psi\rangle$，而波函数 $\psi(x) = \langle x | \psi \rangle$ 只是这个矢量在坐标表象中的
+      "分量"（投影）。同一个态矢在动量表象中的分量是 $\tilde{\psi}(p) = \langle p | \psi \rangle$，
+      两者包含完全相同的物理信息，通过 Fourier 变换联系。正如一个三维矢量不依赖于坐标系的选取，
+      量子态 $|\psi\rangle$ 不依赖于表象的选取。Dirac 符号的优美之处正在于直接处理抽象态矢，
+      不预先选定表象。
+    </p>
+  </ThinkingBox>
+
+  <!-- ============================================================ -->
+  <!-- 1.2 算符代数 -->
+  <!-- ============================================================ -->
+  <h2 id="operators">1.2 算符代数</h2>
+
+  <h3>线性算符的定义与性质</h3>
+
+  <p>
+    <strong>算符</strong>（operator） $\hat{A}$ 是 Hilbert 空间 $\mathcal{H}$ 到自身的映射：
+    $\hat{A}: \mathcal{H} \to \mathcal{H}$。算符 $\hat{A}$ 称为<strong>线性的</strong>，若对任意
+    $|\psi_1\rangle, |\psi_2\rangle \in \mathcal{H}$ 及 $a, b \in \mathbb{C}$：
+  </p>
+
+  <p>$$\hat{A}(a|\psi_1\rangle + b|\psi_2\rangle) = a\hat{A}|\psi_1\rangle + b\hat{A}|\psi_2\rangle$$</p>
+
+  <p>
+    量子力学中的所有可观测量和对称变换都由线性算符（或反线性算符，如时间反演）表示。
+    以下讨论限于线性算符。
+  </p>
+
+  <p>
+    算符的<strong>伴随</strong>（adjoint，又称 Hermite 共轭）$\hat{A}^\dagger$ 由如下关系定义：
+    对所有 $|\phi\rangle, |\psi\rangle$，
+  </p>
+
+  <p>$$\langle \phi | \hat{A}^\dagger | \psi \rangle = \langle \hat{A}\phi | \psi \rangle = (\langle \psi | \hat{A} | \phi \rangle)^*$$</p>
+
+  <p>伴随运算有以下基本性质：</p>
+
+  <ul>
+    <li>$(\hat{A}^\dagger)^\dagger = \hat{A}$</li>
+    <li>$(c\hat{A})^\dagger = c^*\hat{A}^\dagger$</li>
+    <li>$(\hat{A} + \hat{B})^\dagger = \hat{A}^\dagger + \hat{B}^\dagger$</li>
+    <li>$(\hat{A}\hat{B})^\dagger = \hat{B}^\dagger \hat{A}^\dagger$（注意顺序反转）</li>
+  </ul>
+
+  <h3>Hermite算符（自伴算符）</h3>
+
+  <p>
+    算符 $\hat{A}$ 若满足 $\hat{A}^\dagger = \hat{A}$，则称为 <strong>Hermite 算符</strong>
+    （自伴算符、自共轭算符）。Hermite 算符在量子力学中具有核心地位——
+    <strong>所有可观测量都由 Hermite 算符表示</strong>。
+  </p>
+
+  <p>Hermite 算符具有两个至关重要的性质：</p>
+
+  <p><strong>性质1：Hermite 算符的本征值为实数。</strong></p>
+
+  <Derivation title="证明：Hermite算符本征值为实数">
+    <p>设 $\hat{A}|\alpha\rangle = a|\alpha\rangle$，其中 $|\alpha\rangle \neq |0\rangle$。左乘 $\langle \alpha|$：</p>
+    <p>$$\langle \alpha | \hat{A} | \alpha \rangle = a \langle \alpha | \alpha \rangle$$</p>
+    <p>取复共轭：</p>
+    <p>$$(\langle \alpha | \hat{A} | \alpha \rangle)^* = a^* \langle \alpha | \alpha \rangle$$</p>
+    <p>由 $\hat{A}^\dagger = \hat{A}$，左边等于：</p>
+    <p>$$(\langle \alpha | \hat{A} | \alpha \rangle)^* = \langle \alpha | \hat{A}^\dagger | \alpha \rangle = \langle \alpha | \hat{A} | \alpha \rangle$$</p>
+    <p>因此 $a \langle \alpha | \alpha \rangle = a^* \langle \alpha | \alpha \rangle$。因 $\langle \alpha | \alpha \rangle > 0$（$|\alpha\rangle$ 非零），故 $a = a^*$，即 $a$ 为实数。</p>
+  </Derivation>
+
+  <p>
+    本征值为实数这一性质保证了测量结果是实数值，与实验观测一致。
+    这正是量子力学要求可观测量对应 Hermite 算符的物理原因。
+  </p>
+
+  <p><strong>性质2：Hermite 算符属于不同本征值的本征矢相互正交。</strong></p>
+
+  <Derivation title="证明：不同本征值的本征矢正交">
+    <p>设 $\hat{A}|\alpha'\rangle = a'|\alpha'\rangle$ 且 $\hat{A}|\alpha''\rangle = a''|\alpha''\rangle$，其中 $a' \neq a''$。考虑：</p>
+    <p>$$\langle \alpha'' | \hat{A} | \alpha' \rangle = a' \langle \alpha'' | \alpha' \rangle$$</p>
+    <p>另一方面：</p>
+    <p>$$\langle \alpha'' | \hat{A} | \alpha' \rangle = \langle \hat{A}\alpha'' | \alpha' \rangle = (a'')^* \langle \alpha'' | \alpha' \rangle = a'' \langle \alpha'' | \alpha' \rangle$$</p>
+    <p>其中最后一步用到 $a''$ 为实数。两式相减：</p>
+    <p>$$(a' - a'') \langle \alpha'' | \alpha' \rangle = 0$$</p>
+    <p>由 $a' \neq a''$，必有 $\langle \alpha'' | \alpha' \rangle = 0$，即 $|\alpha'\rangle$ 与 $|\alpha''\rangle$ 正交。</p>
+  </Derivation>
+
+  <p>
+    对于简并情形（不同本征矢对应相同本征值），可通过 Gram-Schmidt 正交化过程构造正交基。
+    因此 Hermite 算符总可以找到一组正交归一的完备本征基。这就是<strong>谱定理</strong>的内容
+    （离散谱的情形），是量子力学测量理论的数学基础。
+  </p>
+
+  <h3>对易关系</h3>
+
+  <p>
+    两个算符 $\hat{A}$ 和 $\hat{B}$ 的<strong>对易子</strong>（commutator）定义为：
+  </p>
+
+  <p>$$[\hat{A}, \hat{B}] = \hat{A}\hat{B} - \hat{B}\hat{A}$$</p>
+
+  <p>
+    若 $[\hat{A}, \hat{B}] = 0$，则称 $\hat{A}$ 与 $\hat{B}$ <strong>对易</strong>。
+    对易的两个 Hermite 算符可以找到<strong>共同本征态的完备集</strong>（即可同时对角化），
+    这在物理上意味着两个对应的可观测量可以<strong>同时精确测量</strong>。
+  </p>
+
+  <p>
+    反之，若 $[\hat{A}, \hat{B}] \neq 0$，则两个可观测量不能同时拥有确定值，
+    这正是<strong>不确定性原理</strong>的数学根源。量子力学中最基本的对易关系是正则对易关系：
+  </p>
+
+  <p>$$[\hat{x}, \hat{p}] = i\hbar$$</p>
+
+  <p>
+    <strong>反对易子</strong>（anticommutator）也常有用处，定义为：
+  </p>
+
+  <p>$$\{\hat{A}, \hat{B}\} = \hat{A}\hat{B} + \hat{B}\hat{A}$$</p>
+
+  <h3>对易子的基本恒等式</h3>
+
+  <p>以下是对易子运算的常用恒等式，在具体计算中反复使用：</p>
+
+  <p><strong>(1) 线性：</strong></p>
+  <p>$$[\hat{A}, \hat{B} + \hat{C}] = [\hat{A}, \hat{B}] + [\hat{A}, \hat{C}]$$</p>
+
+  <p><strong>(2) 反对称性：</strong></p>
+  <p>$$[\hat{A}, \hat{B}] = -[\hat{B}, \hat{A}]$$</p>
+
+  <p><strong>(3) 乘积法则（Leibniz 法则）：</strong></p>
+  <p>$$[\hat{A}, \hat{B}\hat{C}] = [\hat{A}, \hat{B}]\hat{C} + \hat{B}[\hat{A}, \hat{C}]$$</p>
+
+  <Derivation title="证明乘积法则">
+    <p>直接展开：</p>
+    <p>$$[\hat{A}, \hat{B}\hat{C}] = \hat{A}\hat{B}\hat{C} - \hat{B}\hat{C}\hat{A}$$</p>
+    <p>在右边加减 $\hat{B}\hat{A}\hat{C}$：</p>
+    <p>$$= \hat{A}\hat{B}\hat{C} - \hat{B}\hat{A}\hat{C} + \hat{B}\hat{A}\hat{C} - \hat{B}\hat{C}\hat{A}$$</p>
+    <p>$$= (\hat{A}\hat{B} - \hat{B}\hat{A})\hat{C} + \hat{B}(\hat{A}\hat{C} - \hat{C}\hat{A})$$</p>
+    <p>$$= [\hat{A}, \hat{B}]\hat{C} + \hat{B}[\hat{A}, \hat{C}]$$</p>
+  </Derivation>
+
+  <p>类似地有 $[\hat{A}\hat{B}, \hat{C}] = \hat{A}[\hat{B}, \hat{C}] + [\hat{A}, \hat{C}]\hat{B}$。</p>
+
+  <p><strong>(4) Jacobi 恒等式：</strong></p>
+  <p>$$[\hat{A}, [\hat{B}, \hat{C}]] + [\hat{B}, [\hat{C}, \hat{A}]] + [\hat{C}, [\hat{A}, \hat{B}]] = 0$$</p>
+
+  <Derivation title="证明Jacobi恒等式">
+    <p>直接展开每一项：</p>
+    <p>$$[\hat{A}, [\hat{B}, \hat{C}]] = \hat{A}\hat{B}\hat{C} - \hat{A}\hat{C}\hat{B} - \hat{B}\hat{C}\hat{A} + \hat{C}\hat{B}\hat{A}$$</p>
+    <p>$$[\hat{B}, [\hat{C}, \hat{A}]] = \hat{B}\hat{C}\hat{A} - \hat{B}\hat{A}\hat{C} - \hat{C}\hat{A}\hat{B} + \hat{A}\hat{C}\hat{B}$$</p>
+    <p>$$[\hat{C}, [\hat{A}, \hat{B}]] = \hat{C}\hat{A}\hat{B} - \hat{C}\hat{B}\hat{A} - \hat{A}\hat{B}\hat{C} + \hat{B}\hat{A}\hat{C}$$</p>
+    <p>三式相加，每一项恰好出现一次正号和一次负号，全部相消，结果为零。</p>
+  </Derivation>
+
+  <p>
+    Jacobi 恒等式表明算符的对易子构成一个<strong>Lie 代数</strong>结构。
+    这一结构在对称性分析和角动量理论中发挥核心作用。
+  </p>
+
+  <InsightBox title="对易关系与Lie代数">
+    <p>
+      量子力学中的对易关系 $[\hat{A}, \hat{B}] = i\hbar\hat{C}$ 与经典力学中的 Poisson 括号
+      $\{A, B\}_{\text{PB}} = C$ 存在深刻的对应关系（Dirac 对应原理）：
+    </p>
+    <p>$$[\hat{A}, \hat{B}] \leftrightarrow i\hbar\{A, B\}_{\text{PB}}$$</p>
+    <p>
+      这不仅仅是形式上的类比。从数学上看，经典 Poisson 括号和量子对易子都赋予可观测量集合
+      一个 Lie 代数结构，而量子化过程正是这个 Lie 代数的一种表示。
+    </p>
+  </InsightBox>
+
+  <h3>幺正算符</h3>
+
+  <p>
+    满足 $\hat{U}^\dagger \hat{U} = \hat{U}\hat{U}^\dagger = \hat{I}$ 的算符 $\hat{U}$ 称为<strong>幺正算符</strong>（unitary operator）。
+    幺正算符保持内积不变：
+  </p>
+
+  <p>$$\langle \hat{U}\phi | \hat{U}\psi \rangle = \langle \phi | \hat{U}^\dagger\hat{U} | \psi \rangle = \langle \phi | \psi \rangle$$</p>
+
+  <p>
+    因此幺正变换保持概率和概率幅不变——这是量子力学中对称变换必须由幺正算符表示的原因
+    （Wigner 定理更精确地指出：保持跃迁概率的变换要么是幺正的，要么是反幺正的）。
+  </p>
+
+  <p>幺正算符的基本性质：</p>
+  <ul>
+    <li>$\hat{U}$ 的本征值的模为 1，即形如 $e^{i\theta}$（$\theta$ 为实数）。</li>
+    <li>两个幺正算符的乘积仍为幺正算符。</li>
+    <li>幺正算符的逆 $\hat{U}^{-1} = \hat{U}^\dagger$ 也是幺正算符。</li>
+    <li>若 $\hat{A}$ 是 Hermite 算符，则 $\hat{U} = e^{i\hat{A}}$ 是幺正算符。</li>
+  </ul>
+
+  <p>
+    最后一条性质尤为重要：量子力学中的时间演化算符 $\hat{U}(t) = e^{-i\hat{H}t/\hbar}$ 正是由
+    Hermite 的 Hamiltonian $\hat{H}$ 生成的幺正算符。这保证了概率在时间演化中守恒。
+  </p>
+
+  <h3>投影算符</h3>
+
+  <p>
+    对归一化态 $|\alpha\rangle$，定义<strong>投影算符</strong>：
+  </p>
+
+  <p>$$\hat{P}_\alpha = |\alpha\rangle\langle\alpha|$$</p>
+
+  <p>投影算符满足以下性质：</p>
+  <ul>
+    <li><strong>幂等性</strong>：$\hat{P}_\alpha^2 = |\alpha\rangle\langle\alpha|\alpha\rangle\langle\alpha| = |\alpha\rangle\langle\alpha| = \hat{P}_\alpha$（利用 $\langle\alpha|\alpha\rangle = 1$）。</li>
+    <li><strong>Hermite 性</strong>：$\hat{P}_\alpha^\dagger = (|\alpha\rangle\langle\alpha|)^\dagger = |\alpha\rangle\langle\alpha| = \hat{P}_\alpha$。</li>
+    <li><strong>本征值</strong>：仅为 0 和 1。</li>
+  </ul>
+
+  <p>
+    $\hat{P}_\alpha$ 的物理意义：将任意态 $|\psi\rangle$ 投影到 $|\alpha\rangle$ 方向上：
+  </p>
+
+  <p>$$\hat{P}_\alpha |\psi\rangle = |\alpha\rangle\langle\alpha|\psi\rangle = \langle\alpha|\psi\rangle \, |\alpha\rangle$$</p>
+
+  <p>
+    在量子测量中，投影算符对应于将系统"坍缩"到某个本征态的过程。
+    更一般地，对应子空间的投影算符为 $\hat{P} = \sum_{i \in S} |i\rangle\langle i|$，
+    其中求和遍历该子空间的一组正交归一基。
+  </p>
+
+  <ThinkingBox title="正算符与密度算符">
+    <p>
+      投影算符是<strong>正算符</strong>（positive operator，满足 $\langle\psi|\hat{A}|\psi\rangle \geq 0$ 对所有 $|\psi\rangle$ 成立）
+      的特殊情形。正算符的另一个核心例子是<strong>密度算符</strong>（密度矩阵）$\hat{\rho} = \sum_i p_i |\psi_i\rangle\langle\psi_i|$，
+      它描述量子系统的混合态。密度算符满足 $\hat{\rho}^\dagger = \hat{\rho}$、$\text{tr}(\hat{\rho}) = 1$、
+      $\hat{\rho} \geq 0$（正半定），但一般不满足幂等性（$\hat{\rho}^2 \neq \hat{\rho}$，除非是纯态）。
+      密度算符将在后续章节详细讨论。你能证明纯态的密度算符 $\hat{\rho} = |\psi\rangle\langle\psi|$ 满足
+      $\text{tr}(\hat{\rho}^2) = 1$，而混合态满足 $\text{tr}(\hat{\rho}^2) < 1$ 吗？
+    </p>
+  </ThinkingBox>
+
+  <!-- ============================================================ -->
+  <!-- 1.3 Dirac符号 -->
+  <!-- ============================================================ -->
+  <h2 id="dirac-notation">1.3 Dirac符号</h2>
+
+  <h3>右矢、左矢与内积</h3>
+
+  <p>
+    Dirac 符号体系是量子力学最优雅、最高效的记号系统。它由以下基本要素构成：
+  </p>
+
+  <p>
+    <strong>右矢</strong>（ket）$|\psi\rangle$：Hilbert 空间 $\mathcal{H}$ 中的矢量，表示量子态。
+    右矢构成线性空间，可以做线性叠加：
+  </p>
+
+  <p>$$|\psi\rangle = c_1|\psi_1\rangle + c_2|\psi_2\rangle, \qquad c_1, c_2 \in \mathbb{C}$$</p>
+
+  <p>
+    <strong>左矢</strong>（bra）$\langle\psi|$：$\mathcal{H}$ 的<strong>对偶空间</strong> $\mathcal{H}^*$ 中的矢量。
+    对偶空间由 $\mathcal{H}$ 上所有连续线性泛函构成。由 <strong>Riesz 表示定理</strong>，
+    $\mathcal{H}$ 与 $\mathcal{H}^*$ 之间存在<strong>反线性的</strong>一一对应：
+  </p>
+
+  <p>$$|\psi\rangle \leftrightarrow \langle\psi|$$</p>
+
+  <p>反线性意味着：</p>
+
+  <p>$$c_1|\psi_1\rangle + c_2|\psi_2\rangle \leftrightarrow c_1^*\langle\psi_1| + c_2^*\langle\psi_2|$$</p>
+
+  <p>
+    <strong>内积</strong>（bracket）$\langle\phi|\psi\rangle$：左矢 $\langle\phi|$ 作用于右矢 $|\psi\rangle$ 得到的复数。
+    Dirac 的天才之处在于将"bracket"（括号）拆成了"bra"（左括号）和"ket"（右括号），
+    使得左矢与右矢的记号自然地配对。
+  </p>
+
+  <InsightBox title="Riesz表示定理的物理意义">
+    <p>
+      Riesz 表示定理断言：Hilbert 空间上的每一个连续线性泛函 $f$ 都可以唯一地表示为
+      $f(|\psi\rangle) = \langle\phi|\psi\rangle$ 的形式，其中 $|\phi\rangle$ 由 $f$ 唯一确定。
+      这就是为什么左矢和右矢之间存在一一对应的原因。
+      在有限维空间中，这对应于将列向量和行向量（取共轭转置）一一对应。
+      但在无穷维空间中这远不平凡——它保证了 Dirac 符号在无穷维 Hilbert 空间中的合法性。
+    </p>
+  </InsightBox>
+
+  <h3>完备性关系（恒等分解）</h3>
+
+  <p>
+    完备性关系（或称<strong>恒等分解</strong>、closure relation）是 Dirac 符号体系中最核心的工具之一。
+  </p>
+
+  <p><strong>离散基的情形：</strong>设 $\{|n\rangle\}$ 是 $\mathcal{H}$ 的一组正交归一完备基，则：</p>
+
+  <p>$$\sum_n |n\rangle\langle n| = \hat{I}$$</p>
+
+  <p>其中 $\hat{I}$ 是恒等算符。这意味着对任意 $|\psi\rangle$：</p>
+
+  <p>$$|\psi\rangle = \hat{I}|\psi\rangle = \sum_n |n\rangle\langle n|\psi\rangle = \sum_n c_n |n\rangle$$</p>
+
+  <p>其中 $c_n = \langle n|\psi\rangle$ 是态矢在基 $|n\rangle$ 方向上的分量（展开系数）。</p>
+
+  <p><strong>连续基的情形：</strong>对坐标本征态 $|x\rangle$ 或动量本征态 $|p\rangle$，完备性关系变为积分形式：</p>
+
+  <p>$$\int_{-\infty}^{+\infty} |x\rangle\langle x| \, dx = \hat{I}, \qquad \int_{-\infty}^{+\infty} |p\rangle\langle p| \, dp = \hat{I}$$</p>
+
+  <p>
+    于是波函数可以理解为：$\psi(x) = \langle x|\psi\rangle$，即态矢 $|\psi\rangle$ 在坐标基 $|x\rangle$ 上的"分量"。
+  </p>
+
+  <InsightBox title="完备性关系的威力">
+    <p>
+      完备性关系的核心用途是"插入恒等算符"。在 Dirac 符号运算中，可以在任何两个因子之间
+      插入 $\hat{I} = \sum_n |n\rangle\langle n|$（或积分形式），从而在不同表象之间自由转换。
+      例如，要计算矩阵元 $\langle\phi|\hat{A}|\psi\rangle$，可以插入两次完备性关系：
+    </p>
+    <p>$$\langle\phi|\hat{A}|\psi\rangle = \sum_m \sum_n \langle\phi|m\rangle \langle m|\hat{A}|n\rangle \langle n|\psi\rangle$$</p>
+    <p>
+      这将抽象的算符运算转化为具体的矩阵乘法。掌握了"插入恒等算符"的技巧，
+      就掌握了 Dirac 符号计算的一半精髓。
+    </p>
+  </InsightBox>
+
+  <h3>外积与算符表示</h3>
+
+  <p>
+    <strong>外积</strong>（outer product） $|\alpha\rangle\langle\beta|$ 是一个算符，作用于右矢给出右矢：
+  </p>
+
+  <p>$$(|\alpha\rangle\langle\beta|)|\psi\rangle = |\alpha\rangle\langle\beta|\psi\rangle = \langle\beta|\psi\rangle \, |\alpha\rangle$$</p>
+
+  <p>
+    它将任意态投影到 $|\alpha\rangle$ 方向上，投影的"权重"由 $\langle\beta|\psi\rangle$ 给出。
+    外积的伴随为：
+  </p>
+
+  <p>$$(|\alpha\rangle\langle\beta|)^\dagger = |\beta\rangle\langle\alpha|$$</p>
+
+  <p>
+    利用完备性关系和外积，任何算符 $\hat{A}$ 都可以写成：
+  </p>
+
+  <p>$$\hat{A} = \hat{I}\hat{A}\hat{I} = \sum_m \sum_n |m\rangle\langle m|\hat{A}|n\rangle\langle n| = \sum_m \sum_n A_{mn} |m\rangle\langle n|$$</p>
+
+  <p>
+    其中 $A_{mn} = \langle m|\hat{A}|n\rangle$ 是算符 $\hat{A}$ 在基 $\{|n\rangle\}$ 下的<strong>矩阵元</strong>。
+    这表明算符与矩阵之间存在精确的对应关系（选定基之后）。
+  </p>
+
+  <p>
+    特别地，Hermite 算符的<strong>谱分解</strong>（spectral decomposition）为：
+  </p>
+
+  <p>$$\hat{A} = \sum_n a_n |a_n\rangle\langle a_n|$$</p>
+
+  <p>
+    其中 $a_n$ 是本征值，$|a_n\rangle$ 是对应的归一化本征态。
+    这是 Hermite 算符在自身本征基下的展开——算符在这个基下是对角的。
+  </p>
+
+  <h3>算符在基矢下的矩阵元</h3>
+
+  <p>
+    选定正交归一基 $\{|n\rangle\}$ 后，算符 $\hat{A}$ 的矩阵元为：
+  </p>
+
+  <p>$$A_{mn} = \langle m | \hat{A} | n \rangle$$</p>
+
+  <p>这些矩阵元构成的矩阵 $(A_{mn})$ 完全刻画了算符 $\hat{A}$ 在该基下的行为。核心运算法则：</p>
+
+  <ul>
+    <li>
+      <strong>算符乘积的矩阵元</strong>：
+      <p>$$(\hat{A}\hat{B})_{mn} = \langle m|\hat{A}\hat{B}|n\rangle = \sum_k \langle m|\hat{A}|k\rangle\langle k|\hat{B}|n\rangle = \sum_k A_{mk} B_{kn}$$</p>
+      <p>这正是矩阵乘法法则。</p>
+    </li>
+    <li>
+      <strong>伴随算符的矩阵元</strong>：
+      <p>$$(A^\dagger)_{mn} = \langle m|\hat{A}^\dagger|n\rangle = (\langle n|\hat{A}|m\rangle)^* = A_{nm}^*$$</p>
+      <p>即 $A^\dagger$ 的矩阵是 $A$ 的矩阵的共轭转置。</p>
+    </li>
+    <li>
+      <strong>Hermite 条件</strong>：$A_{mn} = A_{nm}^*$，即矩阵为 Hermite 矩阵（自共轭矩阵）。
+    </li>
+    <li>
+      <strong>幺正条件</strong>：$\sum_k U_{mk}^* U_{kn} = \delta_{mn}$，即 $U^\dagger U = I$。
+    </li>
+  </ul>
+
+  <p>
+    <strong>迹</strong>（trace）的定义：
+  </p>
+
+  <p>$$\text{tr}(\hat{A}) = \sum_n \langle n|\hat{A}|n\rangle = \sum_n A_{nn}$$</p>
+
+  <p>迹具有循环不变性（与基的选取无关）：</p>
+
+  <p>$$\text{tr}(\hat{A}\hat{B}) = \text{tr}(\hat{B}\hat{A})$$</p>
+
+  <Derivation title="证明迹的循环不变性">
+    <p>利用完备性关系：</p>
+    <p>$$\text{tr}(\hat{A}\hat{B}) = \sum_n \langle n|\hat{A}\hat{B}|n\rangle = \sum_n \sum_m \langle n|\hat{A}|m\rangle\langle m|\hat{B}|n\rangle$$</p>
+    <p>交换求和顺序：</p>
+    <p>$$= \sum_m \sum_n \langle m|\hat{B}|n\rangle\langle n|\hat{A}|m\rangle = \sum_m \langle m|\hat{B}\hat{A}|m\rangle = \text{tr}(\hat{B}\hat{A})$$</p>
+  </Derivation>
+
+  <p>
+    更一般地，$\text{tr}(\hat{A}\hat{B}\hat{C}) = \text{tr}(\hat{C}\hat{A}\hat{B}) = \text{tr}(\hat{B}\hat{C}\hat{A})$
+    （循环置换不变），但一般不等于 $\text{tr}(\hat{A}\hat{C}\hat{B})$。
+  </p>
+
+  <ThinkingBox title="有限维与无穷维的差异">
+    <p>
+      上面的讨论在有限维 Hilbert 空间中是完全严格的。但在无穷维空间中，有些微妙之处需要注意：
+      (1) 并非所有算符都是有界的——位置算符 $\hat{x}$ 和动量算符 $\hat{p}$ 都是无界算符，
+      它们只在稠密子空间上有定义（定义域问题）。
+      (2) 迹的循环不变性对无迹类算符可能不成立——例如 $\text{tr}(\hat{x}\hat{p})$ 与 $\text{tr}(\hat{p}\hat{x})$
+      的"差"为 $\text{tr}(i\hbar\hat{I})$ 形式上发散。
+      (3) Hermite 算符（$A = A^\dagger$ 在定义域上）与自伴算符（$A = A^\dagger$ 且定义域也相同）
+      有微妙区别，后者才保证谱定理成立。
+      这些数学细节在物理计算中通常不造成困难，但在严格的公理化量子力学（如 von Neumann 的数学基础）中是核心问题。
+    </p>
+  </ThinkingBox>
+
+  <!-- ============================================================ -->
+  <!-- 1.4 表象理论 -->
+  <!-- ============================================================ -->
+  <h2 id="representation">1.4 表象理论</h2>
+
+  <h3>表象的概念</h3>
+
+  <p>
+    在 Hilbert 空间中选定一组正交归一完备基 $\{|\phi_n\rangle\}$，
+    将抽象的态矢和算符用分量和矩阵元表示出来，就称为选取了一个<strong>表象</strong>（representation）。
+    表象的选取通常与某个 Hermite 算符的本征基对应——以该算符的本征态为基矢的表象称为该算符的<strong>本征表象</strong>。
+  </p>
+
+  <p>在表象 $\{|n\rangle\}$ 下：</p>
+  <ul>
+    <li>态矢 $|\psi\rangle$ 用列向量表示：分量为 $c_n = \langle n|\psi\rangle$。</li>
+    <li>算符 $\hat{A}$ 用矩阵表示：矩阵元为 $A_{mn} = \langle m|\hat{A}|n\rangle$。</li>
+    <li>内积用分量表示：$\langle\phi|\psi\rangle = \sum_n \langle\phi|n\rangle\langle n|\psi\rangle = \sum_n \phi_n^* \psi_n$，即行向量乘列向量。</li>
+  </ul>
+
+  <h3>坐标表象</h3>
+
+  <p>
+    以位置算符 $\hat{x}$ 的本征态 $|x\rangle$ 为基——这里 $x$ 是连续标记，
+    $\hat{x}|x\rangle = x|x\rangle$。坐标本征态的正交归一关系和完备性关系为：
+  </p>
+
+  <p>$$\langle x' | x \rangle = \delta(x' - x), \qquad \int_{-\infty}^{+\infty} |x\rangle\langle x| \, dx = \hat{I}$$</p>
+
+  <p>在坐标表象中：</p>
+  <ul>
+    <li>态矢的"分量"（波函数）：$\psi(x) = \langle x|\psi\rangle$</li>
+    <li>位置算符：$\langle x|\hat{x}|\psi\rangle = x\psi(x)$（乘以 $x$）</li>
+    <li>动量算符：$\langle x|\hat{p}|\psi\rangle = -i\hbar\dfrac{\partial}{\partial x}\psi(x)$（微分算子）</li>
+    <li>内积：$\langle\phi|\psi\rangle = \int_{-\infty}^{+\infty} \phi^*(x)\psi(x) \, dx$</li>
+  </ul>
+
+  <Derivation title="坐标表象中动量算符的形式推导">
+    <p>从正则对易关系 $[\hat{x}, \hat{p}] = i\hbar$ 出发。在坐标表象中，取 $\langle x|$ 作用于 $[\hat{x}, \hat{p}]|\psi\rangle = i\hbar|\psi\rangle$：</p>
+    <p>$$\langle x|\hat{x}\hat{p}|\psi\rangle - \langle x|\hat{p}\hat{x}|\psi\rangle = i\hbar\langle x|\psi\rangle$$</p>
+    <p>左边第一项，$\hat{x}$ 作用于 $\langle x|$ 的右边给出 $x$：</p>
+    <p>$$x\langle x|\hat{p}|\psi\rangle - \langle x|\hat{p}\hat{x}|\psi\rangle = i\hbar\psi(x)$$</p>
+    <p>对第二项，在 $\hat{p}$ 和 $\hat{x}$ 之间插入完备性关系 $\int |x'\rangle\langle x'| \, dx'$：</p>
+    <p>$$\langle x|\hat{p}\hat{x}|\psi\rangle = \int \langle x|\hat{p}|x'\rangle\langle x'|\hat{x}|\psi\rangle \, dx' = \int \langle x|\hat{p}|x'\rangle \, x'\psi(x') \, dx'$$</p>
+    <p>设 $\langle x|\hat{p}|x'\rangle = p(x, x')$ 为动量算符在坐标表象中的核（kernel）。由上式得：</p>
+    <p>$$x \int p(x, x')\psi(x') \, dx' - \int p(x, x') x' \psi(x') \, dx' = i\hbar\psi(x)$$</p>
+    <p>$$\int p(x, x')(x - x')\psi(x') \, dx' = i\hbar\psi(x)$$</p>
+    <p>由 $\psi$ 的任意性，$p(x, x')$ 必须具有 $\delta$ 函数的导数形式：$p(x, x') = -i\hbar\delta'(x - x')$ 其中 $\delta'$ 是 Dirac $\delta$ 的导数。这可以验证：</p>
+    <p>$$\int [-i\hbar\delta'(x - x')](x - x')\psi(x') \, dx' = -i\hbar \int \delta'(x - x')(x - x')\psi(x') \, dx'$$</p>
+    <p>利用分部积分（或 $t\delta'(t)$ 的性质 $t\delta'(t) = -\delta(t)$）：</p>
+    <p>$$= -i\hbar \cdot (-1) \int \delta(x - x')\psi(x') \, dx' = i\hbar\psi(x)$$</p>
+    <p>因此：</p>
+    <p>$$\langle x|\hat{p}|\psi\rangle = \int p(x, x')\psi(x') \, dx' = -i\hbar\int \delta'(x - x')\psi(x') \, dx' = -i\hbar\frac{\partial}{\partial x}\psi(x)$$</p>
+    <p>即 $\hat{p}$ 在坐标表象中表示为 $-i\hbar\dfrac{\partial}{\partial x}$。</p>
+  </Derivation>
+
+  <h3>动量表象</h3>
+
+  <p>
+    以动量算符 $\hat{p}$ 的本征态 $|p\rangle$ 为基——$\hat{p}|p\rangle = p|p\rangle$。
+    正交归一关系和完备性关系为：
+  </p>
+
+  <p>$$\langle p' | p \rangle = \delta(p' - p), \qquad \int_{-\infty}^{+\infty} |p\rangle\langle p| \, dp = \hat{I}$$</p>
+
+  <p>在动量表象中：</p>
+  <ul>
+    <li>态矢的"分量"（动量空间波函数）：$\tilde{\psi}(p) = \langle p|\psi\rangle$</li>
+    <li>动量算符：$\langle p|\hat{p}|\psi\rangle = p\tilde{\psi}(p)$（乘以 $p$）</li>
+    <li>位置算符：$\langle p|\hat{x}|\psi\rangle = i\hbar\dfrac{\partial}{\partial p}\tilde{\psi}(p)$</li>
+    <li>内积：$\langle\phi|\psi\rangle = \int_{-\infty}^{+\infty} \tilde{\phi}^*(p)\tilde{\psi}(p) \, dp$</li>
+  </ul>
+
+  <p>注意坐标表象和动量表象中 $\hat{x}$ 和 $\hat{p}$ 的地位恰好互换，并且微分算子的符号相反（一个是 $-i\hbar\partial_x$，另一个是 $+i\hbar\partial_p$），这反映了正则对易关系 $[\hat{x}, \hat{p}] = i\hbar$ 的反对称性。</p>
+
+  <h3>表象变换与幺正变换</h3>
+
+  <p>
+    从一个正交归一完备基 $\{|a_n\rangle\}$（旧表象）到另一个 $\{|b_n\rangle\}$（新表象）的<strong>表象变换</strong>
+    是一个<strong>幺正变换</strong>。定义变换矩阵：
+  </p>
+
+  <p>$$U_{mn} = \langle b_m | a_n \rangle$$</p>
+
+  <p>则态矢的分量变换为：</p>
+
+  <p>$$\psi_m^{(b)} = \langle b_m|\psi\rangle = \sum_n \langle b_m|a_n\rangle\langle a_n|\psi\rangle = \sum_n U_{mn}\psi_n^{(a)}$$</p>
+
+  <p>算符的矩阵元变换为：</p>
+
+  <p>$$A_{mn}^{(b)} = \langle b_m|\hat{A}|b_n\rangle = \sum_k \sum_l \langle b_m|a_k\rangle\langle a_k|\hat{A}|a_l\rangle\langle a_l|b_n\rangle = \sum_k \sum_l U_{mk} A_{kl}^{(a)} U_{ln}^*$$</p>
+
+  <p>用矩阵形式简记：</p>
+
+  <p>$$A^{(b)} = U A^{(a)} U^\dagger$$</p>
+
+  <p>变换矩阵 $U$ 是幺正的：$(U^\dagger U)_{mn} = \sum_k U_{km}^* U_{kn} = \sum_k \langle a_m|b_k\rangle\langle b_k|a_n\rangle = \langle a_m|a_n\rangle = \delta_{mn}$。</p>
+
+  <InsightBox title="表象变换的几何直觉">
+    <p>
+      表象变换的本质是 Hilbert 空间中的"坐标系旋转"。态矢 $|\psi\rangle$ 本身不变，
+      变化的只是用来描述它的"坐标系"（基矢的选取）。就像三维空间中同一个向量在不同坐标系下
+      有不同的分量，但向量本身不变一样。幺正变换保持内积不变，正如正交变换保持点积不变。
+      量子力学的物理结论（如跃迁概率 $|\langle\phi|\psi\rangle|^2$）不依赖于表象的选取——
+      这是理论自洽性的根本要求。
+    </p>
+  </InsightBox>
+
+  <h3>坐标-动量表象的变换核 $\langle x | p \rangle$</h3>
+
+  <p>
+    坐标表象与动量表象之间的联系由 $\langle x|p\rangle$ 给出。这是将坐标基 $|x\rangle$ 与动量基 $|p\rangle$
+    联系起来的变换核。
+  </p>
+
+  <Derivation title="推导 ⟨x|p⟩ 的具体形式">
+    <p>利用 $\hat{p}|p\rangle = p|p\rangle$，在坐标表象中：</p>
+    <p>$$\langle x|\hat{p}|p\rangle = p\langle x|p\rangle$$</p>
+    <p>另一方面，动量算符在坐标表象中的作用为 $\langle x|\hat{p} = -i\hbar\dfrac{\partial}{\partial x}\langle x|$，因此：</p>
+    <p>$$-i\hbar\frac{\partial}{\partial x}\langle x|p\rangle = p\langle x|p\rangle$$</p>
+    <p>这是一个简单的一阶 ODE，解为：</p>
+    <p>$$\langle x|p\rangle = N \, e^{ipx/\hbar}$$</p>
+    <p>其中 $N$ 是归一化常数。由动量本征态的归一化条件 $\langle p'|p\rangle = \delta(p' - p)$ 确定 $N$：</p>
+    <p>$$\langle p'|p\rangle = \int_{-\infty}^{+\infty} \langle p'|x\rangle\langle x|p\rangle \, dx = |N|^2 \int_{-\infty}^{+\infty} e^{i(p-p')x/\hbar} \, dx$$</p>
+    <p>利用 Fourier 分析中的公式 $\int_{-\infty}^{+\infty} e^{ikx} \, dx = 2\pi\delta(k)$，令 $k = (p - p')/\hbar$：</p>
+    <p>$$= |N|^2 \cdot 2\pi\hbar \, \delta(p - p')$$</p>
+    <p>要求这等于 $\delta(p - p')$，故 $|N|^2 = \dfrac{1}{2\pi\hbar}$，取 $N = \dfrac{1}{\sqrt{2\pi\hbar}}$：</p>
+    <p>$$\boxed{\langle x|p\rangle = \frac{1}{\sqrt{2\pi\hbar}} \, e^{ipx/\hbar}}$$</p>
+  </Derivation>
+
+  <p>有了这个变换核，坐标表象波函数与动量表象波函数之间的变换即为 <strong>Fourier 变换</strong>：</p>
+
+  <p>$$\psi(x) = \langle x|\psi\rangle = \int_{-\infty}^{+\infty} \langle x|p\rangle\langle p|\psi\rangle \, dp = \frac{1}{\sqrt{2\pi\hbar}} \int_{-\infty}^{+\infty} e^{ipx/\hbar} \tilde{\psi}(p) \, dp$$</p>
+
+  <p>逆变换为：</p>
+
+  <p>$$\tilde{\psi}(p) = \langle p|\psi\rangle = \int_{-\infty}^{+\infty} \langle p|x\rangle\langle x|\psi\rangle \, dx = \frac{1}{\sqrt{2\pi\hbar}} \int_{-\infty}^{+\infty} e^{-ipx/\hbar} \psi(x) \, dx$$</p>
+
+  <p>
+    Fourier 变换在量子力学中的无处不在，其根源正是坐标表象与动量表象之间的幺正变换。
+    Parseval 定理（$\int|\psi(x)|^2dx = \int|\tilde{\psi}(p)|^2dp$）正是幺正变换保持内积（从而保持范数）的直接体现。
+  </p>
+
+  <h3>从离散基到连续基：Kronecker $\delta$ 到 Dirac $\delta$</h3>
+
+  <p>
+    离散情形和连续情形之间存在系统的对应关系。理解这种对应是掌握 Dirac 符号处理连续谱的关键：
+  </p>
+
+  <div class="overflow-x-auto">
+    <table>
+      <thead>
+        <tr>
+          <th>离散基 $\{|n\rangle\}$</th>
+          <th>连续基 $\{|x\rangle\}$</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>$\langle m|n\rangle = \delta_{mn}$</td>
+          <td>$\langle x'|x\rangle = \delta(x' - x)$</td>
+        </tr>
+        <tr>
+          <td>$\sum_n |n\rangle\langle n| = \hat{I}$</td>
+          <td>$\int |x\rangle\langle x| \, dx = \hat{I}$</td>
+        </tr>
+        <tr>
+          <td>$|\psi\rangle = \sum_n c_n |n\rangle$</td>
+          <td>$|\psi\rangle = \int \psi(x) |x\rangle \, dx$</td>
+        </tr>
+        <tr>
+          <td>$c_n = \langle n|\psi\rangle$</td>
+          <td>$\psi(x) = \langle x|\psi\rangle$</td>
+        </tr>
+        <tr>
+          <td>$\langle\phi|\psi\rangle = \sum_n \phi_n^* \psi_n$</td>
+          <td>$\langle\phi|\psi\rangle = \int \phi^*(x)\psi(x) \, dx$</td>
+        </tr>
+        <tr>
+          <td>$\sum_n |c_n|^2 = 1$</td>
+          <td>$\int |\psi(x)|^2 \, dx = 1$</td>
+        </tr>
+        <tr>
+          <td>$A_{mn} = \langle m|\hat{A}|n\rangle$</td>
+          <td>$A(x', x) = \langle x'|\hat{A}|x\rangle$</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    核心对应规律可以概括为：$\sum_n \leftrightarrow \int dx$，$\delta_{mn} \leftrightarrow \delta(x' - x)$。
+    离散情形中的求和在连续情形中变为积分，Kronecker $\delta$ 变为 Dirac $\delta$ 函数。
+  </p>
+
+  <p>
+    需要注意的是，连续基矢 $|x\rangle$ <strong>不属于</strong> $L^2(\mathbb{R})$——
+    它不是平方可积的（$\langle x|x\rangle = \delta(0) = \infty$）。
+    严格来说，$|x\rangle$ 属于 Hilbert 空间的扩展——<strong>rigged Hilbert space</strong>
+    （Gel'fand 三元组 $\Phi \subset \mathcal{H} \subset \Phi'$）。
+    在物理上，$|x\rangle$ 表示粒子精确位于 $x$ 处的"理想化极限态"，
+    实际物理态总是以 $\int \psi(x)|x\rangle dx$ 的波包形式出现。
+  </p>
+
+  <ThinkingBox title="Dirac delta函数的数学本质">
+    <p>
+      Dirac $\delta(x)$ 不是通常意义下的函数，而是一个<strong>分布</strong>（广义函数），
+      定义在试验函数空间上的连续线性泛函：$\delta[f] = f(0)$。它满足
+      $\int \delta(x)f(x)dx = f(0)$ 对所有足够光滑且衰减足够快的 $f$ 成立。
+      Dirac $\delta$ 可以看作一系列"常规"函数（如高斯函数 $\delta_\epsilon(x) = \frac{1}{\epsilon\sqrt{\pi}}e^{-x^2/\epsilon^2}$）
+      在 $\epsilon \to 0$ 时的极限，但这个极限只在分布意义下成立。
+      物理学家通常把 $\delta(x)$ 当函数使用，这在形式运算中是安全的，
+      但理解其数学本质有助于避免某些微妙的错误（例如 $\delta(x)^2$ 没有意义）。
+    </p>
+  </ThinkingBox>
+
+  <!-- ============================================================ -->
+  <!-- 本章小结 -->
+  <!-- ============================================================ -->
+  <h2>本章小结</h2>
+
+  <p>本章建立了量子力学的数学框架，核心内容可以概括为以下几点：</p>
+
+  <ol>
+    <li>
+      <strong>Hilbert 空间</strong>是量子力学的态空间——一个完备的内积空间。
+      量子态 $|\psi\rangle$ 是其中的矢量，叠加原理来自线性空间结构，
+      概率诠释来自内积结构，谱分解的收敛来自完备性。
+    </li>
+    <li>
+      <strong>算符</strong>代表可观测量和对称变换。Hermite 算符（$A^\dagger = A$）
+      代表可观测量，其本征值实数、本征矢正交。幺正算符（$U^\dagger U = I$）
+      代表对称变换，保持概率不变。
+    </li>
+    <li>
+      <strong>Dirac 符号</strong>提供了优雅的抽象记号：
+      右矢 $|\psi\rangle$、左矢 $\langle\psi|$、内积 $\langle\phi|\psi\rangle$、外积 $|\alpha\rangle\langle\beta|$。
+      完备性关系 $\sum_n|n\rangle\langle n| = \hat{I}$ 是在不同表象间自由转换的核心工具。
+    </li>
+    <li>
+      <strong>表象理论</strong>将抽象矢量和算符转化为分量和矩阵。
+      坐标表象给出波函数 $\psi(x) = \langle x|\psi\rangle$，
+      动量表象给出 $\tilde{\psi}(p) = \langle p|\psi\rangle$，
+      两者通过 $\langle x|p\rangle = \frac{1}{\sqrt{2\pi\hbar}}e^{ipx/\hbar}$ 的 Fourier 变换联系。
+    </li>
+  </ol>
+
+  <p>
+    这些数学工具将在后续章节中反复运用。下一章将在此基础上引入量子力学的基本假设，
+    建立从数学框架到物理理论的桥梁。
+  </p>
+
+  <!-- ============================================================ -->
+  <!-- 参考教材 -->
+  <!-- ============================================================ -->
+  <ReferenceBox title="参考教材对照">
+    <table>
+      <thead>
+        <tr>
+          <th>本章内容</th>
+          <th>Sakurai</th>
+          <th>Griffiths</th>
+          <th>曾谨言</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1.1 Hilbert空间与内积</td>
+          <td>Ch.1 &sect;1.2 (Ket space, bra space, inner products)</td>
+          <td>Ch.3 &sect;3.1 (Hilbert space)</td>
+          <td>卷I Ch.2 &sect;2.1 (态的叠加原理); 卷II Ch.1 &sect;1.1-1.2</td>
+        </tr>
+        <tr>
+          <td>1.2 算符代数</td>
+          <td>Ch.1 &sect;1.3 (Operators), &sect;1.4 (Eigenvalues)</td>
+          <td>Ch.3 &sect;3.2 (Observables), &sect;3.3 (Hermitian operators)</td>
+          <td>卷I Ch.2 &sect;2.2-2.4 (力学量算符); 卷II Ch.1 &sect;1.3-1.5</td>
+        </tr>
+        <tr>
+          <td>1.3 Dirac符号</td>
+          <td>Ch.1 &sect;1.2-1.3 (整章围绕Dirac记号展开)</td>
+          <td>Ch.3 &sect;3.6 (Dirac notation)</td>
+          <td>卷II Ch.1 &sect;1.6 (Dirac符号)</td>
+        </tr>
+        <tr>
+          <td>1.4 表象理论</td>
+          <td>Ch.1 &sect;1.6-1.7 (Position/momentum, change of basis)</td>
+          <td>Ch.3 &sect;3.4-3.5 (Position/momentum space)</td>
+          <td>卷I Ch.2 &sect;2.5-2.7 (表象变换); 卷II Ch.1 &sect;1.7-1.8</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top: 0.75rem;">
+      <strong>推荐阅读顺序</strong>：建议先读 Sakurai Ch.1 整章以建立 Dirac 符号的直觉，
+      再对照曾谨言卷II Ch.1 补充数学细节，Griffiths Ch.3 作为概念复习和习题练习。
+      对 rigged Hilbert space 等数学细节感兴趣的读者可参考
+      R. de la Madrid, <em>Eur. J. Phys.</em> <strong>26</strong>, 287 (2005)。
+    </p>
+  </ReferenceBox>
+
+</ChapterLayout>

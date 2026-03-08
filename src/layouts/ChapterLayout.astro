@@ -1,0 +1,66 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Sidebar from '../components/Sidebar.astro';
+import { courses } from '../i18n/courses';
+
+interface Props {
+  title: string;
+  courseId: string;
+  chapterId: string;
+  lang?: string;
+}
+
+const { title, courseId, chapterId, lang = 'zh' } = Astro.props;
+const langKey = lang as 'zh' | 'en';
+const course = courses.find(c => c.id === courseId);
+const chapters = course?.chapters || [];
+const currentIndex = chapters.findIndex(ch => ch.id === chapterId);
+const prevChapter = currentIndex > 0 ? chapters[currentIndex - 1] : null;
+const nextChapter = currentIndex < chapters.length - 1 ? chapters[currentIndex + 1] : null;
+---
+
+<BaseLayout title={title} lang={lang}>
+  <Sidebar courseId={courseId} currentChapter={chapterId} lang={lang} />
+
+  <main class="lg:ml-72 min-h-screen">
+    <!-- Top bar -->
+    <header class="sticky top-0 z-30 bg-[var(--color-surface)]/80 backdrop-blur-md border-b border-[var(--color-border)] px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-[var(--color-text-muted)]">
+          {course?.title[langKey]}
+        </span>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="?lang=zh" class:list={["text-sm px-2 py-1 rounded", langKey === 'zh' ? 'text-white bg-[var(--color-primary)]' : 'text-[var(--color-text-muted)] hover:text-white']}>中文</a>
+        <a href="?lang=en" class:list={["text-sm px-2 py-1 rounded", langKey === 'en' ? 'text-white bg-[var(--color-primary)]' : 'text-[var(--color-text-muted)] hover:text-white']}>EN</a>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <article class="prose max-w-4xl mx-auto px-6 py-8">
+      <slot />
+    </article>
+
+    <!-- Navigation -->
+    <nav class="max-w-4xl mx-auto px-6 py-8 flex justify-between border-t border-[var(--color-border)]">
+      {prevChapter ? (
+        <a href={`/${courseId}/${prevChapter.id}/`} class="flex items-center gap-2 text-[var(--color-primary-light)] hover:text-white transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+          <div>
+            <div class="text-xs text-[var(--color-text-muted)]">{langKey === 'zh' ? '上一章' : 'Previous'}</div>
+            <div class="text-sm">{prevChapter.title[langKey]}</div>
+          </div>
+        </a>
+      ) : <div />}
+      {nextChapter ? (
+        <a href={`/${courseId}/${nextChapter.id}/`} class="flex items-center gap-2 text-right text-[var(--color-primary-light)] hover:text-white transition-colors">
+          <div>
+            <div class="text-xs text-[var(--color-text-muted)]">{langKey === 'zh' ? '下一章' : 'Next'}</div>
+            <div class="text-sm">{nextChapter.title[langKey]}</div>
+          </div>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+        </a>
+      ) : <div />}
+    </nav>
+  </main>
+</BaseLayout>

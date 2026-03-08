@@ -1,0 +1,389 @@
+---
+import ChapterLayout from '../../layouts/ChapterLayout.astro';
+import InsightBox from '../../components/InsightBox.astro';
+import ThinkingBox from '../../components/ThinkingBox.astro';
+import Derivation from '../../components/Derivation.astro';
+import ReferenceBox from '../../components/ReferenceBox.astro';
+---
+
+<ChapterLayout title="第二章 微正则系综" courseId="stat" chapterId="ch02">
+
+  <h1>第二章 微正则系综</h1>
+
+  <p>
+    微正则系综描述一个<strong>孤立系统</strong>——能量 $E$、体积 $V$、粒子数 $N$ 均严格守恒。系综的核心对象是<strong>态密度</strong> $\Omega(E, V, N)$：它计数系统在能量 $E$ 附近可及的微观态数目，是统计力学中联系微观动力学与宏观热力学的桥梁。本章将从态密度的定义出发，严格推导全部热力学关系，并以经典理想气体、谐振子系统、二能级系统为例展示微正则系综的力量。
+  </p>
+
+  <!-- ============================================================ -->
+  <h2 id="density-of-states">2.1 态密度与微正则配分函数</h2>
+  <!-- ============================================================ -->
+
+  <h3>相空间与微观态计数</h3>
+  <p>
+    对 $N$ 个经典粒子组成的系统，微观态由 $6N$ 维相空间中的一个点 $(q_1,\dots,q_{3N};\, p_1,\dots,p_{3N})$ 确定。相空间体积元记为
+  </p>
+  $$
+    d\Gamma = \prod_{i=1}^{3N} dq_i\, dp_i
+  $$
+  <p>
+    <strong>态密度</strong>（即微正则配分函数）定义为
+  </p>
+  $$
+    \Omega(E) = \frac{1}{N!\, h^{3N}} \int \delta\!\bigl(H(\mathbf{q}, \mathbf{p}) - E\bigr)\, d\Gamma
+  $$
+  <p>
+    其中 $H(\mathbf{q}, \mathbf{p})$ 是系统的Hamilton量，$\delta$ 是Dirac delta函数。这一表达式给出的是能量恰好为 $E$ 的等能面上的微观态"密度"。
+  </p>
+
+  <h3>$N!$ 因子：全同粒子的不可分辨性</h3>
+  <p>
+    若不引入 $N!$ 因子，对 $N$ 个全同粒子的任何一个微观态，粒子标号的全排列将被计数 $N!$ 次，导致对微观态的过度计数。这一过度计数的直接后果就是<strong>Gibbs佯谬</strong>——混合两份完全相同的理想气体时熵会增大，违反热力学直觉。引入 $1/N!$ 的"正确Boltzmann计数"消除了这一困难。
+  </p>
+
+  <InsightBox title="Gibbs因子的本质">
+    <p>
+      $1/N!$ 因子本质上来源于量子力学：全同粒子的波函数在粒子交换下要么对称（玻色子），要么反对称（费米子）。在经典极限下，两种统计都退化为 $1/N!$ 的修正。Gibbs在量子力学诞生之前就引入了这个因子——这是一个深刻的物理直觉。
+    </p>
+  </InsightBox>
+
+  <h3>$h^{3N}$ 因子：相空间的量子化</h3>
+  <p>
+    量子力学中的不确定性原理 $\Delta q\,\Delta p \geq \hbar/2$ 意味着相空间中每个自由度的最小"格子"大小为 $h = 2\pi\hbar$。因此一个微观量子态在 $6N$ 维相空间中占据的体积为 $h^{3N}$。除以 $h^{3N}$ 使得 $\Omega$ 成为无量纲的态计数。
+  </p>
+
+  <h3>经典理想气体的态密度计算</h3>
+  <p>
+    考虑 $N$ 个无相互作用的全同粒子在体积 $V$ 的容器中，Hamilton量为
+  </p>
+  $$
+    H = \sum_{i=1}^{N} \frac{\mathbf{p}_i^2}{2m}
+  $$
+  <p>
+    空间部分积分直接给出 $V^N$。动量部分需要计算 $3N$ 维球面 $\sum_{i=1}^{3N} p_i^2 = 2mE$ 的面积。
+  </p>
+
+  <Derivation title="N维球体积与态密度推导">
+    <p>$n$ 维空间中半径为 $R$ 的球的体积为</p>
+    $$
+      V_n(R) = \frac{\pi^{n/2}}{\Gamma(n/2 + 1)}\, R^n
+    $$
+    <p>其中 $\Gamma$ 是Gamma函数。对应的球面面积为</p>
+    $$
+      S_n(R) = \frac{dV_n}{dR} = \frac{2\pi^{n/2}}{\Gamma(n/2)}\, R^{n-1}
+    $$
+    <p>令 $n = 3N$，动量空间中等能面 $\sum p_i^2 = 2mE$ 是半径 $R = \sqrt{2mE}$ 的 $3N$ 维球面。态密度中的动量积分为</p>
+    $$
+      \int \delta\!\Bigl(\sum_{i=1}^{3N} \frac{p_i^2}{2m} - E\Bigr)\, d^{3N}p
+      = \frac{S_{3N}\!\bigl(\sqrt{2mE}\bigr)}{2m}
+      \cdot (2m)
+      = \frac{2\pi^{3N/2}}{\Gamma(3N/2)}\,(2mE)^{3N/2 - 1} \cdot \frac{1}{2}
+    $$
+    <p>
+      这里最后的 $1/2$ 来自 delta 函数与动量模的关系：$\delta(p^2/(2m) - E) = (m/p)\,\delta(p - \sqrt{2mE})$，具体地，将 $\delta(H - E)$ 转化为对球面的积分时，需要除以 $|\nabla_{\mathbf{p}} H| = |\mathbf{p}|/m$ 在等能面上的值。综合得
+    </p>
+    $$
+      \Omega(E, V, N) = \frac{V^N}{N!\, h^{3N}} \cdot \frac{2\pi^{3N/2}}{\Gamma(3N/2)} \cdot \frac{(2mE)^{3N/2-1}}{2}
+    $$
+    <p>
+      在热力学极限下（$N \to \infty$），更常用的是等能面以下的累积态数 $\Sigma(E)$：
+    </p>
+    $$
+      \Sigma(E, V, N) = \frac{V^N}{N!\, h^{3N}} \cdot \frac{\pi^{3N/2}}{\Gamma(3N/2 + 1)}\, (2mE)^{3N/2}
+    $$
+  </Derivation>
+
+  <h3>能壳方法 vs 能面以下方法的等价性</h3>
+  <p>
+    有两种等价的定义方式：
+  </p>
+  <ul>
+    <li><strong>能壳方法</strong>：取能量在 $[E, E+\Delta]$ 之间的薄壳，$\Omega_{\Delta}(E) = \omega(E)\,\Delta$，其中 $\omega(E)$ 即上述态密度。</li>
+    <li><strong>能面以下方法</strong>：取能量不超过 $E$ 的全部态数 $\Sigma(E)$，定义熵为 $S = k_B \ln \Sigma(E)$。</li>
+  </ul>
+  <p>
+    在热力学极限下，$\ln \omega(E)$ 与 $\ln \Sigma(E)$ 仅差一个 $O(\ln N)$ 的修正项，相对于 $O(N)$ 的主项完全可忽略。因此两种定义在热力学极限下严格等价。
+  </p>
+
+  <ThinkingBox title="为何能壳与能面以下等价？">
+    <p>
+      直觉上，$\Sigma(E)$ 是 $E$ 的急剧增函数（对理想气体，$\Sigma \propto E^{3N/2}$）。因此 $\Sigma(E)$ 的"绝大部分"集中在 $E$ 附近极薄的壳层中。具体地，$\omega(E) = d\Sigma/dE \sim (3N/2)\,\Sigma/E$，从而
+    </p>
+    $$
+      \ln\omega(E) = \ln\Sigma(E) + \ln\frac{3N}{2E} \approx \ln\Sigma(E) + O(\ln N)
+    $$
+    <p>
+      而 $\ln\Sigma(E)$ 本身是 $O(N)$ 量。因此在热力学极限下，$O(\ln N)$ 修正完全无关紧要。这一论证对一般系统都成立，只要态密度是能量的快速增函数。
+    </p>
+  </ThinkingBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 1.4, 2.3-2.4</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 6.1-6.3</li>
+      <li>汪志诚,《热力学·统计物理》, 第6版, 第7章</li>
+      <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;7</li>
+    </ul>
+  </ReferenceBox>
+
+  <!-- ============================================================ -->
+  <h2 id="thermodynamics-from-counting">2.2 从态密度推导热力学</h2>
+  <!-- ============================================================ -->
+
+  <h3>Boltzmann关系</h3>
+  <p>
+    微正则系综的基本假设是：孤立系统的所有可及微观态等概率出现。由此，系统的熵定义为
+  </p>
+  $$
+    S(E, V, N) = k_B \ln \Omega(E, V, N)
+  $$
+  <p>
+    这就是刻在Boltzmann墓碑上的公式（原文为 $S = k \log W$）。它是联系微观世界与宏观热力学的<strong>核心桥梁</strong>。
+  </p>
+
+  <h3>温度、压强、化学势</h3>
+  <p>
+    热力学基本关系 $dE = TdS - PdV + \mu dN$ 可以改写为
+  </p>
+  $$
+    dS = \frac{1}{T}\,dE + \frac{P}{T}\,dV - \frac{\mu}{T}\,dN
+  $$
+  <p>
+    由此得到热力学量的微观定义：
+  </p>
+  $$
+    \frac{1}{T} = \left(\frac{\partial S}{\partial E}\right)_{V,N}, \qquad
+    \frac{P}{T} = \left(\frac{\partial S}{\partial V}\right)_{E,N}, \qquad
+    -\frac{\mu}{T} = \left(\frac{\partial S}{\partial N}\right)_{E,V}
+  $$
+
+  <InsightBox title="温度的统计力学本质">
+    <p>
+      温度不是微观粒子运动快慢的简单度量，而是<strong>熵对能量的响应</strong>。当两个系统热接触时，能量从 $\partial S/\partial E$ 较大（即温度较低）的系统流向 $\partial S/\partial E$ 较小（即温度较高）的系统——直到两者 $1/T$ 相等，即达到热平衡。这一图像完全基于态密度的性质，无需引入任何"热"的先验概念。
+    </p>
+  </InsightBox>
+
+  <h3>理想气体状态方程的推导</h3>
+
+  <Derivation title="从态密度推导 PV = Nk_BT">
+    <p>利用上节的态密度结果，对累积态数取对数：</p>
+    $$
+      \ln\Sigma(E,V,N) = N\ln V + \frac{3N}{2}\ln(2mE) + \frac{3N}{2}\ln\pi - \ln\Gamma\!\left(\frac{3N}{2}+1\right) - \ln(N!) - 3N\ln h
+    $$
+    <p>利用 $S = k_B\ln\Sigma$（在热力学极限下与能壳方法等价），先对 $V$ 求偏导：</p>
+    $$
+      \frac{P}{T} = \left(\frac{\partial S}{\partial V}\right)_{E,N} = k_B \cdot \frac{N}{V}
+    $$
+    <p>这立即给出</p>
+    $$
+      PV = Nk_BT
+    $$
+    <p>再对 $E$ 求偏导：</p>
+    $$
+      \frac{1}{T} = \left(\frac{\partial S}{\partial E}\right)_{V,N} = k_B \cdot \frac{3N}{2E}
+    $$
+    <p>即</p>
+    $$
+      E = \frac{3}{2}Nk_BT
+    $$
+    <p>这就是能量均分定理：每个平动自由度贡献 $\frac{1}{2}k_BT$ 的能量。</p>
+  </Derivation>
+
+  <h3>Sackur-Tetrode公式</h3>
+  <p>
+    将理想气体的完整态密度代入Boltzmann关系，利用Stirling近似 $\ln N! \approx N\ln N - N$，得到理想气体的绝对熵公式：
+  </p>
+  $$
+    S(E, V, N) = Nk_B \left[\ln\frac{V}{N}\left(\frac{4\pi mE}{3Nh^2}\right)^{3/2} + \frac{5}{2}\right]
+  $$
+  <p>
+    用 $E = \frac{3}{2}Nk_BT$ 消去 $E$，得到更常见的形式：
+  </p>
+  $$
+    S(T, V, N) = Nk_B \left[\ln\frac{V}{N}\left(\frac{2\pi mk_BT}{h^2}\right)^{3/2} + \frac{5}{2}\right]
+    = Nk_B \left[\ln\frac{V}{N\lambda_T^3} + \frac{5}{2}\right]
+  $$
+  <p>
+    其中 $\lambda_T = h/\sqrt{2\pi mk_BT}$ 是<strong>热de Broglie波长</strong>。此公式具有以下重要性质：
+  </p>
+  <ul>
+    <li><strong>广延性</strong>：$S(E, \alpha V, \alpha N) = \alpha\, S(E, V, N)$，其中关键在于 $V/N$ 的出现（来自 $1/N!$ 因子）。</li>
+    <li><strong>第三定律</strong>：当 $T \to 0$ 时 $S \to -\infty$，这意味着经典统计力学在低温下失效，必须引入量子统计。</li>
+    <li><strong>实验验证</strong>：Sackur-Tetrode公式已被单原子理想气体（如 He, Ar）的实验数据精确验证。</li>
+  </ul>
+
+  <h3>负温度的物理意义</h3>
+  <p>
+    温度由 $1/T = \partial S/\partial E$ 定义。对大多数系统，态密度 $\Omega(E)$ 随 $E$ 单调递增，故 $T > 0$。然而，如果系统的能谱有<strong>上界</strong>（例如自旋系统），则当能量超过某临界值后，$\Omega(E)$ 开始递减，$\partial S/\partial E < 0$，从而 $T < 0$。
+  </p>
+  <p>
+    负温度态的关键性质：
+  </p>
+  <ul>
+    <li>负温度比任何正温度都"更热"：$T = -\epsilon$ 的系统与 $T > 0$ 的系统接触时，能量从负温度系统流向正温度系统。</li>
+    <li>在 $\beta = 1/(k_BT)$ 的标度上，温度排序为 $0^+ < \cdots < +\infty < -\infty < \cdots < 0^-$，即 $\beta$ 从 $+\infty$ 单调递减到 $-\infty$。</li>
+    <li>负温度对应于粒子占据高能态多于低能态的<strong>粒子数反转</strong>状态。</li>
+  </ul>
+
+  <ThinkingBox title="负温度真的存在吗？">
+    <p>
+      负温度是否具有物理意义，取决于对熵的定义。使用Boltzmann的 $S = k_B\ln\Omega$ 可以得到负温度，但Gibbs的 $S = k_B\ln\Sigma$（累积态数）给出的温度总是正的。2014年前后，Dunkel & Hilbert 在 <em>Nature Physics</em> 上引发了激烈讨论。目前多数统计力学家认为，对于能谱有上界的系统（如核自旋系统），Boltzmann定义下的负温度是自洽且有实验对应的。Purcell和Pound在1951年的核自旋实验中就实现了负温度态。关键在于：这些系统必须与平动自由度有效解耦，否则无法达到平衡态。
+    </p>
+  </ThinkingBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 1.4-1.6, 2.4</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 6.4-6.5</li>
+      <li>汪志诚,《热力学·统计物理》, 第6版, &sect;7.4-7.5</li>
+      <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;7, &sect;24</li>
+      <li>N.F. Ramsey, <em>Phys. Rev.</em> <strong>103</strong>, 20 (1956) — 负温度的热力学理论</li>
+    </ul>
+  </ReferenceBox>
+
+  <!-- ============================================================ -->
+  <h2 id="microcanonical-applications">2.3 微正则系综的经典应用</h2>
+  <!-- ============================================================ -->
+
+  <h3>$N$ 个谐振子的精确解</h3>
+  <p>
+    考虑 $N$ 个一维经典谐振子，Hamilton量为
+  </p>
+  $$
+    H = \sum_{i=1}^{N} \left(\frac{p_i^2}{2m} + \frac{1}{2}m\omega^2 q_i^2\right)
+  $$
+  <p>
+    做变量替换 $x_i = p_i/\sqrt{2m}$，$y_i = q_i\sqrt{m\omega^2/2}$，等能面变为 $2N$ 维空间中的球面 $\sum(x_i^2 + y_i^2) = E$。
+  </p>
+
+  <Derivation title="N个谐振子态密度的完整推导">
+    <p>等能面以下的相空间体积为</p>
+    $$
+      \Sigma(E) = \frac{1}{N!\,h^N} \int_{H \leq E} d^N q\, d^N p
+    $$
+    <p>变量替换后，这是半径为 $\sqrt{E}$ 的 $2N$ 维球（乘以适当的Jacobian）。Jacobian为 $(2m)^{N/2}\cdot(2/(m\omega^2))^{N/2} = (2/\omega)^N$，因此</p>
+    $$
+      \Sigma(E) = \frac{1}{N!\,h^N}\left(\frac{2}{\omega}\right)^N \cdot \frac{\pi^N}{\Gamma(N+1)}\,E^N
+      = \frac{1}{N!\,N!}\left(\frac{E}{\hbar\omega}\right)^N
+    $$
+    <p>态密度（能壳方法）为</p>
+    $$
+      \omega(E) = \frac{d\Sigma}{dE} = \frac{1}{N!\,N!}\cdot\frac{N}{\hbar\omega}\left(\frac{E}{\hbar\omega}\right)^{N-1}
+    $$
+    <p>
+      有趣的是，如果不考虑全同性（令 $N! \to 1$），对应的量子问题（$N$ 个可分辨的量子谐振子，总能量为 $E = (M + N/2)\hbar\omega$）的微观态数恰好是组合数 $\binom{M+N-1}{N-1}$，其中 $M$ 为总量子数。在经典极限 $M \gg N$ 下，两者一致。
+    </p>
+  </Derivation>
+
+  <p>
+    由 $S = k_B\ln\Omega$ 和 $1/T = \partial S/\partial E$，得到
+  </p>
+  $$
+    E = Nk_BT
+  $$
+  <p>
+    每个谐振子有两个二次型自由度（动能 + 势能），各贡献 $\frac{1}{2}k_BT$，与能量均分定理一致。
+  </p>
+
+  <h3>二能级系统与负温度</h3>
+  <p>
+    考虑 $N$ 个不相互作用的二能级系统，每个粒子能量为 $0$ 或 $\varepsilon$。若总能量 $E = n\varepsilon$（$0 \leq n \leq N$），则微观态数为
+  </p>
+  $$
+    \Omega(E) = \binom{N}{n} = \frac{N!}{n!\,(N-n)!}
+  $$
+  <p>
+    利用Stirling近似 $\ln n! \approx n\ln n - n$，得到熵
+  </p>
+  $$
+    S = k_B\bigl[N\ln N - n\ln n - (N-n)\ln(N-n)\bigr]
+  $$
+  <p>
+    温度为
+  </p>
+  $$
+    \frac{1}{T} = \frac{\partial S}{\partial E} = \frac{k_B}{\varepsilon}\ln\frac{N-n}{n}
+  $$
+  <p>
+    分析：
+  </p>
+  <ul>
+    <li>$n < N/2$ 时，$T > 0$（正常态）；</li>
+    <li>$n = N/2$ 时，$T = \pm\infty$（熵取最大值）；</li>
+    <li>$n > N/2$ 时，$T < 0$（粒子数反转态）。</li>
+  </ul>
+  <p>
+    二能级系统的比热为
+  </p>
+  $$
+    C_V = \frac{\partial E}{\partial T} = Nk_B\left(\frac{\varepsilon}{k_BT}\right)^2 \frac{e^{\varepsilon/(k_BT)}}{\left(1 + e^{\varepsilon/(k_BT)}\right)^2}
+  $$
+  <p>
+    这给出著名的<strong>Schottky比热</strong>峰：$C_V$ 在 $k_BT \sim \varepsilon$ 附近有一个峰值，在 $T \to 0$ 和 $T \to \infty$ 时均趋于零。
+  </p>
+
+  <InsightBox title="Schottky峰的物理图像">
+    <p>
+      低温时几乎所有粒子在基态，激发需要克服能隙 $\varepsilon$，比热按 $e^{-\varepsilon/(k_BT)}$ 指数衰减（冻结）。高温时两个能级几乎等概率占据，增加温度几乎不改变能级布居——比热也趋于零（饱和）。比热峰出现在这两种机制竞争的中间温度区。Schottky比热是实验上检测局域能级间距的重要手段。
+    </p>
+  </InsightBox>
+
+  <h3>Gibbs佯谬的深入分析</h3>
+  <p>
+    考虑将一个体积为 $V$、含 $N$ 个粒子的容器用隔板分为两半（体积各 $V/2$，粒子各 $N/2$），然后移除隔板。如果不引入 $1/N!$ 因子，混合前后的熵变为
+  </p>
+  $$
+    \Delta S_{\text{wrong}} = 2 \cdot \frac{N}{2}k_B\ln V - Nk_B\ln\frac{V}{2} = Nk_B\ln 2 > 0
+  $$
+  <p>
+    但这是同种粒子的"混合"——一个完全可逆的过程，熵不应改变！引入 $1/N!$ 后，Sackur-Tetrode公式中 $V$ 被 $V/N$ 替换，混合熵变正确为零：
+  </p>
+  $$
+    \Delta S_{\text{correct}} = Nk_B\ln\frac{V}{N} - 2\cdot\frac{N}{2}k_B\ln\frac{V/2}{N/2} = 0
+  $$
+
+  <ThinkingBox title="Gibbs佯谬的更深层次">
+    <p>
+      Gibbs佯谬的真正根源不仅是计数因子，而是<strong>"粒子的可分辨性是否是物理的"</strong>这一基本问题。在经典力学中，粒子有确定的轨迹，原则上可以追踪——那为什么要除以 $N!$？答案是：我们讨论的是<strong>宏观态</strong>的熵，而非单个轨迹。即使经典粒子原则上可分辨，如果宏观测量无法区分粒子交换后的态，那么这些态在统计上就应被视为同一态。$1/N!$ 因子正是这一物理要求的数学体现。这也解释了为什么对<strong>不同种类</strong>粒子的混合，确实有 $\Delta S = Nk_B\ln 2$ 的混合熵——因为不同种类的粒子可以被实验区分。
+    </p>
+  </ThinkingBox>
+
+  <h3>从微正则到正则：系综转化</h3>
+  <p>
+    考虑一个小系统（系统A）与一个大热库（系统B）构成孤立总系统，总能量为 $E_{\text{tot}} = E_A + E_B$。总系统的微正则态密度为
+  </p>
+  $$
+    \Omega_{\text{tot}}(E_{\text{tot}}) = \sum_{E_A} \Omega_A(E_A)\,\Omega_B(E_{\text{tot}} - E_A)
+  $$
+  <p>
+    对热库的熵在 $E_A = 0$ 附近Taylor展开（$E_A \ll E_{\text{tot}}$）：
+  </p>
+  $$
+    S_B(E_{\text{tot}} - E_A) \approx S_B(E_{\text{tot}}) - \frac{E_A}{T}
+  $$
+  <p>
+    因此系统A处于能量 $E_A$ 的概率为
+  </p>
+  $$
+    P(E_A) \propto \Omega_A(E_A)\,e^{-E_A/(k_BT)}
+  $$
+  <p>
+    若系统A足够小，使得 $\Omega_A(E_A)$ 的"结构"可以分解为离散能级 $\{E_i\}$，就得到了<strong>Boltzmann分布</strong>：
+  </p>
+  $$
+    P_i = \frac{e^{-\beta E_i}}{Z}, \qquad Z = \sum_i e^{-\beta E_i}, \qquad \beta = \frac{1}{k_BT}
+  $$
+  <p>
+    这正是正则系综的起点——将在下一章详细展开。
+  </p>
+
+  <ReferenceBox>
+    <ul>
+      <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 2.3-2.5, 3.1</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 6.4-6.6, 7.1</li>
+      <li>汪志诚,《热力学·统计物理》, 第6版, &sect;7.3-7.6</li>
+      <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;7, &sect;28</li>
+      <li>E.T. Jaynes, "The Gibbs Paradox", in <em>Maximum Entropy and Bayesian Methods</em> (1992)</li>
+    </ul>
+  </ReferenceBox>
+
+</ChapterLayout>

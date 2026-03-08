@@ -1,0 +1,18 @@
+---
+interface Props {
+  title?: string;
+}
+const { title = '深度洞察' } = Astro.props;
+---
+<div class="insight-box">
+  <div class="flex items-center gap-2 mb-2">
+    <svg class="w-5 h-5 text-[var(--color-insight)]" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM4 11a1 1 0 100-2H3a1 1 0 000 2h1zM10 17a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1z" />
+      <path fill-rule="evenodd" d="M10 5a5 5 0 00-3 9v2a1 1 0 001 1h4a1 1 0 001-1v-2a5 5 0 00-3-9z" clip-rule="evenodd" />
+    </svg>
+    <span class="font-semibold text-[var(--color-insight)]">{title}</span>
+  </div>
+  <div class="text-sm leading-relaxed">
+    <slot />
+  </div>
+</div>

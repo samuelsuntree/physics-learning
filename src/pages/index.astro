@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { courses } from '../i18n/courses';
+---
+
+<BaseLayout title="四大力学深度学习平台">
+  <div class="min-h-screen flex flex-col">
+    <!-- Hero -->
+    <header class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-primary-dark)] via-[var(--color-surface)] to-[var(--color-surface)]"></div>
+      <div class="relative max-w-6xl mx-auto px-6 py-20 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+          四大力学 <span class="text-[var(--color-primary-light)]">深度学习平台</span>
+        </h1>
+        <p class="text-xl text-[var(--color-text-muted)] mb-2">
+          量子力学 & 平衡态统计物理
+        </p>
+        <p class="text-sm text-[var(--color-text-muted)] max-w-2xl mx-auto mt-4">
+          基于 Sakurai、Landau、Pathria、曾谨言、汪志诚等经典教材，配以交互式可视化，
+          深入浅出地呈现理论物理的核心精髓。
+        </p>
+      </div>
+    </header>
+
+    <!-- Course cards -->
+    <main class="max-w-6xl mx-auto px-6 py-12 flex-1">
+      <div class="grid md:grid-cols-2 gap-8">
+        {courses.map(course => (
+          <div class="bg-[var(--color-surface-light)] border border-[var(--color-border)] rounded-xl overflow-hidden hover:border-[var(--color-primary-light)] transition-colors">
+            <div class="p-6">
+              <h2 class="text-2xl font-bold text-white mb-1">{course.title.zh}</h2>
+              <p class="text-sm text-[var(--color-primary-light)] mb-4">{course.title.en}</p>
+              <p class="text-sm text-[var(--color-text-muted)] mb-6">
+                {course.chapters.length} 章 · {course.chapters.reduce((acc, ch) => acc + ch.sections.length, 0)} 节
+              </p>
+
+              <div class="space-y-2">
+                {course.chapters.map((chapter, i) => (
+                  <a
+                    href={`/${course.id}/${chapter.id}/`}
+                    class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-[var(--color-surface-lighter)] transition-colors group"
+                  >
+                    <span class="flex-shrink-0 w-7 h-7 rounded-full bg-[var(--color-primary)] bg-opacity-20 text-[var(--color-primary-light)] text-xs font-bold flex items-center justify-center">
+                      {i + 1}
+                    </span>
+                    <span class="text-sm text-[var(--color-text)] group-hover:text-white transition-colors">
+                      {chapter.title.zh}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- References -->
+      <section class="mt-16">
+        <h2 class="text-xl font-bold text-white mb-6">核心参考教材</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="bg-[var(--color-surface-light)] rounded-lg p-5 border border-[var(--color-border)]">
+            <h3 class="font-semibold text-white mb-3">量子力学</h3>
+            <ul class="text-sm text-[var(--color-text-muted)] space-y-1.5">
+              <li>J.J. Sakurai, <em>Modern Quantum Mechanics</em></li>
+              <li>D.J. Griffiths, <em>Introduction to Quantum Mechanics</em></li>
+              <li>曾谨言,《量子力学》（卷I、II）</li>
+              <li>S. Weinberg, <em>Lectures on Quantum Mechanics</em></li>
+              <li>L.D. Landau & E.M. Lifshitz, <em>Quantum Mechanics</em></li>
+            </ul>
+          </div>
+          <div class="bg-[var(--color-surface-light)] rounded-lg p-5 border border-[var(--color-border)]">
+            <h3 class="font-semibold text-white mb-3">统计物理</h3>
+            <ul class="text-sm text-[var(--color-text-muted)] space-y-1.5">
+              <li>R.K. Pathria & P.D. Beale, <em>Statistical Mechanics</em></li>
+              <li>K. Huang, <em>Statistical Mechanics</em></li>
+              <li>汪志诚,《热力学·统计物理》</li>
+              <li>L.D. Landau & E.M. Lifshitz, <em>Statistical Physics Part 1</em></li>
+              <li>M. Kardar, <em>Statistical Physics of Particles</em></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-[var(--color-border)] py-6 text-center text-xs text-[var(--color-text-muted)]">
+      四大力学深度学习平台 · 基于经典教材的交互式物理学习
+    </footer>
+  </div>
+</BaseLayout>

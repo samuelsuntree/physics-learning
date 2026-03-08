@@ -1,0 +1,690 @@
+---
+import ChapterLayout from '../../layouts/ChapterLayout.astro';
+import InsightBox from '../../components/InsightBox.astro';
+import ThinkingBox from '../../components/ThinkingBox.astro';
+import Derivation from '../../components/Derivation.astro';
+import ReferenceBox from '../../components/ReferenceBox.astro';
+---
+
+<ChapterLayout title="第一章 统计力学的逻辑基础" courseId="stat" chapterId="ch01">
+
+  <h1>第一章 统计力学的逻辑基础</h1>
+
+  <p>
+    统计力学是从微观动力学通向宏观热力学的桥梁。它的逻辑起点并非对力学规律的否定，
+    而是对力学规律的<strong>有效重组</strong>——承认微观动力学的确定性，但放弃对每一个自由度的追踪，
+    转而通过概率描述来提取宏观可观测的信息。本章将严格建立这一逻辑链条：
+    从Hamilton力学出发，经由Liouville定理、系综概念、等概率假设，最终抵达Boltzmann熵的定义。
+  </p>
+
+  <!-- ============================================================ -->
+  <!-- 1.1 从力学到统计 -->
+  <!-- ============================================================ -->
+  <h2 id="why-probability">1.1 从力学到统计</h2>
+
+  <h3>相空间 ($\Gamma$ 空间) 的定义</h3>
+
+  <p>
+    考虑一个由 $N$ 个粒子构成的经典力学系统。若每个粒子具有 $d$ 个空间自由度（通常 $d=3$），
+    则系统的总自由度为 $f = dN = 3N$（暂不考虑约束）。系统的微观状态由 $f$ 个广义坐标
+    $q_1, q_2, \ldots, q_f$ 及其共轭动量 $p_1, p_2, \ldots, p_f$ 完全确定。
+    这 $2f$ 个变量张成的空间称为<strong>相空间</strong>（phase space），记作 $\Gamma$ 空间：
+  </p>
+
+  $$\Gamma = \{(q_1, \ldots, q_f,\; p_1, \ldots, p_f)\} \subset \mathbb{R}^{2f}$$
+
+  <p>
+    系统在任一时刻的微观状态对应 $\Gamma$ 空间中的一个点，称为<strong>代表点</strong>（representative point）。
+    随时间演化，代表点在 $\Gamma$ 空间中画出一条轨迹——<strong>相轨迹</strong>。
+  </p>
+
+  <InsightBox title="$\Gamma$ 空间 vs. $\mu$ 空间">
+    <p>
+      必须区分 $\Gamma$ 空间与 $\mu$ 空间。$\mu$ 空间是<strong>单个粒子</strong>的相空间（$6$ 维），
+      $\Gamma$ 空间是<strong>整个系统</strong>的相空间（$6N$ 维）。Boltzmann的 $H$ 定理在 $\mu$ 空间中表述，
+      而Gibbs的系综理论在 $\Gamma$ 空间中建立。对于全同粒子系统，$\Gamma$ 空间中交换任意两个粒子的坐标与动量
+      所得的点对应同一物理状态——这一点在后续讨论 Gibbs 佯谬时至关重要。
+    </p>
+  </InsightBox>
+
+  <h3>Hamilton正则方程</h3>
+
+  <p>
+    系统的时间演化由Hamilton量 $H(q_1, \ldots, q_f, p_1, \ldots, p_f, t)$ 完全决定，遵循正则方程：
+  </p>
+
+  $$\dot{q}_i = \frac{\partial H}{\partial p_i}, \qquad \dot{p}_i = -\frac{\partial H}{\partial q_i}, \qquad i = 1, 2, \ldots, f$$
+
+  <p>
+    这是 $2f$ 个一阶常微分方程。给定初条件 $(q(0), p(0))$，微观状态的整个未来（与过去）原则上完全确定。
+    这里没有任何随机性——Hamilton力学是<strong>严格确定性</strong>的。
+  </p>
+
+  <h3>宏观态与微观态的区分</h3>
+
+  <p>
+    宏观测量仪器只能分辨少数几个宏观量：能量 $E$、体积 $V$、粒子数 $N$、压强 $P$、温度 $T$ 等。
+    这些宏观量是相空间坐标的函数，但极度粗糙——它们仅仅给出 $\Gamma$ 空间中代表点的大致位置。
+    关键在于：
+  </p>
+
+  <p>
+    <strong>一个宏观态对应天文数字个微观态。</strong>
+  </p>
+
+  <p>
+    定量地说，对于 $N \sim 10^{23}$ 的系统，处于给定宏观态 $(E, V, N)$ 的微观态数目 $\Omega$
+    通常为
+  </p>
+
+  $$\Omega \sim e^{N} \sim e^{10^{23}}$$
+
+  <p>
+    这个数大到无法用任何类比来理解。它是统计力学得以成立的数学根基：
+    正因为微观态数目巨大，概率论中的大数定律和中心极限定理才能保证宏观量的涨落极小
+    （相对涨落 $\sim 1/\sqrt{N}$），使得热力学的确定性描述成为极好的近似。
+  </p>
+
+  <h3>为什么需要概率描述</h3>
+
+  <p>概率描述并非因为微观动力学不确定，而是源于三个层次的困难：</p>
+
+  <ol>
+    <li>
+      <strong>初条件不可知</strong>——我们永远无法精确测量 $10^{23}$ 个粒子的位置与动量。
+      即使原则上方程可解，没有初条件的解是无意义的。
+    </li>
+    <li>
+      <strong>对初条件的极端敏感性</strong>——即使初条件已知到极高精度，
+      微小误差也会在相互作用下指数放大（Lyapunov 不稳定性）。对于硬球气体，
+      相邻轨道的偏差大约每经历 $\sim 10$ 次碰撞翻一倍；经过 $\sim 100$ 次碰撞后，
+      初始精度就完全丧失了。
+    </li>
+    <li>
+      <strong>自由度极多</strong>——即使能够求解运动方程，$10^{23}$ 个变量的轨迹也无法存储和处理。
+      我们需要的不是每个粒子去了哪里，而是宏观可观测量的值。
+    </li>
+  </ol>
+
+  <p>
+    因此，统计力学的策略是：放弃对微观态的逐一追踪，转而描述微观态上的<strong>概率分布</strong>，
+    并从中提取宏观量作为统计平均。
+  </p>
+
+  <h3>粗粒化的必要性</h3>
+
+  <p>
+    在具体操作中，我们将 $\Gamma$ 空间划分为大小为 $(\delta q\, \delta p)^f$ 的小格子（cell）。
+    每个格子足够小，使得其中宏观量近似不变；又足够大，包含大量微观态。
+    这种<strong>粗粒化</strong>（coarse-graining）是统计描述的本质步骤。
+    从信息论的视角看，粗粒化意味着有意地丢弃微观细节，保留宏观相关的信息——
+    这正是从力学过渡到统计的核心操作。
+  </p>
+
+  <p>
+    值得强调的是，粗粒化的精细程度有一个自然下限：由量子力学的不确定性原理，
+    相空间中单个量子态占据的体积为
+  </p>
+
+  $$\Delta q_i \, \Delta p_i \geq \frac{\hbar}{2}$$
+
+  <p>
+    因此，相空间的最小有物理意义的体积元为 $h^f$（$h = 2\pi\hbar$）。
+    这一量子力学输入在经典统计力学中看似可有可无，
+    但它是使熵具有绝对值（而非只定义到一个加法常数）的关键，
+    也是解决 Gibbs 佯谬的必要条件。
+  </p>
+
+  <InsightBox title="经典极限的微妙之处">
+    <p>
+      经典统计力学的完整微观态计数公式为 $\Omega = \frac{1}{N! \, h^{f}} \int d\Gamma$。
+      因子 $h^f$ 来自量子力学（设定相空间格子大小），$N!$ 来自全同粒子的不可区分性。
+      历史上，Gibbs 在量子力学诞生之前就已凭借"正确计数"的要求引入了 $N!$，
+      这是理论物理中美学直觉领先于实验验证的经典案例。
+    </p>
+  </InsightBox>
+
+
+  <!-- ============================================================ -->
+  <!-- 1.2 Liouville定理与统计系综 -->
+  <!-- ============================================================ -->
+  <h2 id="liouville">1.2 Liouville定理与统计系综</h2>
+
+  <h3>系综的概念</h3>
+
+  <p>
+    Gibbs引入的<strong>系综</strong>（ensemble）是统计力学最深刻的概念之一。
+    设想在相同的宏观条件下制备大量（思想上无穷多）相同系统的拷贝，
+    每个拷贝处于不同的微观态。这些拷贝的代表点在 $\Gamma$ 空间中形成一个"点云"。
+    当拷贝数趋于无穷时，点云可以用连续的概率密度函数描述：
+  </p>
+
+  $$\rho(q_1, \ldots, q_f, \; p_1, \ldots, p_f, \; t) \geq 0$$
+
+  <p>
+    归一化条件为
+  </p>
+
+  $$\int \rho(q, p, t) \, d\Gamma = 1, \qquad d\Gamma = \prod_{i=1}^{f} dq_i \, dp_i$$
+
+  <p>
+    任何力学量 $A(q, p)$ 的宏观测量值等于<strong>系综平均</strong>：
+  </p>
+
+  $$\langle A \rangle = \int A(q, p) \, \rho(q, p, t) \, d\Gamma$$
+
+  <p>
+    系综并非真正存在的物理实体，而是一种计算工具。
+    它的合理性最终依赖于遍历假说——见本节末尾的讨论。
+  </p>
+
+  <h3>Liouville定理的推导</h3>
+
+  <p>
+    $\rho$ 的时间演化由一个基本定理决定——<strong>Liouville定理</strong>。
+    其核心内容是：<em>沿相轨迹运动的概率密度不随时间改变</em>，即
+  </p>
+
+  $$\frac{d\rho}{dt} = 0$$
+
+  <Derivation title="Liouville定理的完整推导">
+    <p>
+      <strong>方法一：连续性方程出发。</strong>
+    </p>
+    <p>
+      $\Gamma$ 空间中的概率守恒意味着概率的"流体"满足连续性方程。
+      定义相空间速度 $\mathbf{v} = (\dot{q}_1, \ldots, \dot{q}_f, \dot{p}_1, \ldots, \dot{p}_f)$。
+      概率流密度为 $\mathbf{J} = \rho \, \mathbf{v}$。概率守恒给出：
+    </p>
+
+    $$\frac{\partial \rho}{\partial t} + \nabla \cdot (\rho \, \mathbf{v}) = 0$$
+
+    <p>其中散度在 $2f$ 维相空间中取。展开散度：</p>
+
+    $$\frac{\partial \rho}{\partial t} + \sum_{i=1}^{f} \left[ \frac{\partial (\rho \dot{q}_i)}{\partial q_i} + \frac{\partial (\rho \dot{p}_i)}{\partial p_i} \right] = 0$$
+
+    <p>利用乘积法则：</p>
+
+    $$\frac{\partial \rho}{\partial t} + \sum_{i=1}^{f} \left[ \dot{q}_i \frac{\partial \rho}{\partial q_i} + \rho \frac{\partial \dot{q}_i}{\partial q_i} + \dot{p}_i \frac{\partial \rho}{\partial p_i} + \rho \frac{\partial \dot{p}_i}{\partial p_i} \right] = 0$$
+
+    <p>
+      现在利用Hamilton方程。注意
+    </p>
+
+    $$\frac{\partial \dot{q}_i}{\partial q_i} = \frac{\partial^2 H}{\partial q_i \, \partial p_i}, \qquad \frac{\partial \dot{p}_i}{\partial p_i} = -\frac{\partial^2 H}{\partial p_i \, \partial q_i}$$
+
+    <p>
+      由 $H$ 的二阶混合偏导的对称性（假设 $H$ 足够光滑），这两项严格相消：
+    </p>
+
+    $$\frac{\partial \dot{q}_i}{\partial q_i} + \frac{\partial \dot{p}_i}{\partial p_i} = 0$$
+
+    <p>
+      这意味着相空间中的"速度场"是<strong>无散的</strong>（$\nabla \cdot \mathbf{v} = 0$），
+      即Hamilton流构成不可压缩流。因此连续性方程简化为：
+    </p>
+
+    $$\frac{\partial \rho}{\partial t} + \sum_{i=1}^{f} \left( \dot{q}_i \frac{\partial \rho}{\partial q_i} + \dot{p}_i \frac{\partial \rho}{\partial p_i} \right) = 0$$
+
+    <p>左边恰好是 $\rho$ 沿相轨迹的全导数：</p>
+
+    $$\frac{d\rho}{dt} = \frac{\partial \rho}{\partial t} + \sum_{i=1}^{f} \left( \dot{q}_i \frac{\partial \rho}{\partial q_i} + \dot{p}_i \frac{\partial \rho}{\partial p_i} \right) = 0$$
+
+    <p><strong>方法二：Poisson括号表述。</strong></p>
+
+    <p>定义Poisson括号</p>
+
+    $$\{A, B\} = \sum_{i=1}^{f} \left( \frac{\partial A}{\partial q_i} \frac{\partial B}{\partial p_i} - \frac{\partial A}{\partial p_i} \frac{\partial B}{\partial q_i} \right)$$
+
+    <p>
+      则 $\sum_i (\dot{q}_i \partial\rho/\partial q_i + \dot{p}_i \partial\rho/\partial p_i)$
+      利用Hamilton方程可改写为 $\{\rho, H\}$。因此 Liouville 定理等价于：
+    </p>
+
+    $$\boxed{\frac{\partial \rho}{\partial t} + \{\rho, H\} = 0}$$
+
+    <p>
+      这是经典力学中 $\rho$ 的运动方程，与量子力学中密度矩阵的 von Neumann 方程
+      $i\hbar \, \partial\hat{\rho}/\partial t = [\hat{H}, \hat{\rho}]$ 形成精确的对应
+      （Poisson括号 $\leftrightarrow$ $(i\hbar)^{-1}$[对易子]）。
+    </p>
+  </Derivation>
+
+  <h3>几何含义：相空间流体不可压缩</h3>
+
+  <p>
+    Liouville定理有一个清晰的几何解读。考虑 $\Gamma$ 空间中一团由代表点构成的"流体"区域。
+    随着时间演化，这团流体的形状可以任意变形——拉伸、旋转、扭曲——
+    但其<strong>体积严格不变</strong>：
+  </p>
+
+  $$\frac{d}{dt} \int_{\mathcal{R}(t)} d\Gamma = 0$$
+
+  <p>
+    其中 $\mathcal{R}(t)$ 是随Hamilton流运动的区域。
+    这一性质等价于相空间速度场的散度为零，正如上面推导中所示。
+  </p>
+
+  <p>
+    直观上，这意味着相空间中的"概率流体"像理想的不可压缩液体一样流动。
+    若在某个方向上被压缩，必然在另一方向上膨胀，总体积保持恒定。
+  </p>
+
+  <InsightBox title="辛结构与Liouville定理">
+    <p>
+      从更深层的数学视角看，Liouville定理是Hamilton力学的<strong>辛结构</strong>的直接推论。
+      相空间天然配备辛形式 $\omega = \sum_i dp_i \wedge dq_i$，Hamilton流保持 $\omega$ 不变
+      （即为辛变换/正则变换）。由 $\omega$ 构造的体积形式 $\omega^f / f!$ 即 Liouville 体积元。
+      保辛自动蕴含保体积。这一理解揭示了 Liouville 定理不是"碰巧成立"，
+      而是Hamilton力学几何结构的必然后果。
+    </p>
+  </InsightBox>
+
+  <h3>平衡态条件</h3>
+
+  <p>
+    热力学平衡态要求宏观量不随时间变化，因此系综分布 $\rho$ 不应显含时间：
+  </p>
+
+  $$\frac{\partial \rho}{\partial t} = 0$$
+
+  <p>由Liouville方程，这立即要求</p>
+
+  $$\{\rho, H\} = 0$$
+
+  <p>
+    这意味着 $\rho$ 必须是<strong>运动积分</strong>（constant of motion）的函数。
+    对于一般的、具有足够复杂相互作用的系统，唯一的单值、连续的运动积分是能量 $H$ 本身
+    （以及可能的其他守恒量如总动量、角动量等，视系统的对称性而定）。
+    因此，<strong>平衡态分布 $\rho$ 只能是 $H$（及其他守恒量）的函数</strong>：
+  </p>
+
+  $$\rho_{\text{eq}} = \rho(H(q, p))$$
+
+  <p>
+    这一结论是微正则系综、正则系综和巨正则系综形式的共同出发点。
+  </p>
+
+  <h3>遍历假说</h3>
+
+  <p>
+    系综理论的物理合理性依赖于一个基本假说——<strong>遍历假说</strong>（ergodic hypothesis）：
+  </p>
+
+  <p>
+    <em>对于一个孤立系统，其相轨迹在足够长的时间内将"遍历"能量曲面
+    $H(q,p) = E$ 上的所有区域。因此，力学量 $A$ 的时间平均等于其系综平均：</em>
+  </p>
+
+  $$\overline{A} \equiv \lim_{T \to \infty} \frac{1}{T} \int_0^T A(q(t), p(t)) \, dt = \langle A \rangle \equiv \int A \, \rho \, d\Gamma$$
+
+  <p>
+    严格的遍历假说（相轨迹经过能量面上的每一点）对连续系统不可能成立
+    （一维曲线无法填满高维曲面）。数学上有更弱但足够的<strong>准遍历假说</strong>
+    （quasi-ergodic hypothesis 或 metric transitivity）：
+    能量面不能分为两个不变的、测度均为正的子集。
+    对于硬球气体，Sinai（1963）在二维情形证明了遍历性。
+    对于更一般的系统，遍历性仍是一个活跃的数学物理研究方向。
+  </p>
+
+  <ThinkingBox title="Liouville定理与熵增的调和">
+    <p>
+      <strong>问题：</strong>Liouville定理说相空间体积守恒（因而精细粒度的Gibbs熵
+      $S_{\text{fine}} = -k_B \int \rho \ln \rho \, d\Gamma$ 不随时间改变），
+      而热力学第二定律说孤立系统的熵不减。这两个陈述如何兼容？
+    </p>
+    <p>
+      <strong>解析：</strong>关键在于"粗粒化"。Liouville定理保证的是<strong>精细粒度</strong>
+      （fine-grained）体积不变——相空间中代表点的集合虽然被拉伸成极复杂的纤丝状结构，
+      其真实体积不变。但经过粗粒化（即对相空间小格子取平均），
+      这些纤丝"看起来"填满了更大的区域。<strong>粗粒化Gibbs熵</strong>
+      $S_{\text{coarse}} = -k_B \int \bar{\rho} \ln \bar{\rho} \, d\Gamma$
+      （$\bar{\rho}$ 为粗粒化分布）是增加的。
+    </p>
+    <p>
+      类比：想象在一杯水中滴入一滴墨水。墨水的总体积不变（类似Liouville），
+      但它扩散成越来越细的丝缕，最终在粗粒化的视角下均匀充满整杯水——
+      这就是"熵增"。精细尺度上信息仍在，但宏观上不可回收。
+    </p>
+  </ThinkingBox>
+
+  <ThinkingBox title="遍历假说的有效性">
+    <p>
+      <strong>问题：</strong>对于大多数实际系统，严格的遍历性并未得到证明。
+      那么统计力学为何仍然有效？
+    </p>
+    <p>
+      <strong>解析：</strong>有几条互补的论证：
+    </p>
+    <p>
+      (1) <strong>热力学极限的压倒性</strong>——在 $N \to \infty$ 极限下，
+      能量面上的绝大部分（按测度算，占比 $1 - O(e^{-N})$）都给出相同的宏观量值。
+      因此，即使相轨迹只覆盖了能量面的一小部分，
+      只要这部分不是测度为零的"病态"子集，就会给出正确的宏观预言。
+      这是 Khinchin（1949）的关键洞察。
+    </p>
+    <p>
+      (2) <strong>宏观可观测量的特殊性</strong>——我们关心的不是任意力学量，
+      而是少数宏观量（能量、压强等）。这些量通常是大量微观量的求和，
+      天然具有自平均（self-averaging）性质。
+    </p>
+    <p>
+      (3) <strong>实验验证</strong>——最终，统计力学的正确性由实验判决。
+      它在气体、液体、固体、等离子体、辐射场等千差万别的系统中一致地给出正确预言，
+      这本身就是对其基本假设最有力的佐证。
+    </p>
+  </ThinkingBox>
+
+
+  <!-- ============================================================ -->
+  <!-- 1.3 等概率假设与Boltzmann熵 -->
+  <!-- ============================================================ -->
+  <h2 id="equal-probability">1.3 等概率假设与Boltzmann熵</h2>
+
+  <h3>等概率假设的精确陈述</h3>
+
+  <p>
+    统计力学的基本公设（fundamental postulate）如下：
+  </p>
+
+  <p>
+    <strong>等概率假设（Equal a priori probability postulate）：</strong><em>
+    对于一个处于平衡态的孤立系统，其所有可及微观态（accessible microstates）出现的概率相等。</em>
+  </p>
+
+  <p>
+    数学表述：设孤立系统的能量约束为 $E \leq H(q,p) \leq E + \delta E$
+    （$\delta E$ 为宏观上极小但微观上包含大量态的能量壳厚度），
+    体积为 $V$，粒子数为 $N$。则平衡态的概率分布为
+  </p>
+
+  $$\rho_{\text{mc}}(q, p) = \begin{cases} \dfrac{1}{\omega(E, V, N)} & \text{if } E \leq H(q,p) \leq E + \delta E \\[8pt] 0 & \text{otherwise} \end{cases}$$
+
+  <p>其中</p>
+
+  $$\omega(E, V, N) = \int_{E \leq H \leq E + \delta E} d\Gamma$$
+
+  <p>
+    是能量壳的相空间体积。这就是<strong>微正则系综</strong>（microcanonical ensemble）。
+  </p>
+
+  <p>
+    等概率假设的合理性来自多个方向：(i) Liouville定理表明均匀分布是稳态解
+    （因为常数满足 $\{\rho, H\} = 0$）；(ii) 遍历假说暗示时间平均等价于此均匀分布下的系综平均；
+    (iii) 它是最大熵原理在仅有能量约束时的唯一结果（见下文Jaynes论证）。
+  </p>
+
+  <h3>Boltzmann熵</h3>
+
+  <p>
+    有了微观态计数，Boltzmann（以及Planck的最终表述）给出了熵的微观定义：
+  </p>
+
+  $$\boxed{S = k_B \ln \Omega(E, V, N)}$$
+
+  <p>
+    其中 $k_B = 1.380649 \times 10^{-23} \, \text{J/K}$ 是Boltzmann常数，
+    $\Omega$ 是可及微观态数目。对于经典系统，
+  </p>
+
+  $$\Omega(E, V, N) = \frac{1}{N! \, h^f} \, \omega(E, V, N)$$
+
+  <p>
+    因子 $h^f$ 将相空间体积转化为无量纲的态数目，$N!$ 是全同粒子的正确Boltzmann计数。
+  </p>
+
+  <p>
+    这个公式虽然简洁，却蕴含着极其深刻的物理。它将一个宏观热力学量（熵）
+    完全归结为一个微观计数问题，从而在微观力学与宏观热力学之间建立了精确的桥梁。
+  </p>
+
+  <h3>为什么取对数</h3>
+
+  <p>
+    $S = k_B \ln \Omega$ 中对数函数的出现绝非偶然，而是由<strong>广延性要求</strong>唯一确定的。
+    考虑两个独立子系统 $A$ 和 $B$，其微观态数分别为 $\Omega_A$ 和 $\Omega_B$。
+    由于两系统独立，复合系统的微观态数为
+  </p>
+
+  $$\Omega_{A+B} = \Omega_A \times \Omega_B$$
+
+  <p>
+    但热力学要求熵是<strong>广延量</strong>（extensive quantity），即
+  </p>
+
+  $$S_{A+B} = S_A + S_B$$
+
+  <p>
+    将乘法转化为加法的唯一连续单调函数是对数。因此
+  </p>
+
+  $$S = k_B \ln \Omega$$
+
+  <p>
+    是满足 $S(\Omega_A \cdot \Omega_B) = S(\Omega_A) + S(\Omega_B)$ 的唯一形式
+    （在连续性和单调性条件下）。常数 $k_B$ 只是选定了温度的单位。
+  </p>
+
+  <Derivation title="从Boltzmann熵推导热力学基本关系">
+    <p>
+      Boltzmann熵公式的威力在于它可以直接导出热力学的基本关系。
+      设 $\Sigma(E, V, N)$ 为相空间中 $H(q,p) \leq E$ 的体积：
+    </p>
+
+    $$\Sigma(E, V, N) = \int_{H(q,p) \leq E} \frac{d\Gamma}{N! \, h^f}$$
+
+    <p>
+      则微观态密度（state density）为 $g(E) = \partial \Sigma / \partial E$，
+      而 $\Omega = g(E) \, \delta E$。对于大系统，$\ln \Sigma$、$\ln(g \, \delta E)$、
+      $\ln g$ 仅差 $O(\ln N)$ 项，远小于 $O(N)$ 的熵本身，因此三种定义在热力学极限下等价。
+    </p>
+    <p>
+      热力学基本关系为
+    </p>
+
+    $$dS = \frac{1}{T} dE + \frac{P}{T} dV - \frac{\mu}{T} dN$$
+
+    <p>由此可识别：</p>
+
+    $$\frac{1}{T} = \left(\frac{\partial S}{\partial E}\right)_{V,N}, \qquad
+      \frac{P}{T} = \left(\frac{\partial S}{\partial V}\right)_{E,N}, \qquad
+      \frac{\mu}{T} = -\left(\frac{\partial S}{\partial N}\right)_{E,V}$$
+
+    <p>
+      第一个等式定义了温度，第二个给出状态方程，第三个定义化学势。
+      因此，只要能计算 $\Omega(E, V, N)$，所有热力学信息原则上都可提取。
+    </p>
+  </Derivation>
+
+  <h3>Gibbs熵</h3>
+
+  <p>
+    Boltzmann熵适用于微正则系综（等概率分布），但更一般的概率分布需要更一般的熵定义。
+    Gibbs给出的推广形式为：
+  </p>
+
+  <p><strong>离散形式：</strong></p>
+
+  $$S_G = -k_B \sum_i p_i \ln p_i$$
+
+  <p>其中 $p_i$ 是第 $i$ 个微观态的概率，满足 $\sum_i p_i = 1$。</p>
+
+  <p><strong>连续形式：</strong></p>
+
+  $$S_G = -k_B \int \rho(q, p) \ln \rho(q, p) \, d\Gamma$$
+
+  <p>
+    当所有可及态等概率时，$p_i = 1/\Omega$，Gibbs熵退化为Boltzmann熵：
+  </p>
+
+  $$S_G = -k_B \sum_{i=1}^{\Omega} \frac{1}{\Omega} \ln \frac{1}{\Omega} = -k_B \cdot \Omega \cdot \frac{1}{\Omega} \cdot (-\ln \Omega) = k_B \ln \Omega = S_B$$
+
+  <p>
+    因此，Boltzmann熵是Gibbs熵在等概率分布（微正则系综）下的特例。
+  </p>
+
+  <InsightBox title="Gibbs熵的非负性与极值性质">
+    <p>
+      Gibbs熵具有以下重要性质：(1) $S_G \geq 0$，等号当且仅当系统处于纯态（$p_i = 1$ 对某个 $i$）；
+      (2) 在所有满足 $\sum p_i = 1$ 的分布中，等概率分布 $p_i = 1/\Omega$ 使 $S_G$ 取最大值 $k_B \ln \Omega$。
+      后一性质可以用 Jensen 不等式或 Lagrange 乘子法严格证明：
+      由 $-x \ln x$ 的严格凹性，$S_G = -k_B \sum p_i \ln p_i \leq k_B \ln \Omega$，
+      等号成立当且仅当所有 $p_i$ 相等。
+      这意味着<strong>等概率分布是"最无序"的分布</strong>——它使熵最大化。
+    </p>
+  </InsightBox>
+
+  <h3>Shannon信息熵与物理熵的联系</h3>
+
+  <p>
+    1948年，Shannon在信息论中独立引入了形式完全相同的量：
+  </p>
+
+  $$H_{\text{Shannon}} = -\sum_i p_i \log_2 p_i \quad (\text{单位: bit})$$
+
+  <p>
+    Shannon证明，$H$ 是满足以下三个公理的唯一函数（至多差一个正的乘法常数）：
+    (i) $H$ 是 $\{p_i\}$ 的连续函数；(ii) 当所有 $p_i$ 相等时，$H$ 是 $\Omega$ 的单调递增函数；
+    (iii) 分组性质（grouping axiom）——复合实验的信息量分解为各步骤信息量之和。
+  </p>
+
+  <p>
+    物理熵与信息熵的关系为
+  </p>
+
+  $$S = k_B \ln 2 \cdot H_{\text{Shannon}}$$
+
+  <p>
+    这一形式对应不是巧合。它揭示了<strong>熵的本质是对缺失信息的度量</strong>：
+    $S$ 量化的是我们在知道宏观态之后对微观态仍然具有的无知程度。
+    这一观点由E.T. Jaynes在1957年系统阐发，引出了最大熵原理。
+  </p>
+
+  <h3>Jaynes最大熵原理初步</h3>
+
+  <p>
+    Jaynes的核心主张是：<em>统计力学中的概率分布不应被视为系统"真正"所处的频率分布，
+    而应被视为在给定信息下最诚实的推断。</em>
+    选择分布的准则是<strong>最大熵原理</strong>（Maximum Entropy Principle, MaxEnt）：
+  </p>
+
+  <p>
+    <strong>在满足已知约束的所有概率分布中，选择使Gibbs熵（Shannon信息熵）最大的那个。</strong>
+  </p>
+
+  <p>
+    这是因为最大熵分布是对未知信息做出最少假设的分布——它不引入任何超出约束所蕴含的结构。
+  </p>
+
+  <Derivation title="从最大熵原理导出微正则和正则分布">
+    <p><strong>情形一：微正则系综。</strong></p>
+    <p>
+      已知信息：系统能量在 $[E, E + \delta E]$ 内，有 $\Omega$ 个可及态。
+      约束仅为归一化 $\sum_{i=1}^{\Omega} p_i = 1$。
+    </p>
+    <p>
+      最大化 $S_G = -k_B \sum_i p_i \ln p_i$，使用 Lagrange 乘子：
+    </p>
+
+    $$\frac{\partial}{\partial p_j} \left[ -\sum_i p_i \ln p_i - \alpha \left(\sum_i p_i - 1\right) \right] = 0$$
+
+    $$-\ln p_j - 1 - \alpha = 0 \implies p_j = e^{-1 - \alpha} = \text{const}$$
+
+    <p>
+      由归一化 $p_j = 1/\Omega$。这正是等概率分布，即微正则系综。
+      等概率假设因此不是额外公设，而是最大熵原理在仅有能量约束时的必然结论。
+    </p>
+
+    <p><strong>情形二：正则系综。</strong></p>
+    <p>
+      已知信息：平均能量 $\langle E \rangle = \bar{E}$。
+      约束为归一化 $\sum_i p_i = 1$ 和 $\sum_i p_i E_i = \bar{E}$。
+    </p>
+    <p>
+      引入两个 Lagrange 乘子 $\alpha$ 和 $\beta$：
+    </p>
+
+    $$\frac{\partial}{\partial p_j}\left[-\sum_i p_i\ln p_i - \alpha\left(\sum_i p_i - 1\right) - \beta\left(\sum_i p_i E_i - \bar{E}\right)\right] = 0$$
+
+    $$-\ln p_j - 1 - \alpha - \beta E_j = 0 \implies p_j = e^{-1-\alpha} \, e^{-\beta E_j}$$
+
+    <p>归一化给出</p>
+
+    $$p_j = \frac{e^{-\beta E_j}}{\sum_i e^{-\beta E_i}} = \frac{e^{-\beta E_j}}{Z(\beta)}$$
+
+    <p>
+      其中 $Z(\beta) = \sum_i e^{-\beta E_i}$ 是配分函数。
+      可以证明 $\beta = 1/(k_B T)$。这就是<strong>正则分布</strong>（Boltzmann分布/Gibbs分布），
+      它的出现完全由最大熵原理在平均能量约束下唯一确定。
+    </p>
+  </Derivation>
+
+  <ThinkingBox title="$\Omega$ 的精确定义与量子力学的角色">
+    <p>
+      <strong>问题：</strong>在 $S = k_B \ln \Omega$ 中，$\Omega$ 对连续相空间如何精确定义？
+      经典力学中相空间是连续的，"微观态数"似乎没有意义。量子力学在此扮演什么角色？
+    </p>
+    <p>
+      <strong>解析：</strong>在纯经典框架中，$\Omega$ 严格来说只能定义为相空间体积
+      $\omega(E)$（量纲为 $[p \cdot q]^f$），这使得 $\ln \Omega$ 依赖于单位选取——
+      熵只定义到一个加法常数。这是经典统计力学的内禀缺陷。
+    </p>
+    <p>
+      量子力学从根本上解决了这个问题。在量子力学中，微观态是离散的能级
+      （或更一般地，Hilbert空间中的正交态），$\Omega$ 是一个明确的正整数。
+      在经典极限下，每个量子态占据相空间体积 $h^f$（$h$ 是 Planck 常数），因此
+    </p>
+    <p>$$\Omega = \frac{\omega(E)}{N! \, h^f}$$</p>
+    <p>
+      成为一个无量纲的确定数。$h^f$ 的出现不是"方便的约定"，
+      而是量子力学的物理要求。全同粒子的 $N!$ 同样源于量子力学的全同性原理。
+    </p>
+    <p>
+      因此，虽然统计力学的逻辑框架（系综、Liouville定理、最大熵原理）
+      可以在经典层面建立，但要使熵成为一个绝对的、无歧义的物理量，
+      量子力学的输入是不可或缺的。这是 Nernst 第三定律（$T \to 0$ 时 $S \to 0$）
+      得以成立的微观基础。
+    </p>
+  </ThinkingBox>
+
+  <InsightBox title="从信息到物理：Landauer原理">
+    <p>
+      Shannon-Jaynes的信息论视角不仅仅是哲学上的重新诠释，它有可实验检验的物理后果。
+      Landauer（1961）指出，擦除一比特信息必然向环境释放至少 $k_B T \ln 2$ 的热量。
+      这是因为擦除操作将两个微观态合并为一个，使系统熵减少 $k_B \ln 2$，
+      由第二定律，环境的熵必须至少增加相同的量。Landauer原理在2012年被实验验证
+      （B&eacute;rut et al., <em>Nature</em>），直接证实了信息与物理熵之间的定量联系。
+    </p>
+  </InsightBox>
+
+  <h3>本章小结</h3>
+
+  <p>
+    本章建立了统计力学的逻辑骨架。从Hamilton力学出发，我们论证了概率描述的必要性；
+    通过Liouville定理确定了概率分布的演化规律，并由此推断平衡态分布必须是运动积分的函数；
+    等概率假设（或等价地，最大熵原理）为孤立系统选定了微正则分布；
+    Boltzmann公式 $S = k_B \ln \Omega$ 将熵还原为微观态计数。
+    这一逻辑链条可以图示为：
+  </p>
+
+  $$\text{Hamilton力学} \xrightarrow{\text{Liouville}} \text{相空间概率流守恒} \xrightarrow{\text{平衡态}} \{\rho, H\} = 0 \xrightarrow{\text{等概率/MaxEnt}} \rho = \frac{1}{\Omega} \xrightarrow{\text{Boltzmann}} S = k_B \ln \Omega$$
+
+  <p>
+    后续章节将在此基础上发展微正则系综的具体计算方法，并引入正则系综和巨正则系综
+    以处理非孤立系统。
+  </p>
+
+  <ReferenceBox title="本章参考文献">
+    <ul>
+      <li><strong>Pathria &amp; Beale</strong>, <em>Statistical Mechanics</em>, 4th ed. — Ch.1 (统计力学与热力学的联系), Ch.2 (系综理论的基本元素). 对微正则系综和Liouville定理有系统阐述。</li>
+      <li><strong>Huang, K.</strong>, <em>Statistical Mechanics</em>, 2nd ed. — Ch.4 (系综的一般讨论), Ch.6 (经典统计力学). 遍历假说的讨论尤为清晰。</li>
+      <li><strong>Landau &amp; Lifshitz</strong>, <em>Statistical Physics, Part 1</em> — &sect;1 (统计分布), &sect;2 (统计独立性), &sect;3 (Liouville定理), &sect;4 (统计矩阵的意义), &sect;5 (熵), &sect;6 (熵的统计分布定律), &sect;7 (熵增定律). 以极简公理化风格建立统计力学基础。</li>
+      <li><strong>汪志诚</strong>,《热力学&middot;统计物理》, 第6版 — &sect;7.1 (等概率原理), &sect;7.2 (微观态的经典与量子表述), &sect;7.3 (Liouville定理), &sect;7.4 (微正则分布). 适合作为中文参考对照。</li>
+      <li><strong>Kardar, M.</strong>, <em>Statistical Physics of Particles</em> — Ch.2 (概率论基础), Ch.3 (微正则系综). 从概率论视角切入，数学处理严谨而现代。</li>
+      <li><strong>Reif, F.</strong>, <em>Fundamentals of Statistical and Thermal Physics</em> — Ch.2 (统计描述的基本概念), Ch.3 (统计力学). 物理图景清晰，适合初学者建立直觉。</li>
+      <li><strong>Jaynes, E.T.</strong>, "Information theory and statistical mechanics", <em>Phys. Rev.</em> <strong>106</strong>, 620 (1957). 最大熵原理的奠基论文。</li>
+      <li><strong>Khinchin, A.I.</strong>, <em>Mathematical Foundations of Statistical Mechanics</em> (1949). 对遍历问题和大数定律在统计力学中的角色有严格的数学讨论。</li>
+    </ul>
+  </ReferenceBox>
+
+</ChapterLayout>
