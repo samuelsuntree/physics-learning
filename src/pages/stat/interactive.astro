@@ -1,0 +1,880 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const content = String.raw`
+  <main class="max-w-5xl mx-auto px-6 py-12">
+    <h1 class="text-3xl font-bold text-white mb-2">统计物理交互实验室</h1>
+    <p class="text-[#94a3b8] mb-8">通过交互式模拟深入理解统计力学核心概念</p>
+
+    <!-- ============================================================ -->
+    <!-- Simulation 1: 2D Ising Model Monte Carlo -->
+    <!-- ============================================================ -->
+    <div class="sim-container bg-[#1e293b] rounded-2xl p-6 mb-10 border border-[#334155]">
+      <h2 class="text-2xl font-bold text-white mb-1">1. 2D Ising模型 Monte Carlo模拟</h2>
+      <p class="text-[#94a3b8] mb-4 text-sm leading-relaxed">
+        Ising模型是统计力学中研究相变的经典模型。$N \times N$ 格点上的自旋 $s_i = \pm 1$
+        通过最近邻相互作用耦合，哈密顿量为 $H = -J\sum_{\langle i,j\rangle} s_i s_j$。
+        使用 Metropolis 算法进行 Monte Carlo 模拟，观察在临界温度 $T_c/J \approx 2.269$ 附近的铁磁-顺磁相变。
+      </p>
+
+      <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Canvas -->
+        <div class="flex-shrink-0">
+          <canvas id="ising-canvas" width="400" height="400" class="rounded-lg border border-[#334155] bg-[#0f172a]"></canvas>
+        </div>
+
+        <!-- Controls & Readouts -->
+        <div class="flex-1 space-y-4">
+          <!-- Temperature slider -->
+          <div>
+            <label class="block text-[#e2e8f0] text-sm font-medium mb-1">
+              温度 $T/J$: <span id="ising-temp-val" class="text-[#3b82f6] font-mono">2.27</span>
+              <span class="text-[#64748b] text-xs ml-2">($T_c \approx 2.269$)</span>
+            </label>
+            <input id="ising-temp" type="range" min="0.5" max="5.0" step="0.01" value="2.27"
+              class="w-full h-2 bg-[#0f172a] rounded-lg appearance-none cursor-pointer accent-[#3b82f6]" />
+          </div>
+
+          <!-- Grid size -->
+          <div>
+            <label class="block text-[#e2e8f0] text-sm font-medium mb-1">
+              格点大小 $N$: <span id="ising-size-val" class="text-[#3b82f6] font-mono">50</span>
+            </label>
+            <input id="ising-size" type="range" min="10" max="100" step="10" value="50"
+              class="w-full h-2 bg-[#0f172a] rounded-lg appearance-none cursor-pointer accent-[#3b82f6]" />
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex gap-3">
+            <button id="ising-start" class="px-4 py-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-lg text-sm font-medium transition-colors">开始</button>
+            <button id="ising-stop" class="px-4 py-2 bg-[#64748b] hover:bg-[#475569] text-white rounded-lg text-sm font-medium transition-colors">暂停</button>
+            <button id="ising-reset" class="px-4 py-2 bg-[#ef4444] hover:bg-[#dc2626] text-white rounded-lg text-sm font-medium transition-colors">重置</button>
+          </div>
+
+          <!-- Readouts -->
+          <div class="grid grid-cols-2 gap-3 mt-2">
+            <div class="bg-[#0f172a] rounded-lg p-3 border border-[#334155]">
+              <div class="text-[#94a3b8] text-xs mb-1">磁化强度 $|M|$</div>
+              <div id="ising-mag" class="text-[#e2e8f0] font-mono text-lg">0.000</div>
+            </div>
+            <div class="bg-[#0f172a] rounded-lg p-3 border border-[#334155]">
+              <div class="text-[#94a3b8] text-xs mb-1">能量 $E/N^2$</div>
+              <div id="ising-energy" class="text-[#e2e8f0] font-mono text-lg">0.000</div>
+            </div>
+            <div class="bg-[#0f172a] rounded-lg p-3 border border-[#334155]">
+              <div class="text-[#94a3b8] text-xs mb-1">比热 $C_v$</div>
+              <div id="ising-cv" class="text-[#e2e8f0] font-mono text-lg">0.000</div>
+            </div>
+            <div class="bg-[#0f172a] rounded-lg p-3 border border-[#334155]">
+              <div class="text-[#94a3b8] text-xs mb-1">Monte Carlo 步数</div>
+              <div id="ising-steps" class="text-[#e2e8f0] font-mono text-lg">0</div>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div class="flex items-center gap-4 text-xs text-[#94a3b8]">
+            <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-sm bg-[#3b82f6]"></span> 自旋 $+1$</span>
+            <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-sm bg-[#ef4444]"></span> 自旋 $-1$</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- Simulation 2: Boltzmann Distribution & Energy Level Occupation -->
+    <!-- ============================================================ -->
+    <div class="sim-container bg-[#1e293b] rounded-2xl p-6 mb-10 border border-[#334155]">
+      <h2 class="text-2xl font-bold text-white mb-1">2. Boltzmann分布与能级占据</h2>
+      <p class="text-[#94a3b8] mb-4 text-sm leading-relaxed">
+        量子谐振子能级 $\varepsilon_n = (n + \tfrac{1}{2})\hbar\omega$ 上的粒子按
+        Boltzmann分布 $P(n) = e^{-\beta \varepsilon_n}/Z$ 占据。调节温度观察粒子在各能级上的分布变化，
+        以及配分函数 $Z$ 和平均能量 $\langle E \rangle$ 的行为。
+      </p>
+
+      <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Canvas -->
+        <div class="flex-shrink-0">
+          <canvas id="boltzmann-canvas" width="600" height="400" class="rounded-lg border border-[#334155] bg-[#0f172a]"></canvas>
+        </div>
+
+        <!-- Controls & Readouts -->
+        <div class="flex-1 space-y-4">
+          <!-- Temperature slider -->
+          <div>
+            <label class="block text-[#e2e8f0] text-sm font-medium mb-1">
+              温度 $k_BT/\hbar\omega$: <span id="boltz-temp-val" class="text-[#3b82f6] font-mono">1.00</span>
+            </label>
+            <input id="boltz-temp" type="range" min="0.1" max="5.0" step="0.01" value="1.0"
+              class="w-full h-2 bg-[#0f172a] rounded-lg appearance-none cursor-pointer accent-[#3b82f6]" />
+          </div>
+
+          <!-- Number of levels -->
+          <div>
+            <label class="block text-[#e2e8f0] text-sm font-medium mb-1">
+              能级数: <span id="boltz-levels-val" class="text-[#3b82f6] font-mono">15</span>
+            </label>
+            <input id="boltz-levels" type="range" min="5" max="25" step="1" value="15"
+              class="w-full h-2 bg-[#0f172a] rounded-lg appearance-none cursor-pointer accent-[#3b82f6]" />
+          </div>
+
+          <!-- Number of particles -->
+          <div>
+            <label class="block text-[#e2e8f0] text-sm font-medium mb-1">
+              粒子数 $N$: <span id="boltz-particles-val" class="text-[#3b82f6] font-mono">200</span>
+            </label>
+            <input id="boltz-particles" type="range" min="50" max="500" step="10" value="200"
+              class="w-full h-2 bg-[#0f172a] rounded-lg appearance-none cursor-pointer accent-[#3b82f6]" />
+          </div>
+
+          <!-- Readouts -->
+          <div class="grid grid-cols-2 gap-3 mt-2">
+            <div class="bg-[#0f172a] rounded-lg p-3 border border-[#334155]">
+              <div class="text-[#94a3b8] text-xs mb-1">配分函数 $Z$</div>
+              <div id="boltz-Z" class="text-[#e2e8f0] font-mono text-lg">0.000</div>
+            </div>
+            <div class="bg-[#0f172a] rounded-lg p-3 border border-[#334155]">
+              <div class="text-[#94a3b8] text-xs mb-1">平均能量 $\langle E \rangle / \hbar\omega$</div>
+              <div id="boltz-avgE" class="text-[#e2e8f0] font-mono text-lg">0.000</div>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div class="flex items-center gap-4 text-xs text-[#94a3b8] mt-2">
+            <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-sm bg-[#3b82f6]"></span> 粒子占据 (模拟)</span>
+            <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-sm bg-[#f59e0b]"></span> Boltzmann理论值</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- Simulation 3: Bose-Einstein vs Fermi-Dirac Distribution -->
+    <!-- ============================================================ -->
+    <div class="sim-container bg-[#1e293b] rounded-2xl p-6 mb-10 border border-[#334155]">
+      <h2 class="text-2xl font-bold text-white mb-1">3. Bose-Einstein vs Fermi-Dirac分布</h2>
+      <p class="text-[#94a3b8] mb-4 text-sm leading-relaxed">
+        三种量子统计分布的比较：Fermi-Dirac分布 $\langle n \rangle = 1/(e^{\beta(\varepsilon-\mu)}+1)$，
+        Bose-Einstein分布 $\langle n \rangle = 1/(e^{\beta(\varepsilon-\mu)}-1)$，
+        以及经典极限 Maxwell-Boltzmann分布 $\langle n \rangle = e^{-\beta(\varepsilon-\mu)}$。
+        观察温度和化学势对分布函数的影响。
+      </p>
+
+      <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Canvas -->
+        <div class="flex-shrink-0">
+          <canvas id="quantum-canvas" width="600" height="420" class="rounded-lg border border-[#334155] bg-[#0f172a]"></canvas>
+        </div>
+
+        <!-- Controls & Readouts -->
+        <div class="flex-1 space-y-4">
+          <!-- Temperature slider -->
+          <div>
+            <label class="block text-[#e2e8f0] text-sm font-medium mb-1">
+              温度 $k_BT/\varepsilon_F$: <span id="qd-temp-val" class="text-[#3b82f6] font-mono">0.20</span>
+            </label>
+            <input id="qd-temp" type="range" min="0.01" max="2.0" step="0.01" value="0.20"
+              class="w-full h-2 bg-[#0f172a] rounded-lg appearance-none cursor-pointer accent-[#3b82f6]" />
+          </div>
+
+          <!-- Chemical potential slider -->
+          <div>
+            <label class="block text-[#e2e8f0] text-sm font-medium mb-1">
+              化学势 $\mu/\varepsilon_F$: <span id="qd-mu-val" class="text-[#3b82f6] font-mono">1.00</span>
+            </label>
+            <input id="qd-mu" type="range" min="-1.0" max="2.0" step="0.01" value="1.00"
+              class="w-full h-2 bg-[#0f172a] rounded-lg appearance-none cursor-pointer accent-[#3b82f6]" />
+          </div>
+
+          <!-- Checkboxes for showing/hiding distributions -->
+          <div class="space-y-2">
+            <label class="flex items-center gap-2 text-sm text-[#e2e8f0] cursor-pointer">
+              <input id="qd-show-fermi" type="checkbox" checked class="accent-[#3b82f6]" />
+              <span class="inline-block w-3 h-1 bg-[#3b82f6] rounded"></span> Fermi-Dirac
+            </label>
+            <label class="flex items-center gap-2 text-sm text-[#e2e8f0] cursor-pointer">
+              <input id="qd-show-bose" type="checkbox" checked class="accent-[#22c55e]" />
+              <span class="inline-block w-3 h-1 bg-[#22c55e] rounded"></span> Bose-Einstein
+            </label>
+            <label class="flex items-center gap-2 text-sm text-[#e2e8f0] cursor-pointer">
+              <input id="qd-show-mb" type="checkbox" checked class="accent-[#f59e0b]" />
+              <span class="inline-block w-3 h-1 bg-[#f59e0b] rounded"></span> Maxwell-Boltzmann (经典极限)
+            </label>
+          </div>
+
+          <!-- Info box -->
+          <div class="bg-[#0f172a] rounded-lg p-3 border border-[#334155] text-xs text-[#94a3b8] leading-relaxed space-y-1">
+            <p><strong class="text-[#e2e8f0]">Fermi-Dirac:</strong> 费米子（电子、质子等），服从泡利不相容原理，$T \to 0$ 时为阶跃函数</p>
+            <p><strong class="text-[#e2e8f0]">Bose-Einstein:</strong> 玻色子（光子、声子等），低温下出现 Bose-Einstein 凝聚 ($\mu \to 0^-$)</p>
+            <p><strong class="text-[#e2e8f0]">Maxwell-Boltzmann:</strong> 高温/低密度经典极限，$e^{\beta(\varepsilon-\mu)} \gg 1$</p>
+          </div>
+
+          <!-- Note about Bose constraint -->
+          <div id="qd-bose-warning" class="hidden bg-[#7c2d12] rounded-lg p-3 border border-[#9a3412] text-xs text-[#fed7aa] leading-relaxed">
+            ⚠ 对于Bose-Einstein分布，要求 $\mu < \varepsilon_{\min}$（此处 $\varepsilon_{\min} = 0$），否则占据数发散。当前参数下Bose分布可能无物理意义。
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+`;
+---
+
+<BaseLayout title="统计物理交互实验室">
+  <Fragment set:html={content} />
+
+  <!-- ============================================================ -->
+  <!-- Ising Model Script -->
+  <!-- ============================================================ -->
+  <script is:inline>
+  (function() {
+    const canvas = document.getElementById('ising-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let N = 50;
+    let spins = [];
+    let running = false;
+    let animId = null;
+    let temperature = 2.27;
+    let mcSteps = 0;
+
+    // For specific heat estimation via energy fluctuations
+    let energyHistory = [];
+    const energyHistoryMax = 200;
+
+    function initSpins() {
+      spins = new Array(N * N);
+      for (let i = 0; i < N * N; i++) {
+        spins[i] = Math.random() < 0.5 ? 1 : -1;
+      }
+      mcSteps = 0;
+      energyHistory = [];
+    }
+
+    function idx(x, y) {
+      return y * N + x;
+    }
+
+    function totalEnergy() {
+      let E = 0;
+      for (let y = 0; y < N; y++) {
+        for (let x = 0; x < N; x++) {
+          const s = spins[idx(x, y)];
+          // Only count right and down neighbors to avoid double counting
+          const sr = spins[idx((x + 1) % N, y)];
+          const sd = spins[idx(x, (y + 1) % N)];
+          E -= s * sr + s * sd;
+        }
+      }
+      return E;
+    }
+
+    function totalMagnetization() {
+      let M = 0;
+      for (let i = 0; i < N * N; i++) {
+        M += spins[i];
+      }
+      return M;
+    }
+
+    // Metropolis step: one full sweep = N*N single-spin flips
+    function metropolisSweep() {
+      const beta = 1.0 / temperature;
+      const nn = N * N;
+      for (let step = 0; step < nn; step++) {
+        const i = Math.floor(Math.random() * nn);
+        const x = i % N;
+        const y = Math.floor(i / N);
+        const s = spins[i];
+
+        // Sum of nearest neighbors (periodic BC)
+        const sumNeighbors =
+          spins[idx((x + 1) % N, y)] +
+          spins[idx((x - 1 + N) % N, y)] +
+          spins[idx(x, (y + 1) % N)] +
+          spins[idx(x, (y - 1 + N) % N)];
+
+        const dE = 2 * s * sumNeighbors; // energy change if we flip spin s
+
+        if (dE <= 0 || Math.random() < Math.exp(-beta * dE)) {
+          spins[i] = -s;
+        }
+      }
+      mcSteps++;
+    }
+
+    function drawSpins() {
+      const cellW = canvas.width / N;
+      const cellH = canvas.height / N;
+
+      // Use ImageData for fast rendering
+      const imageData = ctx.createImageData(canvas.width, canvas.height);
+      const data = imageData.data;
+
+      for (let y = 0; y < N; y++) {
+        for (let x = 0; x < N; x++) {
+          const s = spins[idx(x, y)];
+          // Determine the pixel region for this cell
+          const px0 = Math.floor(x * cellW);
+          const py0 = Math.floor(y * cellH);
+          const px1 = Math.floor((x + 1) * cellW);
+          const py1 = Math.floor((y + 1) * cellH);
+
+          let r, g, b;
+          if (s === 1) {
+            r = 59; g = 130; b = 246; // #3b82f6
+          } else {
+            r = 239; g = 68; b = 68;  // #ef4444
+          }
+
+          for (let py = py0; py < py1; py++) {
+            for (let px = px0; px < px1; px++) {
+              const off = (py * canvas.width + px) * 4;
+              data[off] = r;
+              data[off + 1] = g;
+              data[off + 2] = b;
+              data[off + 3] = 255;
+            }
+          }
+        }
+      }
+      ctx.putImageData(imageData, 0, 0);
+    }
+
+    function updateReadouts() {
+      const nn = N * N;
+      const E = totalEnergy();
+      const M = totalMagnetization();
+      const ePerSite = E / nn;
+      const mPerSite = Math.abs(M / nn);
+
+      document.getElementById('ising-mag').textContent = mPerSite.toFixed(3);
+      document.getElementById('ising-energy').textContent = ePerSite.toFixed(3);
+      document.getElementById('ising-steps').textContent = mcSteps.toString();
+
+      // Specific heat from energy fluctuations: C_v = (⟨E²⟩ - ⟨E⟩²) / (kT²N²)
+      energyHistory.push(ePerSite);
+      if (energyHistory.length > energyHistoryMax) {
+        energyHistory.shift();
+      }
+      if (energyHistory.length > 10) {
+        const avgE = energyHistory.reduce((a, b) => a + b, 0) / energyHistory.length;
+        const avgE2 = energyHistory.reduce((a, b) => a + b * b, 0) / energyHistory.length;
+        const cv = nn * (avgE2 - avgE * avgE) / (temperature * temperature);
+        document.getElementById('ising-cv').textContent = cv.toFixed(3);
+      }
+    }
+
+    function animate() {
+      if (!running) return;
+      // Do multiple sweeps per frame for speed
+      const sweepsPerFrame = N <= 50 ? 5 : 2;
+      for (let i = 0; i < sweepsPerFrame; i++) {
+        metropolisSweep();
+      }
+      drawSpins();
+      updateReadouts();
+      animId = requestAnimationFrame(animate);
+    }
+
+    // Controls
+    document.getElementById('ising-temp').addEventListener('input', function() {
+      temperature = parseFloat(this.value);
+      document.getElementById('ising-temp-val').textContent = temperature.toFixed(2);
+      energyHistory = []; // reset Cv estimate on T change
+    });
+
+    document.getElementById('ising-size').addEventListener('input', function() {
+      N = parseInt(this.value);
+      document.getElementById('ising-size-val').textContent = N.toString();
+      initSpins();
+      drawSpins();
+      updateReadouts();
+    });
+
+    document.getElementById('ising-start').addEventListener('click', function() {
+      if (!running) {
+        running = true;
+        animate();
+      }
+    });
+
+    document.getElementById('ising-stop').addEventListener('click', function() {
+      running = false;
+      if (animId) cancelAnimationFrame(animId);
+    });
+
+    document.getElementById('ising-reset').addEventListener('click', function() {
+      running = false;
+      if (animId) cancelAnimationFrame(animId);
+      initSpins();
+      drawSpins();
+      updateReadouts();
+    });
+
+    // Init
+    initSpins();
+    drawSpins();
+    updateReadouts();
+  })();
+  </script>
+
+  <!-- ============================================================ -->
+  <!-- Boltzmann Distribution Script -->
+  <!-- ============================================================ -->
+  <script is:inline>
+  (function() {
+    const canvas = document.getElementById('boltzmann-canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+
+    let kT = 1.0;
+    let numLevels = 15;
+    let numParticles = 200;
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      // Compute Boltzmann probabilities for energy levels e_n = n + 0.5
+      const energies = [];
+      const boltzFactors = [];
+      let Z = 0;
+      for (let n = 0; n < numLevels; n++) {
+        const en = n + 0.5;
+        energies.push(en);
+        const bf = Math.exp(-en / kT);
+        boltzFactors.push(bf);
+        Z += bf;
+      }
+
+      const probs = boltzFactors.map(bf => bf / Z);
+
+      // Distribute particles according to Boltzmann
+      const occupation = new Array(numLevels).fill(0);
+      for (let p = 0; p < numParticles; p++) {
+        let r = Math.random();
+        let cumul = 0;
+        for (let n = 0; n < numLevels; n++) {
+          cumul += probs[n];
+          if (r < cumul) {
+            occupation[n]++;
+            break;
+          }
+        }
+      }
+
+      // Average energy
+      let avgE = 0;
+      for (let n = 0; n < numLevels; n++) {
+        avgE += probs[n] * energies[n];
+      }
+
+      // Update readouts
+      document.getElementById('boltz-Z').textContent = Z.toFixed(3);
+      document.getElementById('boltz-avgE').textContent = avgE.toFixed(3);
+
+      // Drawing layout
+      const marginLeft = 70;
+      const marginRight = 30;
+      const marginTop = 30;
+      const marginBottom = 50;
+      const plotW = W - marginLeft - marginRight;
+      const plotH = H - marginTop - marginBottom;
+      const levelSpacing = plotH / numLevels;
+
+      // Max occupation for scaling bars
+      const maxOcc = Math.max(...occupation, 1);
+      const maxTheory = probs[0] * numParticles;
+      const maxVal = Math.max(maxOcc, maxTheory, 1);
+
+      // Background grid
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 0.5;
+      for (let n = 0; n < numLevels; n++) {
+        const y = marginTop + plotH - (n + 0.5) * levelSpacing;
+        ctx.beginPath();
+        ctx.moveTo(marginLeft, y);
+        ctx.lineTo(marginLeft + plotW, y);
+        ctx.stroke();
+      }
+
+      // Draw bars for occupation
+      for (let n = 0; n < numLevels; n++) {
+        const y = marginTop + plotH - (n + 0.5) * levelSpacing;
+        const barW = (occupation[n] / maxVal) * plotW * 0.85;
+
+        // Simulated occupation bar
+        ctx.fillStyle = 'rgba(59, 130, 246, 0.6)';
+        ctx.fillRect(marginLeft, y - levelSpacing * 0.3, barW, levelSpacing * 0.6);
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(marginLeft, y - levelSpacing * 0.3, barW, levelSpacing * 0.6);
+
+        // Theoretical Boltzmann value (marker)
+        const theoW = (probs[n] * numParticles / maxVal) * plotW * 0.85;
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(marginLeft + theoW, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Level label
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px monospace';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('n=' + n, marginLeft - 8, y);
+      }
+
+      // Connect theoretical points with line
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      for (let n = 0; n < numLevels; n++) {
+        const y = marginTop + plotH - (n + 0.5) * levelSpacing;
+        const theoW = (probs[n] * numParticles / maxVal) * plotW * 0.85;
+        if (n === 0) ctx.moveTo(marginLeft + theoW, y);
+        else ctx.lineTo(marginLeft + theoW, y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Axes
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(marginLeft, marginTop);
+      ctx.lineTo(marginLeft, marginTop + plotH);
+      ctx.lineTo(marginLeft + plotW, marginTop + plotH);
+      ctx.stroke();
+
+      // X-axis label
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('占据数', marginLeft + plotW / 2, H - 10);
+
+      // Y-axis label
+      ctx.save();
+      ctx.translate(15, marginTop + plotH / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('能级 n', 0, 0);
+      ctx.restore();
+
+      // X-axis ticks
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'center';
+      const tickValues = [0, Math.round(maxVal / 2), Math.round(maxVal)];
+      tickValues.forEach(v => {
+        const x = marginLeft + (v / maxVal) * plotW * 0.85;
+        ctx.fillText(v.toString(), x, marginTop + plotH + 18);
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(x, marginTop + plotH);
+        ctx.lineTo(x, marginTop + plotH + 5);
+        ctx.stroke();
+      });
+    }
+
+    // Continuous redraw for stochastic visualization
+    let boltzAnimId = null;
+    function animateBoltzmann() {
+      draw();
+      boltzAnimId = requestAnimationFrame(animateBoltzmann);
+    }
+
+    document.getElementById('boltz-temp').addEventListener('input', function() {
+      kT = parseFloat(this.value);
+      document.getElementById('boltz-temp-val').textContent = kT.toFixed(2);
+    });
+
+    document.getElementById('boltz-levels').addEventListener('input', function() {
+      numLevels = parseInt(this.value);
+      document.getElementById('boltz-levels-val').textContent = numLevels.toString();
+    });
+
+    document.getElementById('boltz-particles').addEventListener('input', function() {
+      numParticles = parseInt(this.value);
+      document.getElementById('boltz-particles-val').textContent = numParticles.toString();
+    });
+
+    // Start animation
+    animateBoltzmann();
+  })();
+  </script>
+
+  <!-- ============================================================ -->
+  <!-- Bose-Einstein vs Fermi-Dirac Script -->
+  <!-- ============================================================ -->
+  <script is:inline>
+  (function() {
+    const canvas = document.getElementById('quantum-canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+
+    let kT = 0.20;  // in units of epsilon_F
+    let mu = 1.00;   // in units of epsilon_F
+
+    function fermiDirac(eps, mu, kT) {
+      const x = (eps - mu) / kT;
+      if (x > 500) return 0;
+      if (x < -500) return 1;
+      return 1.0 / (Math.exp(x) + 1.0);
+    }
+
+    function boseEinstein(eps, mu, kT) {
+      if (eps <= mu) return NaN; // Not physical for eps <= mu
+      const x = (eps - mu) / kT;
+      if (x > 500) return 0;
+      const val = 1.0 / (Math.exp(x) - 1.0);
+      return val < 0 ? NaN : val;
+    }
+
+    function maxwellBoltzmann(eps, mu, kT) {
+      const x = (eps - mu) / kT;
+      if (x > 500) return 0;
+      return Math.exp(-x);
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      const showFermi = document.getElementById('qd-show-fermi').checked;
+      const showBose = document.getElementById('qd-show-bose').checked;
+      const showMB = document.getElementById('qd-show-mb').checked;
+
+      // Bose-Einstein warning
+      const boseWarning = document.getElementById('qd-bose-warning');
+      if (mu >= 0 && showBose) {
+        boseWarning.classList.remove('hidden');
+      } else {
+        boseWarning.classList.add('hidden');
+      }
+
+      // Plot layout
+      const marginLeft = 65;
+      const marginRight = 20;
+      const marginTop = 25;
+      const marginBottom = 55;
+      const plotW = W - marginLeft - marginRight;
+      const plotH = H - marginTop - marginBottom;
+
+      // Energy range: 0 to 3 epsilon_F
+      const epsMin = 0;
+      const epsMax = 3.0;
+
+      // n range: 0 to nMax (auto-scale)
+      let nMax = 2.0; // default
+      // Compute max values to set scale
+      const numPts = 400;
+      const dEps = (epsMax - epsMin) / numPts;
+
+      let maxN = 1.5;
+      for (let i = 0; i <= numPts; i++) {
+        const eps = epsMin + i * dEps;
+        if (showFermi) {
+          const nf = fermiDirac(eps, mu, kT);
+          if (isFinite(nf)) maxN = Math.max(maxN, nf);
+        }
+        if (showBose) {
+          const nb = boseEinstein(eps, mu, kT);
+          if (isFinite(nb) && nb < 50) maxN = Math.max(maxN, nb);
+        }
+        if (showMB) {
+          const nmb = maxwellBoltzmann(eps, mu, kT);
+          if (isFinite(nmb) && nmb < 50) maxN = Math.max(maxN, nmb);
+        }
+      }
+      nMax = Math.min(Math.ceil(maxN * 1.2 * 2) / 2, 10); // round up, cap at 10
+      if (nMax < 1.5) nMax = 1.5;
+
+      function toCanvasX(eps) {
+        return marginLeft + ((eps - epsMin) / (epsMax - epsMin)) * plotW;
+      }
+      function toCanvasY(n) {
+        return marginTop + plotH - (n / nMax) * plotH;
+      }
+
+      // Grid lines
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 0.5;
+      // Horizontal
+      const nStep = nMax <= 3 ? 0.5 : 1.0;
+      for (let n = 0; n <= nMax; n += nStep) {
+        const y = toCanvasY(n);
+        ctx.beginPath();
+        ctx.moveTo(marginLeft, y);
+        ctx.lineTo(marginLeft + plotW, y);
+        ctx.stroke();
+      }
+      // Vertical
+      for (let eps = 0; eps <= epsMax; eps += 0.5) {
+        const x = toCanvasX(eps);
+        ctx.beginPath();
+        ctx.moveTo(x, marginTop);
+        ctx.lineTo(x, marginTop + plotH);
+        ctx.stroke();
+      }
+
+      // Draw mu line
+      if (mu >= epsMin && mu <= epsMax) {
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]);
+        const xMu = toCanvasX(mu);
+        ctx.beginPath();
+        ctx.moveTo(xMu, marginTop);
+        ctx.lineTo(xMu, marginTop + plotH);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('μ', xMu, marginTop - 8);
+      }
+
+      // Draw distributions
+      function drawCurve(colorStr, evalFn) {
+        ctx.strokeStyle = colorStr;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        let started = false;
+        for (let i = 0; i <= numPts; i++) {
+          const eps = epsMin + i * dEps;
+          const n = evalFn(eps);
+          if (!isFinite(n) || n < 0 || n > nMax * 1.1) {
+            started = false;
+            continue;
+          }
+          const x = toCanvasX(eps);
+          const y = toCanvasY(Math.min(n, nMax));
+          if (!started) {
+            ctx.moveTo(x, y);
+            started = true;
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        ctx.stroke();
+      }
+
+      if (showMB) {
+        drawCurve('#f59e0b', function(eps) { return maxwellBoltzmann(eps, mu, kT); });
+      }
+      if (showBose) {
+        drawCurve('#22c55e', function(eps) { return boseEinstein(eps, mu, kT); });
+      }
+      if (showFermi) {
+        drawCurve('#3b82f6', function(eps) { return fermiDirac(eps, mu, kT); });
+      }
+
+      // Axes
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(marginLeft, marginTop);
+      ctx.lineTo(marginLeft, marginTop + plotH);
+      ctx.lineTo(marginLeft + plotW, marginTop + plotH);
+      ctx.stroke();
+
+      // X-axis ticks and labels
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '11px monospace';
+      ctx.textAlign = 'center';
+      for (let eps = 0; eps <= epsMax; eps += 0.5) {
+        const x = toCanvasX(eps);
+        ctx.beginPath();
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1;
+        ctx.moveTo(x, marginTop + plotH);
+        ctx.lineTo(x, marginTop + plotH + 5);
+        ctx.stroke();
+        ctx.fillText(eps.toFixed(1), x, marginTop + plotH + 18);
+      }
+
+      // Y-axis ticks and labels
+      ctx.textAlign = 'right';
+      for (let n = 0; n <= nMax; n += nStep) {
+        const y = toCanvasY(n);
+        ctx.beginPath();
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1;
+        ctx.moveTo(marginLeft - 5, y);
+        ctx.lineTo(marginLeft, y);
+        ctx.stroke();
+        ctx.fillText(n.toFixed(1), marginLeft - 8, y + 4);
+      }
+
+      // Axis labels
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '13px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('ε / ε_F', marginLeft + plotW / 2, H - 8);
+
+      ctx.save();
+      ctx.translate(15, marginTop + plotH / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '13px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('⟨n(ε)⟩', 0, 0);
+      ctx.restore();
+
+      // Legend
+      const legendX = marginLeft + plotW - 170;
+      const legendY = marginTop + 10;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.fillRect(legendX, legendY, 165, 70);
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(legendX, legendY, 165, 70);
+
+      const legendItems = [];
+      if (showFermi) legendItems.push({ color: '#3b82f6', label: 'Fermi-Dirac' });
+      if (showBose) legendItems.push({ color: '#22c55e', label: 'Bose-Einstein' });
+      if (showMB) legendItems.push({ color: '#f59e0b', label: 'Maxwell-Boltzmann' });
+
+      ctx.font = '11px sans-serif';
+      legendItems.forEach(function(item, i) {
+        const ly = legendY + 18 + i * 18;
+        ctx.strokeStyle = item.color;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(legendX + 10, ly);
+        ctx.lineTo(legendX + 30, ly);
+        ctx.stroke();
+        ctx.fillStyle = '#e2e8f0';
+        ctx.textAlign = 'left';
+        ctx.fillText(item.label, legendX + 38, ly + 4);
+      });
+    }
+
+    // Controls
+    document.getElementById('qd-temp').addEventListener('input', function() {
+      kT = parseFloat(this.value);
+      document.getElementById('qd-temp-val').textContent = kT.toFixed(2);
+      draw();
+    });
+
+    document.getElementById('qd-mu').addEventListener('input', function() {
+      mu = parseFloat(this.value);
+      document.getElementById('qd-mu-val').textContent = mu.toFixed(2);
+      draw();
+    });
+
+    document.getElementById('qd-show-fermi').addEventListener('change', draw);
+    document.getElementById('qd-show-bose').addEventListener('change', draw);
+    document.getElementById('qd-show-mb').addEventListener('change', draw);
+
+    // Initial draw
+    draw();
+  })();
+  </script>
+</BaseLayout>

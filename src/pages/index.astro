@@ -48,6 +48,17 @@ import { courses } from '../i18n/courses';
                     </span>
                   </a>
                 ))}
+                <a
+                  href={`/${course.id}/interactive/`}
+                  class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-[var(--color-surface-lighter)] transition-colors group border border-[var(--color-interactive)] border-opacity-30"
+                >
+                  <span class="flex-shrink-0 w-7 h-7 rounded-full bg-[var(--color-interactive)] bg-opacity-20 text-[var(--color-interactive)] text-xs font-bold flex items-center justify-center">
+                    &bull;
+                  </span>
+                  <span class="text-sm text-[var(--color-interactive)] group-hover:text-white transition-colors font-medium">
+                    {course.id === 'qm' ? '交互实验室' : '交互实验室'}
+                  </span>
+                </a>
               </div>
             </div>
           </div>

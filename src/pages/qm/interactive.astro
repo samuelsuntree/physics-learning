@@ -1,0 +1,1117 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const content = String.raw`
+  <main class="max-w-5xl mx-auto px-6 py-12">
+    <h1 class="text-3xl font-bold text-white mb-2">量子力学交互实验室</h1>
+    <p class="text-[#94a3b8] mb-8">通过交互式可视化深入理解量子力学核心概念</p>
+
+    <!-- ============================================================ -->
+    <!-- 1. Quantum Harmonic Oscillator                                -->
+    <!-- ============================================================ -->
+    <div class="sim-container bg-[#1e293b] rounded-2xl p-6 mb-10 border border-[#334155]">
+      <h2 class="text-2xl font-semibold text-white mb-1">1. 量子谐振子波函数</h2>
+      <p class="text-[#94a3b8] text-sm mb-4">
+        显示第 $n$ 能级的波函数 $\psi_n(x)$（蓝色）、概率密度 $|\psi_n(x)|^2$（紫色）以及经典概率分布（橙色虚线）。灰色抛物线为势能 $V(x)=\tfrac{1}{2}m\omega^2 x^2$，红色虚线标出经典转折点。
+      </p>
+      <canvas id="qho-canvas" width="800" height="420" class="w-full rounded-lg" style="background:#0f172a;"></canvas>
+      <div class="flex flex-wrap items-center gap-6 mt-4">
+        <label class="text-[#e2e8f0] text-sm flex items-center gap-2">
+          量子数 $n$：
+          <input id="qho-n" type="range" min="0" max="10" value="0" class="w-48 accent-blue-500" />
+          <span id="qho-n-val" class="font-mono text-blue-400 w-6 text-right">0</span>
+        </label>
+      </div>
+      <div id="qho-readout" class="mt-3 text-sm font-mono text-[#94a3b8] flex flex-wrap gap-x-6 gap-y-1"></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 2. Quantum Tunneling                                          -->
+    <!-- ============================================================ -->
+    <div class="sim-container bg-[#1e293b] rounded-2xl p-6 mb-10 border border-[#334155]">
+      <h2 class="text-2xl font-semibold text-white mb-1">2. 隧穿效应</h2>
+      <p class="text-[#94a3b8] text-sm mb-4">
+        高斯波包撞击方势垒的动画。调节势垒高度 $V_0$ 和宽度 $a$，观察透射系数 $T$ 的变化。入射波（蓝色）、反射波（红色）与透射波（绿色）。
+      </p>
+      <canvas id="tunnel-canvas" width="800" height="400" class="w-full rounded-lg" style="background:#0f172a;"></canvas>
+      <div class="flex flex-wrap items-center gap-6 mt-4">
+        <label class="text-[#e2e8f0] text-sm flex items-center gap-2">
+          势垒高度 $V_0$：
+          <input id="tunnel-v0" type="range" min="0.5" max="5.0" step="0.1" value="2.0" class="w-40 accent-purple-500" />
+          <span id="tunnel-v0-val" class="font-mono text-purple-400 w-12 text-right">2.0</span>
+        </label>
+        <label class="text-[#e2e8f0] text-sm flex items-center gap-2">
+          势垒宽度 $a$：
+          <input id="tunnel-a" type="range" min="0.2" max="3.0" step="0.1" value="1.0" class="w-40 accent-purple-500" />
+          <span id="tunnel-a-val" class="font-mono text-purple-400 w-12 text-right">1.0</span>
+        </label>
+        <button id="tunnel-reset" class="px-4 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm transition-colors">重置动画</button>
+      </div>
+      <div id="tunnel-readout" class="mt-3 text-sm font-mono text-[#94a3b8] flex flex-wrap gap-x-6 gap-y-1"></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 3. Bloch Sphere                                               -->
+    <!-- ============================================================ -->
+    <div class="sim-container bg-[#1e293b] rounded-2xl p-6 mb-10 border border-[#334155]">
+      <h2 class="text-2xl font-semibold text-white mb-1">3. 自旋-1/2 Bloch 球</h2>
+      <p class="text-[#94a3b8] text-sm mb-4">
+        拖拽旋转 Bloch 球上的量子态矢量。球面坐标 $(\theta,\phi)$ 对应旋量 $|\psi\rangle = \cos\tfrac{\theta}{2}|0\rangle + e^{i\phi}\sin\tfrac{\theta}{2}|1\rangle$。实时显示旋量分量和 Pauli 期望值。
+      </p>
+      <canvas id="bloch-canvas" width="520" height="520" class="rounded-lg mx-auto block" style="background:#0f172a;"></canvas>
+      <div id="bloch-readout" class="mt-4 text-sm font-mono text-[#94a3b8] flex flex-wrap gap-x-6 gap-y-1 justify-center"></div>
+    </div>
+  </main>
+`;
+---
+
+<BaseLayout title="量子力学交互实验室">
+  <Fragment set:html={content} />
+
+  <!-- ============================================================ -->
+  <!-- ALL SIMULATION SCRIPTS (is:inline for direct DOM access)     -->
+  <!-- ============================================================ -->
+  <script is:inline>
+  document.addEventListener('DOMContentLoaded', function () {
+
+    // ================================================================
+    // UTILITY: high-DPI canvas helper
+    // ================================================================
+    function setupHiDPI(canvas) {
+      var dpr = window.devicePixelRatio || 1;
+      var rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      var ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      return { ctx: ctx, w: rect.width, h: rect.height };
+    }
+
+    // ================================================================
+    // 1. QUANTUM HARMONIC OSCILLATOR
+    // ================================================================
+    (function () {
+      var canvas = document.getElementById('qho-canvas');
+      var sliderN = document.getElementById('qho-n');
+      var nValSpan = document.getElementById('qho-n-val');
+      var readout = document.getElementById('qho-readout');
+      if (!canvas) return;
+
+      var setup = setupHiDPI(canvas);
+      var ctx = setup.ctx, W = setup.w, H = setup.h;
+
+      // Hermite polynomial via recurrence: H_0=1, H_1=2x, H_{n+1}=2xH_n - 2nH_{n-1}
+      function hermite(n, x) {
+        if (n === 0) return 1;
+        if (n === 1) return 2 * x;
+        var h0 = 1, h1 = 2 * x, h2;
+        for (var i = 2; i <= n; i++) {
+          h2 = 2 * x * h1 - 2 * (i - 1) * h0;
+          h0 = h1;
+          h1 = h2;
+        }
+        return h1;
+      }
+
+      // ln(n!) for normalization
+      function lnFactorial(n) {
+        var s = 0;
+        for (var i = 2; i <= n; i++) s += Math.log(i);
+        return s;
+      }
+
+      // Normalized wavefunction psi_n(x) in natural units (m=omega=hbar=1)
+      function psi(n, x) {
+        var norm = Math.exp(-0.5 * (n * Math.log(2) + lnFactorial(n) + 0.5 * Math.log(Math.PI)));
+        return norm * hermite(n, x) * Math.exp(-x * x / 2);
+      }
+
+      // Classical probability distribution for energy E_n = n + 0.5
+      // P_cl(x) = 1 / (pi * sqrt(2E - x^2)) for |x| < sqrt(2E)
+      function classicalProb(n, x) {
+        var E = n + 0.5;
+        var xtp = Math.sqrt(2 * E);
+        if (Math.abs(x) >= xtp - 0.01) return 0; // avoid singularity
+        return 1.0 / (Math.PI * Math.sqrt(2 * E - x * x));
+      }
+
+      function draw() {
+        var n = parseInt(sliderN.value);
+        nValSpan.textContent = n;
+
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, W, H);
+
+        var xMin = -7, xMax = 7;
+        var numPts = 800;
+        var dx = (xMax - xMin) / numPts;
+
+        // Compute wavefunction and probability density
+        var psiArr = [], probArr = [], classArr = [];
+        var maxPsi = 0, maxProb = 0, maxClass = 0;
+        for (var i = 0; i <= numPts; i++) {
+          var x = xMin + i * dx;
+          var p = psi(n, x);
+          var pr = p * p;
+          var cl = classicalProb(n, x);
+          psiArr.push(p);
+          probArr.push(pr);
+          classArr.push(cl);
+          if (Math.abs(p) > maxPsi) maxPsi = Math.abs(p);
+          if (pr > maxProb) maxProb = pr;
+          if (cl > maxClass) maxClass = cl;
+        }
+
+        var margin = { l: 50, r: 30, t: 30, b: 40 };
+        var plotW = W - margin.l - margin.r;
+        var plotH = H - margin.t - margin.b;
+
+        function xToPixel(x) { return margin.l + (x - xMin) / (xMax - xMin) * plotW; }
+
+        // Scale: wavefunction occupies 80% of half-height
+        var yScalePsi = (plotH / 2) * 0.8 / (maxPsi || 1);
+        var yScaleProb = (plotH / 2) * 0.8 / (maxProb || 1);
+        // Scale classical to same as prob
+        var yScaleClass = (maxClass > 0) ? (plotH / 2) * 0.8 / maxClass : yScaleProb;
+        // Use same scale for prob and classical so they are comparable
+        if (maxClass > 0) {
+          var combinedMax = Math.max(maxProb, maxClass);
+          yScaleProb = (plotH / 2) * 0.8 / combinedMax;
+          yScaleClass = yScaleProb;
+        }
+
+        var yCenter = margin.t + plotH / 2;
+        function psiToPixel(v) { return yCenter - v * yScalePsi; }
+        function probToPixel(v) { return yCenter - v * yScaleProb; }
+
+        // Draw grid
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(margin.l, yCenter);
+        ctx.lineTo(margin.l + plotW, yCenter);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(xToPixel(0), margin.t);
+        ctx.lineTo(xToPixel(0), margin.t + plotH);
+        ctx.stroke();
+
+        // Draw potential (parabola V = 0.5 * x^2, scaled to fit)
+        var E_n = n + 0.5;
+        var potScale = (plotH / 2) * 0.8 / (E_n * 1.5 || 1);
+        ctx.strokeStyle = 'rgba(148,163,184,0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        for (var i = 0; i <= numPts; i++) {
+          var x = xMin + i * dx;
+          var V = 0.5 * x * x;
+          var py = yCenter - V * potScale;
+          if (py < margin.t) continue;
+          if (i === 0) ctx.moveTo(xToPixel(x), py);
+          else ctx.lineTo(xToPixel(x), py);
+        }
+        ctx.stroke();
+
+        // Draw energy level
+        ctx.strokeStyle = 'rgba(148,163,184,0.3)';
+        ctx.setLineDash([4, 4]);
+        ctx.lineWidth = 1;
+        var ey = yCenter - E_n * potScale;
+        ctx.beginPath();
+        ctx.moveTo(margin.l, ey);
+        ctx.lineTo(margin.l + plotW, ey);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Classical turning points
+        var xtp = Math.sqrt(2 * E_n);
+        ctx.strokeStyle = 'rgba(239,68,68,0.7)';
+        ctx.setLineDash([5, 5]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(xToPixel(xtp), margin.t);
+        ctx.lineTo(xToPixel(xtp), margin.t + plotH);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(xToPixel(-xtp), margin.t);
+        ctx.lineTo(xToPixel(-xtp), margin.t + plotH);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Classical probability distribution (orange dashed)
+        if (n > 0) {
+          ctx.strokeStyle = 'rgba(251,146,60,0.8)';
+          ctx.setLineDash([4, 3]);
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          var started = false;
+          for (var i = 0; i <= numPts; i++) {
+            var x = xMin + i * dx;
+            var c = classArr[i];
+            var py = probToPixel(c);
+            if (c > 0.001) {
+              if (!started) { ctx.moveTo(xToPixel(x), py); started = true; }
+              else ctx.lineTo(xToPixel(x), py);
+            } else {
+              if (started) { ctx.stroke(); ctx.beginPath(); started = false; }
+            }
+          }
+          if (started) ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        // Probability density |psi|^2 (purple, filled)
+        ctx.fillStyle = 'rgba(168,85,247,0.25)';
+        ctx.beginPath();
+        ctx.moveTo(xToPixel(xMin), yCenter);
+        for (var i = 0; i <= numPts; i++) {
+          ctx.lineTo(xToPixel(xMin + i * dx), probToPixel(probArr[i]));
+        }
+        ctx.lineTo(xToPixel(xMax), yCenter);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = '#a855f7';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (var i = 0; i <= numPts; i++) {
+          var px = xToPixel(xMin + i * dx);
+          var py = probToPixel(probArr[i]);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Wavefunction psi (blue)
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (var i = 0; i <= numPts; i++) {
+          var px = xToPixel(xMin + i * dx);
+          var py = psiToPixel(psiArr[i]);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Labels
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '13px Inter, sans-serif';
+        ctx.fillText('x', margin.l + plotW + 5, yCenter + 4);
+
+        // Legend
+        var lx = margin.l + 10, ly = margin.t + 18;
+        ctx.fillStyle = '#3b82f6';
+        ctx.fillRect(lx, ly - 8, 16, 3);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Inter, sans-serif';
+        ctx.fillText('ψₙ(x)', lx + 20, ly);
+
+        ly += 16;
+        ctx.fillStyle = '#a855f7';
+        ctx.fillRect(lx, ly - 8, 16, 3);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText('|ψₙ(x)|²', lx + 20, ly);
+
+        if (n > 0) {
+          ly += 16;
+          ctx.strokeStyle = 'rgba(251,146,60,0.8)';
+          ctx.setLineDash([4, 3]);
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(lx, ly - 8);
+          ctx.lineTo(lx + 16, ly - 8);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = '#94a3b8';
+          ctx.fillText('经典概率', lx + 20, ly);
+        }
+
+        ly += 16;
+        ctx.strokeStyle = 'rgba(239,68,68,0.7)';
+        ctx.setLineDash([5, 5]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(lx, ly - 8);
+        ctx.lineTo(lx + 16, ly - 8);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText('经典转折点', lx + 20, ly);
+
+        // Readout
+        readout.innerHTML =
+          '<span>n = ' + n + '</span>' +
+          '<span>E_n = ' + (n + 0.5).toFixed(1) + ' ℏω</span>' +
+          '<span>经典转折点 x_tp = ±' + xtp.toFixed(3) + '</span>' +
+          '<span>节点数 = ' + n + '</span>';
+      }
+
+      sliderN.addEventListener('input', draw);
+      draw();
+    })();
+
+    // ================================================================
+    // 2. QUANTUM TUNNELING
+    // ================================================================
+    (function () {
+      var canvas = document.getElementById('tunnel-canvas');
+      var sliderV0 = document.getElementById('tunnel-v0');
+      var sliderA = document.getElementById('tunnel-a');
+      var v0ValSpan = document.getElementById('tunnel-v0-val');
+      var aValSpan = document.getElementById('tunnel-a-val');
+      var resetBtn = document.getElementById('tunnel-reset');
+      var readout = document.getElementById('tunnel-readout');
+      if (!canvas) return;
+
+      var setup = setupHiDPI(canvas);
+      var ctx = setup.ctx, W = setup.w, H = setup.h;
+
+      // Physics parameters (natural units: hbar = 1, m = 0.5 so -d^2/dx^2 + V)
+      var k0 = 8;           // central wave number
+      var sigma = 2.5;      // wave packet width
+      var x0Init = -12;     // initial center
+      var xMin = -25, xMax = 25;
+      var N = 1024;          // spatial grid points
+      var dxGrid = (xMax - xMin) / N;
+
+      // Time evolution via split-step Fourier method
+      var dt = 0.005;
+
+      // State arrays (complex: [re, im] interleaved in Float64Arrays)
+      var psiRe, psiIm, potentialArr;
+      var time;
+      var animId = null;
+
+      function getV0() { return parseFloat(sliderV0.value); }
+      function getA() { return parseFloat(sliderA.value); }
+
+      // Transmission coefficient for rectangular barrier (analytic, for a monochromatic plane wave at k0)
+      function transmissionCoeff(V0, a) {
+        var E = k0 * k0; // E = hbar^2 k^2 / (2m), with m=0.5, hbar=1 => E = k^2
+        if (E > V0) {
+          var kp = Math.sqrt(E - V0);
+          var denom = 1 + (V0 * V0 * Math.sin(kp * a) * Math.sin(kp * a)) / (4 * E * (E - V0));
+          return 1.0 / denom;
+        } else if (Math.abs(E - V0) < 1e-10) {
+          // E = V0 edge case
+          var denom = 1 + V0 * a * a / 4;
+          return 1.0 / denom;
+        } else {
+          var kappa = Math.sqrt(V0 - E);
+          var denom = 1 + (V0 * V0 * Math.sinh(kappa * a) * Math.sinh(kappa * a)) / (4 * E * (V0 - E));
+          return 1.0 / denom;
+        }
+      }
+
+      // Measure numerical transmission: probability on the right side of barrier
+      function measureTransmission(barrierRight) {
+        var probRight = 0;
+        for (var i = 0; i < N; i++) {
+          var x = xMin + i * dxGrid;
+          if (x > barrierRight + 0.5) {
+            probRight += (psiRe[i] * psiRe[i] + psiIm[i] * psiIm[i]) * dxGrid;
+          }
+        }
+        return probRight;
+      }
+
+      function initState() {
+        time = 0;
+        psiRe = new Float64Array(N);
+        psiIm = new Float64Array(N);
+        potentialArr = new Float64Array(N);
+
+        var V0 = getV0();
+        var a = getA();
+
+        // Barrier centered at x = 0, from -a/2 to a/2
+        for (var i = 0; i < N; i++) {
+          var x = xMin + i * dxGrid;
+          potentialArr[i] = (x >= -a / 2 && x <= a / 2) ? V0 : 0;
+
+          // Gaussian wave packet: psi = exp(ik0*x) * exp(-(x-x0)^2/(4*sigma^2))
+          var env = Math.exp(-(x - x0Init) * (x - x0Init) / (4 * sigma * sigma));
+          psiRe[i] = env * Math.cos(k0 * x);
+          psiIm[i] = env * Math.sin(k0 * x);
+        }
+
+        // Normalize
+        var norm = 0;
+        for (var i = 0; i < N; i++) {
+          norm += (psiRe[i] * psiRe[i] + psiIm[i] * psiIm[i]) * dxGrid;
+        }
+        var s = 1.0 / Math.sqrt(norm);
+        for (var i = 0; i < N; i++) { psiRe[i] *= s; psiIm[i] *= s; }
+      }
+
+      // FFT (Cooley-Tukey, radix-2, in-place)
+      function fft(re, im, invert) {
+        var n = re.length;
+        // Bit-reversal permutation
+        for (var i = 1, j = 0; i < n; i++) {
+          var bit = n >> 1;
+          for (; j & bit; bit >>= 1) { j ^= bit; }
+          j ^= bit;
+          if (i < j) {
+            var tmp = re[i]; re[i] = re[j]; re[j] = tmp;
+            tmp = im[i]; im[i] = im[j]; im[j] = tmp;
+          }
+        }
+        for (var len = 2; len <= n; len <<= 1) {
+          var ang = 2 * Math.PI / len * (invert ? -1 : 1);
+          var wRe = Math.cos(ang), wIm = Math.sin(ang);
+          for (var i = 0; i < n; i += len) {
+            var curRe = 1, curIm = 0;
+            for (var j = 0; j < len / 2; j++) {
+              var uRe = re[i + j], uIm = im[i + j];
+              var vRe = re[i + j + len / 2] * curRe - im[i + j + len / 2] * curIm;
+              var vIm = re[i + j + len / 2] * curIm + im[i + j + len / 2] * curRe;
+              re[i + j] = uRe + vRe;
+              im[i + j] = uIm + vIm;
+              re[i + j + len / 2] = uRe - vRe;
+              im[i + j + len / 2] = uIm - vIm;
+              var newCurRe = curRe * wRe - curIm * wIm;
+              curIm = curRe * wIm + curIm * wRe;
+              curRe = newCurRe;
+            }
+          }
+        }
+        if (invert) {
+          for (var i = 0; i < n; i++) { re[i] /= n; im[i] /= n; }
+        }
+      }
+
+      // Split-step Fourier propagation: one time step
+      function evolveStep() {
+        // Half-step in position space: exp(-i V dt/2)
+        for (var i = 0; i < N; i++) {
+          var phase = -potentialArr[i] * dt / 2;
+          var c = Math.cos(phase), s = Math.sin(phase);
+          var re = psiRe[i], im = psiIm[i];
+          psiRe[i] = re * c - im * s;
+          psiIm[i] = re * s + im * c;
+        }
+
+        // FFT to momentum space
+        fft(psiRe, psiIm, false);
+
+        // Full step in momentum space: exp(-i k^2 dt) [since T = k^2 with m=0.5, hbar=1]
+        var dk = 2 * Math.PI / (N * dxGrid);
+        for (var i = 0; i < N; i++) {
+          var ki = (i < N / 2) ? i * dk : (i - N) * dk;
+          var phase = -ki * ki * dt; // T = p^2/(2m) = k^2 when hbar=1,m=0.5
+          var c = Math.cos(phase), s = Math.sin(phase);
+          var re = psiRe[i], im = psiIm[i];
+          psiRe[i] = re * c - im * s;
+          psiIm[i] = re * s + im * c;
+        }
+
+        // Inverse FFT back to position space
+        fft(psiRe, psiIm, true);
+
+        // Half-step in position space again
+        for (var i = 0; i < N; i++) {
+          var phase = -potentialArr[i] * dt / 2;
+          var c = Math.cos(phase), s = Math.sin(phase);
+          var re = psiRe[i], im = psiIm[i];
+          psiRe[i] = re * c - im * s;
+          psiIm[i] = re * s + im * c;
+        }
+
+        // Absorbing boundary: smooth damping at edges
+        for (var i = 0; i < N; i++) {
+          var x = xMin + i * dxGrid;
+          var damp = 1;
+          var edgeWidth = 3;
+          if (x < xMin + edgeWidth) {
+            damp = (x - xMin) / edgeWidth;
+            damp = damp * damp * (3 - 2 * damp); // smoothstep
+          } else if (x > xMax - edgeWidth) {
+            damp = (xMax - x) / edgeWidth;
+            damp = damp * damp * (3 - 2 * damp);
+          }
+          psiRe[i] *= damp;
+          psiIm[i] *= damp;
+        }
+
+        time += dt;
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, W, H);
+
+        var V0 = getV0();
+        var a = getA();
+        var margin = { l: 40, r: 20, t: 25, b: 35 };
+        var plotW = W - margin.l - margin.r;
+        var plotH = H - margin.t - margin.b;
+
+        function xToPixel(x) { return margin.l + (x - xMin) / (xMax - xMin) * plotW; }
+
+        var yMid = margin.t + plotH / 2;
+
+        // Draw barrier
+        var bx1 = xToPixel(-a / 2);
+        var bx2 = xToPixel(a / 2);
+        var barrierH = plotH * 0.35 * Math.min(V0 / 5.0, 1.0);
+        ctx.fillStyle = 'rgba(148,163,184,0.2)';
+        ctx.fillRect(bx1, yMid - barrierH, bx2 - bx1, barrierH);
+        ctx.strokeStyle = 'rgba(148,163,184,0.5)';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(bx1, yMid - barrierH, bx2 - bx1, barrierH);
+
+        // Barrier label
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('V₀ = ' + V0.toFixed(1), (bx1 + bx2) / 2, yMid - barrierH - 6);
+        ctx.textAlign = 'left';
+
+        // Zero line
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(margin.l, yMid);
+        ctx.lineTo(margin.l + plotW, yMid);
+        ctx.stroke();
+
+        // Compute probability density and real part for display
+        var probDensity = new Float64Array(N);
+        var maxProb = 0;
+        for (var i = 0; i < N; i++) {
+          probDensity[i] = psiRe[i] * psiRe[i] + psiIm[i] * psiIm[i];
+          if (probDensity[i] > maxProb) maxProb = probDensity[i];
+        }
+
+        var yScale = (plotH / 2) * 0.85 / (maxProb || 1);
+        var yScaleWave = (plotH / 2) * 0.6 / (Math.sqrt(maxProb) || 1);
+
+        // Probability density (filled, gradient color based on position relative to barrier)
+        // Left of barrier: blue, inside: yellow, right: green
+        function getColor(x) {
+          if (x < -a / 2) return { fill: 'rgba(59,130,246,0.2)', stroke: '#3b82f6' };
+          if (x > a / 2) return { fill: 'rgba(34,197,94,0.2)', stroke: '#22c55e' };
+          return { fill: 'rgba(250,204,21,0.2)', stroke: '#facc15' };
+        }
+
+        // Draw prob density filled
+        ctx.beginPath();
+        ctx.moveTo(xToPixel(xMin), yMid);
+        for (var i = 0; i < N; i++) {
+          var x = xMin + i * dxGrid;
+          ctx.lineTo(xToPixel(x), yMid - probDensity[i] * yScale);
+        }
+        ctx.lineTo(xToPixel(xMax), yMid);
+        ctx.closePath();
+
+        // Create gradient fill
+        var grad = ctx.createLinearGradient(margin.l, 0, margin.l + plotW, 0);
+        var barrierFracLeft = (-a / 2 - xMin) / (xMax - xMin);
+        var barrierFracRight = (a / 2 - xMin) / (xMax - xMin);
+        grad.addColorStop(0, 'rgba(59,130,246,0.25)');
+        grad.addColorStop(Math.max(0, barrierFracLeft - 0.01), 'rgba(59,130,246,0.25)');
+        grad.addColorStop(barrierFracLeft, 'rgba(250,204,21,0.15)');
+        grad.addColorStop(barrierFracRight, 'rgba(250,204,21,0.15)');
+        grad.addColorStop(Math.min(1, barrierFracRight + 0.01), 'rgba(34,197,94,0.25)');
+        grad.addColorStop(1, 'rgba(34,197,94,0.25)');
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Prob density stroke with color regions
+        var regions = [
+          { test: function (x) { return x < -a / 2; }, color: '#3b82f6' },
+          { test: function (x) { return x >= -a / 2 && x <= a / 2; }, color: '#facc15' },
+          { test: function (x) { return x > a / 2; }, color: '#22c55e' }
+        ];
+        regions.forEach(function (region) {
+          ctx.strokeStyle = region.color;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          var started = false;
+          for (var i = 0; i < N; i++) {
+            var x = xMin + i * dxGrid;
+            if (region.test(x)) {
+              var px = xToPixel(x);
+              var py = yMid - probDensity[i] * yScale;
+              if (!started) { ctx.moveTo(px, py); started = true; }
+              else ctx.lineTo(px, py);
+            }
+          }
+          ctx.stroke();
+        });
+
+        // Real part of wavefunction (thin, semitransparent)
+        ctx.strokeStyle = 'rgba(226,232,240,0.3)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (var i = 0; i < N; i++) {
+          var x = xMin + i * dxGrid;
+          var px = xToPixel(x);
+          var py = yMid - psiRe[i] * yScaleWave * 3;
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Legend
+        var lx = margin.l + 8, ly = margin.t + 16;
+        ctx.font = '11px Inter, sans-serif';
+        ctx.fillStyle = '#3b82f6'; ctx.fillRect(lx, ly - 7, 14, 3);
+        ctx.fillStyle = '#94a3b8'; ctx.fillText('入射/反射', lx + 18, ly);
+        ly += 15;
+        ctx.fillStyle = '#22c55e'; ctx.fillRect(lx, ly - 7, 14, 3);
+        ctx.fillStyle = '#94a3b8'; ctx.fillText('透射', lx + 18, ly);
+        ly += 15;
+        ctx.fillStyle = 'rgba(226,232,240,0.4)'; ctx.fillRect(lx, ly - 7, 14, 2);
+        ctx.fillStyle = '#94a3b8'; ctx.fillText('Re(ψ)', lx + 18, ly);
+
+        // Readout
+        var T_analytic = transmissionCoeff(V0, a);
+        var T_numeric = measureTransmission(a / 2);
+        var totalProb = 0;
+        for (var i = 0; i < N; i++) totalProb += probDensity[i] * dxGrid;
+
+        readout.innerHTML =
+          '<span>V₀ = ' + V0.toFixed(1) + '</span>' +
+          '<span>a = ' + a.toFixed(1) + '</span>' +
+          '<span>E = k₀² = ' + (k0 * k0).toFixed(1) + '</span>' +
+          '<span>T (解析) = ' + T_analytic.toFixed(4) + '</span>' +
+          '<span>T (数值) = ' + T_numeric.toFixed(4) + '</span>' +
+          '<span>t = ' + time.toFixed(2) + '</span>' +
+          '<span>∫|ψ|²dx = ' + totalProb.toFixed(4) + '</span>';
+      }
+
+      function animate() {
+        // Multiple sub-steps per frame for speed
+        for (var s = 0; s < 8; s++) evolveStep();
+        draw();
+        animId = requestAnimationFrame(animate);
+      }
+
+      function restart() {
+        if (animId) cancelAnimationFrame(animId);
+        initState();
+        // Update potential for current slider values
+        var V0 = getV0();
+        var a = getA();
+        for (var i = 0; i < N; i++) {
+          var x = xMin + i * dxGrid;
+          potentialArr[i] = (x >= -a / 2 && x <= a / 2) ? V0 : 0;
+        }
+        animate();
+      }
+
+      sliderV0.addEventListener('input', function () {
+        v0ValSpan.textContent = parseFloat(sliderV0.value).toFixed(1);
+        restart();
+      });
+      sliderA.addEventListener('input', function () {
+        aValSpan.textContent = parseFloat(sliderA.value).toFixed(1);
+        restart();
+      });
+      resetBtn.addEventListener('click', restart);
+
+      restart();
+    })();
+
+    // ================================================================
+    // 3. BLOCH SPHERE
+    // ================================================================
+    (function () {
+      var canvas = document.getElementById('bloch-canvas');
+      var readout = document.getElementById('bloch-readout');
+      if (!canvas) return;
+
+      var setup = setupHiDPI(canvas);
+      var ctx = setup.ctx, W = setup.w, H = setup.h;
+
+      var cx = W / 2, cy = H / 2;
+      var R = Math.min(W, H) * 0.38;
+
+      // State: Bloch sphere angles theta, phi
+      var theta = Math.PI / 4;  // polar angle from +z
+      var phi = Math.PI / 4;    // azimuthal angle from +x
+
+      // View rotation (for the 3D projection)
+      var viewAlpha = -0.35; // rotation about vertical axis (azimuth of view)
+      var viewBeta = 0.45;   // tilt (elevation of view)
+
+      // Dragging
+      var isDragging = false;
+      var isRotatingView = false;
+      var lastMouse = { x: 0, y: 0 };
+
+      // 3D to 2D projection (orthographic with rotation)
+      function project(x3, y3, z3) {
+        // Rotate about y-axis by viewAlpha
+        var ca = Math.cos(viewAlpha), sa = Math.sin(viewAlpha);
+        var x1 = x3 * ca + z3 * sa;
+        var z1 = -x3 * sa + z3 * ca;
+        var y1 = y3;
+        // Rotate about x-axis by viewBeta
+        var cb = Math.cos(viewBeta), sb = Math.sin(viewBeta);
+        var y2 = y1 * cb - z1 * sb;
+        var z2 = y1 * sb + z1 * cb;
+        var x2 = x1;
+        return { x: cx + x2 * R, y: cy - y2 * R, z: z2 };
+      }
+
+      function drawCircle3D(axis, color, dash) {
+        // Draw a great circle on a given plane
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1;
+        if (dash) ctx.setLineDash(dash);
+        else ctx.setLineDash([]);
+
+        var pts = 120;
+        // Front and back parts
+        var frontPts = [];
+        var backPts = [];
+        for (var i = 0; i <= pts; i++) {
+          var t = (i / pts) * 2 * Math.PI;
+          var x3, y3, z3;
+          if (axis === 'z') { x3 = Math.cos(t); y3 = Math.sin(t); z3 = 0; }
+          else if (axis === 'x') { x3 = 0; y3 = Math.cos(t); z3 = Math.sin(t); }
+          else { x3 = Math.cos(t); y3 = 0; z3 = Math.sin(t); }
+          var p = project(x3, y3, z3);
+          if (p.z >= 0) frontPts.push(p);
+          else backPts.push(p);
+        }
+        // Draw back (dashed/dimmed)
+        if (backPts.length > 1) {
+          ctx.globalAlpha = 0.2;
+          ctx.beginPath();
+          ctx.moveTo(backPts[0].x, backPts[0].y);
+          for (var i = 1; i < backPts.length; i++) {
+            // Only draw if points are close (avoid jumps)
+            var dx = backPts[i].x - backPts[i - 1].x;
+            var dy = backPts[i].y - backPts[i - 1].y;
+            if (dx * dx + dy * dy < 1000) ctx.lineTo(backPts[i].x, backPts[i].y);
+            else { ctx.stroke(); ctx.beginPath(); ctx.moveTo(backPts[i].x, backPts[i].y); }
+          }
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
+        // Draw front
+        if (frontPts.length > 1) {
+          ctx.beginPath();
+          ctx.moveTo(frontPts[0].x, frontPts[0].y);
+          for (var i = 1; i < frontPts.length; i++) {
+            var dx = frontPts[i].x - frontPts[i - 1].x;
+            var dy = frontPts[i].y - frontPts[i - 1].y;
+            if (dx * dx + dy * dy < 1000) ctx.lineTo(frontPts[i].x, frontPts[i].y);
+            else { ctx.stroke(); ctx.beginPath(); ctx.moveTo(frontPts[i].x, frontPts[i].y); }
+          }
+          ctx.stroke();
+        }
+        ctx.setLineDash([]);
+      }
+
+      function drawAxis(x3, y3, z3, label, color) {
+        var pTip = project(x3 * 1.25, y3 * 1.25, z3 * 1.25);
+        var pOrig = project(0, 0, 0);
+        var pEnd = project(x3, y3, z3);
+        var pNeg = project(-x3, -y3, -z3);
+
+        // Negative axis (dimmed)
+        ctx.strokeStyle = color;
+        ctx.globalAlpha = 0.2;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(pOrig.x, pOrig.y);
+        ctx.lineTo(pNeg.x, pNeg.y);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
+        // Positive axis
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(pOrig.x, pOrig.y);
+        ctx.lineTo(pEnd.x, pEnd.y);
+        ctx.stroke();
+
+        // Arrowhead
+        var dx = pEnd.x - pOrig.x, dy = pEnd.y - pOrig.y;
+        var len = Math.sqrt(dx * dx + dy * dy);
+        if (len > 0) {
+          var ux = dx / len, uy = dy / len;
+          var ax = -uy, ay = ux; // perpendicular
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.moveTo(pEnd.x, pEnd.y);
+          ctx.lineTo(pEnd.x - ux * 8 + ax * 4, pEnd.y - uy * 8 + ay * 4);
+          ctx.lineTo(pEnd.x - ux * 8 - ax * 4, pEnd.y - uy * 8 - ay * 4);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // Label
+        ctx.fillStyle = color;
+        ctx.font = 'bold 14px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, pTip.x, pTip.y);
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, W, H);
+
+        // Sphere outline (shaded)
+        var grad = ctx.createRadialGradient(cx - R * 0.15, cy - R * 0.15, R * 0.1, cx, cy, R);
+        grad.addColorStop(0, 'rgba(100,116,139,0.12)');
+        grad.addColorStop(1, 'rgba(30,41,59,0.05)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, 0, 2 * Math.PI);
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(148,163,184,0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        // Great circles
+        drawCircle3D('z', 'rgba(148,163,184,0.35)', [3, 3]); // equator
+        drawCircle3D('x', 'rgba(148,163,184,0.2)', [2, 4]);
+        drawCircle3D('y', 'rgba(148,163,184,0.2)', [2, 4]);
+
+        // Axes
+        drawAxis(1, 0, 0, 'x', '#94a3b8');
+        drawAxis(0, 1, 0, 'y', '#94a3b8');
+        drawAxis(0, 0, 1, 'z', '#94a3b8');
+
+        // Pole labels
+        var pNorth = project(0, 0, 1.35);
+        var pSouth = project(0, 0, -1.35);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '13px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('|0⟩', pNorth.x, pNorth.y);
+        ctx.fillText('|1⟩', pSouth.x, pSouth.y);
+
+        // State vector on Bloch sphere
+        var sx = Math.sin(theta) * Math.cos(phi);
+        var sy = Math.sin(theta) * Math.sin(phi);
+        var sz = Math.cos(theta);
+
+        var pState = project(sx, sy, sz);
+        var pOrig = project(0, 0, 0);
+
+        // Shadow on equator
+        var pShadow = project(sx, sy, 0);
+        ctx.strokeStyle = 'rgba(250,204,21,0.3)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(pState.x, pState.y);
+        ctx.lineTo(pShadow.x, pShadow.y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(pOrig.x, pOrig.y);
+        ctx.lineTo(pShadow.x, pShadow.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // State vector line
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(pOrig.x, pOrig.y);
+        ctx.lineTo(pState.x, pState.y);
+        ctx.stroke();
+
+        // Arrowhead on state vector
+        var dvx = pState.x - pOrig.x, dvy = pState.y - pOrig.y;
+        var dlen = Math.sqrt(dvx * dvx + dvy * dvy);
+        if (dlen > 0) {
+          var ux = dvx / dlen, uy = dvy / dlen;
+          var px2 = -uy, py2 = ux;
+          ctx.fillStyle = '#facc15';
+          ctx.beginPath();
+          ctx.moveTo(pState.x, pState.y);
+          ctx.lineTo(pState.x - ux * 12 + px2 * 5, pState.y - uy * 12 + py2 * 5);
+          ctx.lineTo(pState.x - ux * 12 - px2 * 5, pState.y - uy * 12 - py2 * 5);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // State point
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath();
+        ctx.arc(pState.x, pState.y, 5, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Draw angle arc for theta
+        if (theta > 0.05 && theta < Math.PI - 0.05) {
+          ctx.strokeStyle = 'rgba(250,204,21,0.5)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          var arcR = R * 0.2;
+          var steps = 40;
+          for (var i = 0; i <= steps; i++) {
+            var t = (i / steps) * theta;
+            var ax3 = Math.sin(t) * Math.cos(phi) * 0.2;
+            var ay3 = Math.sin(t) * Math.sin(phi) * 0.2;
+            var az3 = Math.cos(t) * 0.2;
+            var pp = project(ax3, ay3, az3);
+            if (i === 0) ctx.moveTo(pp.x, pp.y);
+            else ctx.lineTo(pp.x, pp.y);
+          }
+          ctx.stroke();
+
+          // theta label
+          var tMid = theta / 2;
+          var lp = project(
+            Math.sin(tMid) * Math.cos(phi) * 0.28,
+            Math.sin(tMid) * Math.sin(phi) * 0.28,
+            Math.cos(tMid) * 0.28
+          );
+          ctx.fillStyle = '#facc15';
+          ctx.font = '12px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('θ', lp.x, lp.y);
+        }
+
+        // Spinor components
+        var alphaRe = Math.cos(theta / 2);
+        var alphaIm = 0;
+        var betaRe = Math.sin(theta / 2) * Math.cos(phi);
+        var betaIm = Math.sin(theta / 2) * Math.sin(phi);
+
+        // Expectation values of Pauli matrices
+        var sigX = Math.sin(theta) * Math.cos(phi);
+        var sigY = Math.sin(theta) * Math.sin(phi);
+        var sigZ = Math.cos(theta);
+
+        // Format complex number
+        function fmtComplex(re, im) {
+          if (Math.abs(im) < 1e-6) return re.toFixed(4);
+          if (Math.abs(re) < 1e-6) return im.toFixed(4) + 'i';
+          return re.toFixed(4) + (im >= 0 ? '+' : '') + im.toFixed(4) + 'i';
+        }
+
+        readout.innerHTML =
+          '<span>θ = ' + (theta * 180 / Math.PI).toFixed(1) + '°</span>' +
+          '<span>φ = ' + (phi * 180 / Math.PI).toFixed(1) + '°</span>' +
+          '<span>α = ' + fmtComplex(alphaRe, alphaIm) + '</span>' +
+          '<span>β = ' + fmtComplex(betaRe, betaIm) + '</span>' +
+          '<span>⟨σ_x⟩ = ' + sigX.toFixed(4) + '</span>' +
+          '<span>⟨σ_y⟩ = ' + sigY.toFixed(4) + '</span>' +
+          '<span>⟨σ_z⟩ = ' + sigZ.toFixed(4) + '</span>';
+      }
+
+      // Mouse interaction: click near state vector tip to drag it, otherwise rotate view
+      function getMousePos(e) {
+        var rect = canvas.getBoundingClientRect();
+        return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      }
+
+      function getTouchPos(e) {
+        var rect = canvas.getBoundingClientRect();
+        var touch = e.touches[0];
+        return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+      }
+
+      function startInteraction(mx, my) {
+        // Check if near state vector tip
+        var sx = Math.sin(theta) * Math.cos(phi);
+        var sy = Math.sin(theta) * Math.sin(phi);
+        var sz = Math.cos(theta);
+        var pState = project(sx, sy, sz);
+        var dist = Math.sqrt((mx - pState.x) * (mx - pState.x) + (my - pState.y) * (my - pState.y));
+        if (dist < 25) {
+          isDragging = true;
+          isRotatingView = false;
+        } else {
+          isRotatingView = true;
+          isDragging = false;
+        }
+        lastMouse = { x: mx, y: my };
+      }
+
+      function moveInteraction(mx, my) {
+        var dx = mx - lastMouse.x;
+        var dy = my - lastMouse.y;
+
+        if (isDragging) {
+          // Map mouse motion to theta/phi changes
+          // We need to figure out how screen motion maps to sphere angles
+          // Simple approach: use screen deltas directly
+          theta = Math.max(0.01, Math.min(Math.PI - 0.01, theta + dy * 0.008));
+          phi = phi - dx * 0.008;
+          // Normalize phi to [0, 2pi)
+          while (phi < 0) phi += 2 * Math.PI;
+          while (phi >= 2 * Math.PI) phi -= 2 * Math.PI;
+          draw();
+        } else if (isRotatingView) {
+          viewAlpha += dx * 0.005;
+          viewBeta -= dy * 0.005;
+          viewBeta = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, viewBeta));
+          draw();
+        }
+        lastMouse = { x: mx, y: my };
+      }
+
+      canvas.addEventListener('mousedown', function (e) {
+        var pos = getMousePos(e);
+        startInteraction(pos.x, pos.y);
+      });
+
+      canvas.addEventListener('mousemove', function (e) {
+        if (!isDragging && !isRotatingView) return;
+        var pos = getMousePos(e);
+        moveInteraction(pos.x, pos.y);
+      });
+
+      window.addEventListener('mouseup', function () {
+        isDragging = false;
+        isRotatingView = false;
+      });
+
+      // Touch support
+      canvas.addEventListener('touchstart', function (e) {
+        e.preventDefault();
+        var pos = getTouchPos(e);
+        startInteraction(pos.x, pos.y);
+      }, { passive: false });
+
+      canvas.addEventListener('touchmove', function (e) {
+        e.preventDefault();
+        if (!isDragging && !isRotatingView) return;
+        var pos = getTouchPos(e);
+        moveInteraction(pos.x, pos.y);
+      }, { passive: false });
+
+      canvas.addEventListener('touchend', function () {
+        isDragging = false;
+        isRotatingView = false;
+      });
+
+      // Change cursor when hovering near the state vector
+      canvas.addEventListener('mousemove', function (e) {
+        if (isDragging || isRotatingView) return;
+        var pos = getMousePos(e);
+        var sx2 = Math.sin(theta) * Math.cos(phi);
+        var sy2 = Math.sin(theta) * Math.sin(phi);
+        var sz2 = Math.cos(theta);
+        var pState = project(sx2, sy2, sz2);
+        var dist = Math.sqrt((pos.x - pState.x) * (pos.x - pState.x) + (pos.y - pState.y) * (pos.y - pState.y));
+        canvas.style.cursor = dist < 25 ? 'grab' : 'move';
+      });
+
+      draw();
+    })();
+
+  }); // end DOMContentLoaded
+  </script>
+</BaseLayout>
