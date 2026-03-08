@@ -71,7 +71,15 @@ const nextChapter = currentIndex < chapters.length - 1 ? chapters[currentIndex +
           </div>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
         </a>
-      ) : <div />}
+      ) : (
+        <a href={`/${courseId}/interactive/`} class="flex items-center gap-2 text-right text-[var(--color-interactive)] hover:text-white transition-colors">
+          <div>
+            <div class="text-xs text-[var(--color-text-muted)]">{langKey === 'zh' ? '继续探索' : 'Explore'}</div>
+            <div class="text-sm">{langKey === 'zh' ? '交互实验室' : 'Interactive Lab'}</div>
+          </div>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+        </a>
+      )}
     </nav>
   </main>
 </BaseLayout>
