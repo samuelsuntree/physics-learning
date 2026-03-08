@@ -1,0 +1,898 @@
+---
+import ChapterLayout from '../../layouts/ChapterLayout.astro';
+import InsightBox from '../../components/InsightBox.astro';
+import ThinkingBox from '../../components/ThinkingBox.astro';
+import Derivation from '../../components/Derivation.astro';
+import ReferenceBox from '../../components/ReferenceBox.astro';
+
+const defined = {
+  /* ── helpers: every LaTeX snippet that contains { or } lives here ── */
+
+  /* §7.1 含时微扰论 */
+  Hfull: String.raw`$H = H_0 + V(t)$`,
+  H0eigen: String.raw`$$H_0|n\rangle = E_n|n\rangle$$`,
+  psiSchrodinger: String.raw`$$i\hbar\frac{\partial}{\partial t}|\psi(t)\rangle = (H_0 + V(t))|\psi(t)\rangle$$`,
+  interactionDef: String.raw`$$|\psi(t)\rangle_I = e^{iH_0 t/\hbar}|\psi(t)\rangle_S$$`,
+  operatorI: String.raw`$$V_I(t) = e^{iH_0 t/\hbar}V(t)\,e^{-iH_0 t/\hbar}$$`,
+  interactionSE: String.raw`$$i\hbar\frac{\partial}{\partial t}|\psi(t)\rangle_I = V_I(t)|\psi(t)\rangle_I$$`,
+  expandCI: String.raw`$$|\psi(t)\rangle_I = \sum_n c_n(t)|n\rangle$$`,
+  cnDotEq: String.raw`$$i\hbar\,\dot{c}_f(t) = \sum_n \langle f|V_I(t)|n\rangle\,c_n(t) = \sum_n V_{fn}(t)\,e^{i\omega_{fn}t}\,c_n(t)$$`,
+  omegaDef: String.raw`$\omega_{fn} = (E_f - E_n)/\hbar$`,
+  Vfn: String.raw`$V_{fn}(t) = \langle f|V(t)|n\rangle$`,
+  cf0: String.raw`$c_n^{(0)} = \delta_{ni}$`,
+  cf1: String.raw`$$c_f^{(1)}(t) = -\frac{i}{\hbar}\int_0^t \langle f|V(t')|i\rangle\,e^{i\omega_{fi}t'}\,dt'$$`,
+  cf1short: String.raw`$c_f^{(1)}(t) = -\frac{i}{\hbar}\int_0^t V_{fi}(t')\,e^{i\omega_{fi}t'}\,dt'$`,
+  Pif: String.raw`$$P_{i \to f}(t) = |c_f^{(1)}(t)|^2$$`,
+  cf2: String.raw`$$c_f^{(2)}(t) = \left(-\frac{i}{\hbar}\right)^2 \sum_m \int_0^t dt'\int_0^{t'} dt''\,V_{fm}(t')\,V_{mi}(t'')\,e^{i\omega_{fm}t'}\,e^{i\omega_{mi}t''}$$`,
+
+  /* 常微扰突然开启 */
+  constVon: String.raw`$V(t) = V_0\,\theta(t)$`,
+  cf1const: String.raw`$$c_f^{(1)}(t) = -\frac{i}{\hbar}V_{fi}\int_0^t e^{i\omega_{fi}t'}\,dt' = -\frac{V_{fi}}{\hbar\omega_{fi}}\left(e^{i\omega_{fi}t} - 1\right)$$`,
+  PifConst: String.raw`$$P_{i \to f}(t) = \frac{|V_{fi}|^2}{\hbar^2}\cdot\frac{\sin^2(\omega_{fi}t/2)}{(\omega_{fi}/2)^2}$$`,
+  sincFunc: String.raw`$\frac{\sin^2(\omega_{fi}t/2)}{(\omega_{fi}/2)^2}$`,
+  resonanceCond: String.raw`$\omega_{fi} \approx 0$`,
+  resonanceGrow: String.raw`$P_{i \to f}(t) \approx \frac{|V_{fi}|^2}{\hbar^2}\,t^2$`,
+  sinc2limit: String.raw`$\lim_{\omega \to 0}\frac{\sin^2(\omega t/2)}{(\omega/2)^2} = t^2$`,
+  resonanceWidth: String.raw`$\Delta\omega \sim 2\pi/t$`,
+
+  /* Dyson级数 */
+  dysonFormal: String.raw`$$|\psi(t)\rangle_I = \mathcal{T}\exp\!\left(-\frac{i}{\hbar}\int_0^t V_I(t')\,dt'\right)|\psi(0)\rangle$$`,
+  dysonExpand: String.raw`$$U_I(t) = \mathbf{1} + \sum_{n=1}^{\infty}\left(-\frac{i}{\hbar}\right)^n \int_0^t dt_1\int_0^{t_1}dt_2\cdots\int_0^{t_{n-1}}dt_n\,V_I(t_1)V_I(t_2)\cdots V_I(t_n)$$`,
+  timeOrdering: String.raw`$\mathcal{T}$`,
+  timeOrderDef: String.raw`$$\mathcal{T}[V_I(t_1)V_I(t_2)] = \begin{cases} V_I(t_1)V_I(t_2) & t_1 > t_2 \\ V_I(t_2)V_I(t_1) & t_2 > t_1 \end{cases}$$`,
+
+  /* §7.2 费米黄金规则 */
+  fgrRate: String.raw`$$\Gamma_{i \to f} = \frac{2\pi}{\hbar}\,|\langle f|V|i\rangle|^2\,\rho(E_f)$$`,
+  fgrRateInline: String.raw`$\Gamma_{i \to f} = \frac{2\pi}{\hbar}|\langle f|V|i\rangle|^2\rho(E_f)$`,
+  rhoEf: String.raw`$\rho(E_f)$`,
+  deltaLimit: String.raw`$$\lim_{t \to \infty}\frac{\sin^2(\omega t/2)}{\pi(\omega/2)^2 t} = \delta(\omega)$$`,
+  deltaLimitAlt: String.raw`$$\frac{\sin^2(\omega_{fi}t/2)}{(\omega_{fi}/2)^2} \xrightarrow{t \to \infty} 2\pi t\,\delta(\omega_{fi})$$`,
+  PifSum: String.raw`$$P_{i \to [f]} = \sum_f P_{i \to f} \approx \frac{|V_{fi}|^2}{\hbar^2}\int \frac{\sin^2(\omega_{fi}t/2)}{(\omega_{fi}/2)^2}\,\rho(E_f)\,dE_f$$`,
+  omegaToE: String.raw`$\omega_{fi} = (E_f - E_i)/\hbar$`,
+  dEfdomega: String.raw`$dE_f = \hbar\,d\omega_{fi}$`,
+  PifSumResult: String.raw`$$P_{i \to [f]} = \frac{2\pi}{\hbar}\,|V_{fi}|^2\,\rho(E_f)\Big|_{E_f = E_i}\,t$$`,
+  decayRate: String.raw`$$\Gamma = \frac{dP}{dt} = \frac{2\pi}{\hbar}\,|V_{fi}|^2\,\rho(E_f)\Big|_{E_f = E_i}$$`,
+
+  /* 周期性微扰 */
+  periodicV: String.raw`$$V(t) = V_0\,e^{-i\omega t} + V_0^\dagger\,e^{i\omega t}$$`,
+  cf1periodic: String.raw`$$c_f^{(1)}(t) = -\frac{i}{\hbar}\int_0^t\left[\langle f|V_0|i\rangle\,e^{i(\omega_{fi}-\omega)t'} + \langle f|V_0^\dagger|i\rangle\,e^{i(\omega_{fi}+\omega)t'}\right]dt'$$`,
+  absorpCond: String.raw`$\omega_{fi} \approx +\omega$`,
+  emissCond: String.raw`$\omega_{fi} \approx -\omega$`,
+  absorpCondMeaning: String.raw`$E_f \approx E_i + \hbar\omega$`,
+  emissCondMeaning: String.raw`$E_f \approx E_i - \hbar\omega$`,
+  fgrPeriodic: String.raw`$$\Gamma_{i \to f}^{\text{abs}} = \frac{2\pi}{\hbar}\,|\langle f|V_0|i\rangle|^2\,\rho(E_i + \hbar\omega)$$`,
+  fgrPeriodicEmiss: String.raw`$$\Gamma_{i \to f}^{\text{em}} = \frac{2\pi}{\hbar}\,|\langle f|V_0^\dagger|i\rangle|^2\,\rho(E_i - \hbar\omega)$$`,
+
+  /* 选择定则 */
+  dipoleOp: String.raw`$\hat{\mathbf{d}} = -e\hat{\mathbf{r}}$`,
+  dipoleMatEl: String.raw`$\langle f|\hat{\mathbf{d}}|i\rangle$`,
+  selRuleDeltaL: String.raw`$\Delta l = \pm 1$`,
+  selRuleDeltaM: String.raw`$\Delta m = 0, \pm 1$`,
+  selRuleParity: String.raw`$(-1)^{l_f} \neq (-1)^{l_i}$`,
+
+  /* §7.3 绝热近似与Berry相 */
+  HofR: String.raw`$H(\mathbf{R}(t))$`,
+  instantEigen: String.raw`$$H(\mathbf{R}(t))|n(\mathbf{R}(t))\rangle = E_n(\mathbf{R}(t))|n(\mathbf{R}(t))\rangle$$`,
+  adiabaticState: String.raw`$$|\psi(t)\rangle = \sum_n c_n(t)\,e^{i\theta_n(t)}\,e^{i\gamma_n(t)}|n(\mathbf{R}(t))\rangle$$`,
+  dynamicPhase: String.raw`$$\theta_n(t) = -\frac{1}{\hbar}\int_0^t E_n(t')\,dt'$$`,
+  dynamicPhaseInline: String.raw`$\theta_n(t) = -\frac{1}{\hbar}\int_0^t E_n(t')\,dt'$`,
+  adiabaticCond: String.raw`$$\left|\frac{\langle m(\mathbf{R})|\dot{H}|n(\mathbf{R})\rangle}{E_n - E_m}\right| \ll \frac{|E_n - E_m|}{\hbar}, \quad \forall\,m \neq n$$`,
+  adiabaticCondCompact: String.raw`$$\left|\langle m|\dot{H}|n\rangle\right| \ll \frac{(E_n - E_m)^2}{\hbar}$$`,
+  adiabaticThm: String.raw`$c_n(t) \approx c_n(0)$`,
+
+  /* Berry相 */
+  berryPhase: String.raw`$$\gamma_n = i\oint \langle n(\mathbf{R})|\nabla_{\mathbf{R}}|n(\mathbf{R})\rangle \cdot d\mathbf{R}$$`,
+  berryPhaseInline: String.raw`$\gamma_n = i\oint \langle n(\mathbf{R})|\nabla_{\mathbf{R}}|n(\mathbf{R})\rangle \cdot d\mathbf{R}$`,
+  berryConnection: String.raw`$$\mathbf{A}_n(\mathbf{R}) = i\langle n(\mathbf{R})|\nabla_{\mathbf{R}}|n(\mathbf{R})\rangle$$`,
+  berryConnectionInline: String.raw`$\mathbf{A}_n(\mathbf{R}) = i\langle n(\mathbf{R})|\nabla_{\mathbf{R}}|n(\mathbf{R})\rangle$`,
+  berryCurvature: String.raw`$$\mathbf{F}_n(\mathbf{R}) = \nabla_{\mathbf{R}} \times \mathbf{A}_n(\mathbf{R})$$`,
+  berryCurvatureInline: String.raw`$\mathbf{F}_n = \nabla_{\mathbf{R}} \times \mathbf{A}_n$`,
+  berryStokes: String.raw`$$\gamma_n = \oint_{\mathcal{C}} \mathbf{A}_n \cdot d\mathbf{R} = \int_{\mathcal{S}} \mathbf{F}_n \cdot d\mathbf{S}$$`,
+  gaugeTransform: String.raw`$$|n(\mathbf{R})\rangle \to e^{i\chi_n(\mathbf{R})}|n(\mathbf{R})\rangle$$`,
+  AunderGauge: String.raw`$$\mathbf{A}_n \to \mathbf{A}_n - \nabla_{\mathbf{R}}\chi_n$$`,
+  FgaugeInvariant: String.raw`$$\mathbf{F}_n \to \mathbf{F}_n$$`,
+  gammaGaugeInvariant: String.raw`$\gamma_n \to \gamma_n + \chi_n(\mathbf{R}_0) - \chi_n(\mathbf{R}_0) = \gamma_n$`,
+
+  /* 自旋-1/2 在磁场中 */
+  spinHamiltonian: String.raw`$$H = -\frac{e}{2m_e}\hat{\mathbf{S}} \cdot \mathbf{B}(t) = -\frac{\omega_0}{2}\hat{\boldsymbol{\sigma}} \cdot \hat{\mathbf{n}}(t)$$`,
+  Bfield: String.raw`$$\mathbf{B}(t) = B_0(\sin\alpha\cos\phi(t),\;\sin\alpha\sin\phi(t),\;\cos\alpha)$$`,
+  spinUpInstant: String.raw`$$|+;\hat{\mathbf{n}}\rangle = \cos\frac{\alpha}{2}|\!\uparrow\rangle + \sin\frac{\alpha}{2}\,e^{i\phi}|\!\downarrow\rangle$$`,
+  spinDownInstant: String.raw`$$|-;\hat{\mathbf{n}}\rangle = \sin\frac{\alpha}{2}|\!\uparrow\rangle - \cos\frac{\alpha}{2}\,e^{i\phi}|\!\downarrow\rangle$$`,
+  spinBerryA: String.raw`$$A_\phi = i\langle +;\hat{\mathbf{n}}|\frac{\partial}{\partial\phi}|+;\hat{\mathbf{n}}\rangle = -\sin^2\frac{\alpha}{2}$$`,
+  spinBerryPhase: String.raw`$$\gamma_+ = \oint A_\phi\,d\phi = -2\pi\sin^2\frac{\alpha}{2} = -\pi(1 - \cos\alpha)$$`,
+  solidAngle: String.raw`$\Omega = 2\pi(1 - \cos\alpha)$`,
+  solidAngleFormula: String.raw`$$\gamma_+ = -\frac{\Omega}{2}$$`,
+  spinBerryF: String.raw`$$\mathbf{F} = -\frac{\hat{\mathbf{R}}}{2R^2}$$`,
+  monopoleAnalogy: String.raw`$\mathbf{F} = -\frac{\hat{\mathbf{R}}}{2R^2}$`,
+
+  /* Berry相推导辅助 */
+  psiAdiabatic: String.raw`$$|\psi(t)\rangle = c_n(t)\,e^{i\theta_n(t)}|n(\mathbf{R}(t))\rangle$$`,
+  cnDot: String.raw`$$\dot{c}_n = -c_n\langle n|\dot{n}\rangle$$`,
+  cnSol: String.raw`$$c_n(t) = c_n(0)\,\exp\!\left(-\int_0^t \langle n(\mathbf{R}(t'))|\frac{\partial}{\partial t'}|n(\mathbf{R}(t'))\rangle\,dt'\right)$$`,
+  cnPhase: String.raw`$$c_n(t) = c_n(0)\,e^{i\gamma_n(t)}$$`,
+  gammaDef: String.raw`$$\gamma_n(t) = i\int_0^t \langle n(\mathbf{R}(t'))|\frac{\partial}{\partial t'}|n(\mathbf{R}(t'))\rangle\,dt' = i\int_{\mathbf{R}(0)}^{\mathbf{R}(t)} \langle n|\nabla_{\mathbf{R}}|n\rangle \cdot d\mathbf{R}$$`,
+
+  /* 绝热定理推导辅助 */
+  adiaFullExpand: String.raw`$$|\psi(t)\rangle = \sum_n c_n(t)\,e^{i\theta_n(t)}|n(t)\rangle$$`,
+  adiaSubstSE: String.raw`$$i\hbar\sum_n\left[\dot{c}_n\,e^{i\theta_n}|n\rangle + c_n\,e^{i\theta_n}\left(i\dot{\theta}_n|n\rangle + |\dot{n}\rangle\right)\right] = \sum_n c_n\,e^{i\theta_n}E_n|n\rangle$$`,
+  adiaSimplify: String.raw`$$\dot{c}_m = -\sum_n c_n\,e^{i(\theta_n - \theta_m)}\langle m|\dot{n}\rangle$$`,
+  adiaOffDiag: String.raw`$$\langle m|\dot{n}\rangle = \frac{\langle m|\dot{H}|n\rangle}{E_n - E_m}, \quad m \neq n$$`,
+  adiaNeglect: String.raw`$$\dot{c}_m \approx -c_m\langle m|\dot{m}\rangle$$`,
+
+  /* 通用 */
+  hbar: String.raw`$\hbar$`,
+  H0: String.raw`$H_0$`,
+  Vt: String.raw`$V(t)$`,
+  Rpar: String.raw`$\mathbf{R}$`,
+};
+---
+
+<ChapterLayout title="第七章 含时问题" courseId="qm" chapterId="ch07">
+
+  <h1>第七章 含时问题</h1>
+
+  <p>
+    前一章讨论的微扰论和近似方法都针对<strong>定态问题</strong>——Hamilton量不显含时间，我们求解的是能量本征值和本征态。
+    然而物理世界中大量重要现象本质上是<strong>含时</strong>的：原子在电磁波作用下的受激跃迁、
+    粒子的散射和衰变、量子绝热过程中的几何相位等等。本章系统发展处理含时问题的理论工具：
+    <strong>含时微扰论</strong>给出外场作用下量子态跃迁的概率振幅；
+    <strong>费米黄金规则</strong>将跃迁概率转化为跃迁速率，是粒子物理和凝聚态物理中最常用的公式之一；
+    <strong>绝热近似与Berry相</strong>揭示了量子态在参数空间缓慢演化时获得的几何相位，
+    这一发现深刻地连接了量子力学与微分几何和拓扑学。
+  </p>
+
+  <InsightBox title="从定态到含时：物理图像的转变">
+    <p>
+      定态问题的核心是<strong>能谱</strong>——系统处于哪些定态、能量是多少。
+      含时问题的核心则是<strong>跃迁</strong>——系统如何在不同定态之间转移。
+      这一转变的数学体现是，从求解 $H|\psi\rangle = E|\psi\rangle$（特征值问题）
+      转向求解 $i\hbar\partial_t|\psi\rangle = H(t)|\psi\rangle$（初值问题）。
+      含时微扰论的精髓在于：将含时问题转化为在已知定态基底上的展开系数的演化方程。
+    </p>
+  </InsightBox>
+
+  <!-- ================================================================== -->
+  <!-- 7.1 含时微扰论 -->
+  <!-- ================================================================== -->
+  <h2 id="time-dependent-perturbation">7.1 含时微扰论</h2>
+
+  <h3>相互作用绘景</h3>
+
+  <p>
+    考虑 Hamilton 量 <Fragment set:html={defined.Hfull} />，其中 <Fragment set:html={defined.H0} /> 是
+    具有已知本征值和本征态的不含时 Hamilton 量，<Fragment set:html={defined.Vt} /> 是含时微扰。
+    <Fragment set:html={defined.H0} /> 的本征值问题已经解决：
+  </p>
+
+  <Fragment set:html={defined.H0eigen} />
+
+  <p>
+    含时 Schrodinger 方程为：
+  </p>
+
+  <Fragment set:html={defined.psiSchrodinger} />
+
+  <p>
+    处理含时微扰问题最自然的框架是<strong>相互作用绘景</strong>（interaction picture）。
+    在 Schrodinger 绘景中，态矢量携带全部时间演化；在 Heisenberg 绘景中，算符携带全部时间演化。
+    相互作用绘景是两者的折衷：<Fragment set:html={defined.H0} /> 导致的"已知"演化由算符携带，
+    而微扰 <Fragment set:html={defined.Vt} /> 导致的"未知"演化由态矢量携带。
+  </p>
+
+  <p>定义相互作用绘景中的态矢量：</p>
+
+  <Fragment set:html={defined.interactionDef} />
+
+  <p>相互作用绘景中的微扰算符为：</p>
+
+  <Fragment set:html={defined.operatorI} />
+
+  <p>
+    将上述定义代入 Schrodinger 方程，经过直接计算可以证明，
+    相互作用绘景中的态矢量满足：
+  </p>
+
+  <Fragment set:html={defined.interactionSE} />
+
+  <Derivation title="相互作用绘景运动方程的推导">
+    <p>
+      在 Schrodinger 绘景中，$i\hbar\frac{\partial}{\partial t}|\psi\rangle_S = (H_0 + V)|\psi\rangle_S$。
+      定义 $|\psi\rangle_I = e^{iH_0 t/\hbar}|\psi\rangle_S$，则：
+    </p>
+    <p>
+      $$i\hbar\frac{\partial}{\partial t}|\psi\rangle_I = i\hbar\left(\frac{iH_0}{\hbar}e^{iH_0 t/\hbar}|\psi\rangle_S + e^{iH_0 t/\hbar}\frac{\partial}{\partial t}|\psi\rangle_S\right)$$
+    </p>
+    <p>
+      $$= -H_0\,e^{iH_0 t/\hbar}|\psi\rangle_S + e^{iH_0 t/\hbar}(H_0 + V)|\psi\rangle_S$$
+    </p>
+    <p>
+      $$= e^{iH_0 t/\hbar}V(t)|\psi\rangle_S = e^{iH_0 t/\hbar}V(t)e^{-iH_0 t/\hbar}\cdot e^{iH_0 t/\hbar}|\psi\rangle_S$$
+    </p>
+    <p>
+      $$= V_I(t)|\psi\rangle_I$$
+    </p>
+    <p>
+      其中 $H_0$ 项恰好抵消，只留下微扰部分。这正是相互作用绘景的优势所在：
+      自由演化的"琐碎"部分已被吸收到算符的时间依赖中，
+      态矢量的演化完全由微扰驱动。
+    </p>
+  </Derivation>
+
+  <h3>微扰展开与跃迁振幅</h3>
+
+  <p>
+    将相互作用绘景中的态矢量在 <Fragment set:html={defined.H0} /> 的本征态上展开：
+  </p>
+
+  <Fragment set:html={defined.expandCI} />
+
+  <p>
+    注意这里的 $|n\rangle$ 是 <Fragment set:html={defined.H0} /> 的本征态（不含时间），
+    全部时间依赖被吸收到展开系数 $c_n(t)$ 中。代入相互作用绘景的运动方程，
+    左乘 $\langle f|$，得到展开系数的耦合微分方程组：
+  </p>
+
+  <Fragment set:html={defined.cnDotEq} />
+
+  <p>
+    其中 <Fragment set:html={defined.omegaDef} /> 是 Bohr 频率，
+    <Fragment set:html={defined.Vfn} /> 是微扰的矩阵元。
+    这是一个精确的方程组——到此为止没有任何近似。
+  </p>
+
+  <p>
+    现在引入微扰展开。设初始条件为 $t = 0$ 时系统处于 <Fragment set:html={defined.H0} /> 的某个本征态 $|i\rangle$，
+    即 <Fragment set:html={defined.cf0} />。将 $c_n(t)$ 按微扰的阶次展开：
+    $c_n = c_n^{(0)} + c_n^{(1)} + c_n^{(2)} + \cdots$。
+  </p>
+
+  <p>
+    <strong>零阶</strong>：$c_f^{(0)} = \delta_{fi}$，即无微扰时系统保持在初态。
+  </p>
+
+  <p>
+    <strong>一阶</strong>：将零阶解代入方程右端，得到一阶跃迁振幅（$f \neq i$）：
+  </p>
+
+  <Fragment set:html={defined.cf1} />
+
+  <p>
+    <strong>跃迁概率</strong>为振幅模方：
+  </p>
+
+  <Fragment set:html={defined.Pif} />
+
+  <p>
+    <strong>二阶</strong>：将一阶解代入方程右端，得到包含中间态求和的二阶振幅：
+  </p>
+
+  <Fragment set:html={defined.cf2} />
+
+  <p>
+    二阶过程的物理图像非常清晰：系统先从初态 $|i\rangle$ 经微扰跃迁到中间态 $|m\rangle$，
+    再从中间态跃迁到末态 $|f\rangle$。对所有可能的中间态求和，对中间时刻在保持时序的条件下积分。
+  </p>
+
+  <InsightBox title="含时微扰论与定态微扰论的对比">
+    <p>
+      定态微扰论的一阶修正 $|n^{(1)}\rangle = \sum_{m \neq n}\frac{V_{mn}}{E_n - E_m}|m\rangle$
+      对应的是能量分母 $1/(E_n - E_m)$。含时微扰论的一阶振幅
+      <Fragment set:html={defined.cf1short} /> 对应的则是时间积分——时间积分中的振荡因子
+      $e^{i\omega_{fi}t'}$ 正是"能量守恒"的体现。当 $\omega_{fi} \neq 0$ 时，
+      振荡积分给出有限值（虚拟过程）；当 <Fragment set:html={defined.resonanceCond} /> 时，
+      积分随 $t$ 线性增长（共振跃迁，能量守恒的实过程）。
+    </p>
+  </InsightBox>
+
+  <h3>常微扰突然开启</h3>
+
+  <p>
+    最重要的特殊情况是不含时微扰在 $t = 0$ 时突然开启：<Fragment set:html={defined.constVon} />，
+    其中 $\theta(t)$ 是 Heaviside 阶跃函数。此时一阶跃迁振幅可以解析计算：
+  </p>
+
+  <Fragment set:html={defined.cf1const} />
+
+  <p>跃迁概率为：</p>
+
+  <Fragment set:html={defined.PifConst} />
+
+  <p>
+    函数 <Fragment set:html={defined.sincFunc} /> 的行为非常有意义：
+  </p>
+
+  <ul>
+    <li>
+      它在 <Fragment set:html={defined.resonanceCond} />（即 $E_f \approx E_i$）处取极大值 $t^2$。
+      由 <Fragment set:html={defined.sinc2limit} />，共振时跃迁概率随时间平方增长：
+      <Fragment set:html={defined.resonanceGrow} />。
+    </li>
+    <li>
+      峰的宽度为 <Fragment set:html={defined.resonanceWidth} />，随时间增长而变窄。
+      这就是能量-时间不确定关系 $\Delta E \cdot \Delta t \sim h$ 的直接体现：
+      微扰作用时间越长，跃迁到的末态能量越精确地等于初态能量。
+    </li>
+    <li>
+      在偏离共振处（$\omega_{fi}$ 较大），概率做振荡但不累积增长，
+      这对应不满足能量守恒的"虚拟跃迁"。
+    </li>
+  </ul>
+
+  <ThinkingBox title="跃迁概率随 t² 增长的困难">
+    <p>
+      共振时 $P \propto t^2$ 意味着概率可以超过 1——这当然是非物理的。
+      这个困难的根源在于我们使用了一阶微扰论，只在 $|V_{fi}|^2 t^2/\hbar^2 \ll 1$ 时有效。
+      对于跃迁到单个分立态的情况，需要精确求解二能级系统的 Rabi 振荡（Rabi oscillation），
+      跃迁概率实际上是 $\sin^2(\Omega_R t/2)$，其中 $\Omega_R$ 是 Rabi 频率。
+      对于跃迁到连续态的情况，对末态求和（积分）后概率随 $t$ 线性增长，
+      由此定义的跃迁<strong>速率</strong>是有限常数——这正是费米黄金规则的内容。
+    </p>
+  </ThinkingBox>
+
+  <h3>Dyson级数与时序指数</h3>
+
+  <p>
+    微扰展开可以推广到任意阶，形式上给出含时演化算符的 Dyson 级数：
+  </p>
+
+  <Fragment set:html={defined.dysonExpand} />
+
+  <p>
+    其中积分区域满足严格的时序关系 $t \geq t_1 \geq t_2 \geq \cdots \geq t_n \geq 0$。
+    这可以紧凑地写成时序指数的形式：
+  </p>
+
+  <Fragment set:html={defined.dysonFormal} />
+
+  <p>
+    其中 <Fragment set:html={defined.timeOrdering} /> 是<strong>时序算符</strong>（time-ordering operator），
+    它将算符按时间从右到左排列：
+  </p>
+
+  <Fragment set:html={defined.timeOrderDef} />
+
+  <p>
+    时序的必要性源于不同时刻的微扰算符一般不对易：$[V_I(t_1), V_I(t_2)] \neq 0$。
+    Dyson 级数是量子场论中微扰计算的起点，Feynman 图就是它的图形化表示。
+  </p>
+
+  <Derivation title="Dyson级数的逐阶构造">
+    <p>
+      相互作用绘景的运动方程 $i\hbar\partial_t|\psi\rangle_I = V_I(t)|\psi\rangle_I$
+      可以写成等价的积分方程：
+    </p>
+    <p>
+      $$|\psi(t)\rangle_I = |\psi(0)\rangle + \frac{1}{i\hbar}\int_0^t V_I(t_1)|\psi(t_1)\rangle_I\,dt_1$$
+    </p>
+    <p>
+      这是 Volterra 积分方程，通过逐次迭代求解：
+    </p>
+    <p>
+      <strong>零阶</strong>：$|\psi(t)\rangle_I^{(0)} = |\psi(0)\rangle$。
+    </p>
+    <p>
+      <strong>一阶</strong>：将零阶代入右端，
+    </p>
+    <p>
+      $$|\psi(t)\rangle_I^{(1)} = |\psi(0)\rangle + \frac{1}{i\hbar}\int_0^t V_I(t_1)|\psi(0)\rangle\,dt_1$$
+    </p>
+    <p>
+      <strong>二阶</strong>：将一阶代入右端，
+    </p>
+    <p>
+      $$|\psi(t)\rangle_I^{(2)} = |\psi(0)\rangle + \frac{1}{i\hbar}\int_0^t V_I(t_1)|\psi(0)\rangle\,dt_1 + \left(\frac{1}{i\hbar}\right)^2\int_0^t dt_1\int_0^{t_1} dt_2\,V_I(t_1)V_I(t_2)|\psi(0)\rangle$$
+    </p>
+    <p>
+      注意二阶项中的积分限：内层积分上限是 $t_1$（而非 $t$），这保证了 $t_2 \leq t_1$，即时序关系。
+      无穷次迭代后得到完整的 Dyson 级数。利用时序算符，有序积分区域
+      $t \geq t_1 \geq \cdots \geq t_n \geq 0$ 可以改写为对称化形式
+      $\frac{1}{n!}\int_0^t dt_1 \cdots \int_0^t dt_n\,\mathcal{T}[V_I(t_1)\cdots V_I(t_n)]$，
+      从而对全级数求和可得时序指数。
+    </p>
+  </Derivation>
+
+  <ReferenceBox>
+    <ul>
+      <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.5.5-5.6：含时微扰论与相互作用绘景</li>
+      <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.9.1：含时微扰的二能级系统</li>
+      <li>曾谨言,《量子力学》卷II, 第四章 &sect;4.1-4.2：含时微扰论</li>
+      <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, &sect;40：含时微扰</li>
+    </ul>
+  </ReferenceBox>
+
+  <!-- ================================================================== -->
+  <!-- 7.2 费米黄金规则 -->
+  <!-- ================================================================== -->
+  <h2 id="fermi-golden-rule">7.2 费米黄金规则</h2>
+
+  <h3>从跃迁概率到跃迁速率</h3>
+
+  <p>
+    上节得到的常微扰跃迁概率 <Fragment set:html={defined.PifConst} /> 对单个分立末态而言在共振时随 $t^2$ 增长，
+    物理上不可能无限增大。但在许多实际情况中，末态并非单个分立态，
+    而是一组准连续的态——例如散射末态、光子场的模式等。
+    此时需要对所有符合条件的末态求和，引入<strong>态密度</strong> <Fragment set:html={defined.rhoEf} />
+    （单位能量间隔内的态数目）。
+  </p>
+
+  <p>总跃迁概率为对末态的积分：</p>
+
+  <Fragment set:html={defined.PifSum} />
+
+  <p>
+    关键的数学步骤是：在长时间极限 $t \to \infty$ 下，函数
+    <Fragment set:html={defined.sincFunc} /> 变得极其尖锐地集中在 $\omega_{fi} = 0$ 处，
+    其行为趋近于 $\delta$ 函数。精确地说：
+  </p>
+
+  <Fragment set:html={defined.deltaLimitAlt} />
+
+  <Derivation title="sinc² 函数趋近 δ 函数的严格证明">
+    <p>
+      需要证明：$\lim_{t \to \infty}\frac{\sin^2(\omega t/2)}{\pi(\omega/2)^2 t} = \delta(\omega)$。
+      验证 $\delta$ 函数的两个定义性质：
+    </p>
+    <p>
+      <strong>(1) 归一化</strong>：计算总面积，
+    </p>
+    <p>
+      $$\int_{-\infty}^{\infty}\frac{\sin^2(\omega t/2)}{(\omega/2)^2}\,d\omega$$
+    </p>
+    <p>
+      令 $u = \omega t/2$，则 $d\omega = 2\,du/t$，$(\omega/2)^2 = u^2/t^2$，积分变为
+    </p>
+    <p>
+      $$\int_{-\infty}^{\infty}\frac{\sin^2 u}{u^2/t^2}\cdot\frac{2\,du}{t} = 2t\int_{-\infty}^{\infty}\frac{\sin^2 u}{u^2}\,du = 2\pi t$$
+    </p>
+    <p>
+      其中使用了标准积分 $\int_{-\infty}^{\infty}\frac{\sin^2 u}{u^2}\,du = \pi$。
+      因此 $\frac{1}{2\pi t}\int\frac{\sin^2(\omega t/2)}{(\omega/2)^2}\,d\omega = 1$。
+    </p>
+    <p>
+      <strong>(2) 集中性</strong>：当 $\omega \neq 0$ 时，$\frac{\sin^2(\omega t/2)}{(\omega/2)^2}$
+      被 $\frac{1}{(\omega/2)^2}$ 限界，而归一化因子 $1/(2\pi t)$ 随 $t$ 趋于零。
+      只有在 $|\omega| \lesssim 2\pi/t$ 的窄区域内，函数值 $\sim t^2$ 才能弥补衰减因子。
+    </p>
+    <p>
+      综合两点，$\frac{\sin^2(\omega t/2)}{(\omega/2)^2} \to 2\pi t\,\delta(\omega)$。
+      等价地，由 <Fragment set:html={defined.omegaToE} />，$\delta(\omega_{fi}) = \hbar\,\delta(E_f - E_i)$，
+      这保证了只有满足能量守恒 $E_f = E_i$ 的末态才有非零贡献。
+    </p>
+  </Derivation>
+
+  <p>
+    将 $\delta$ 函数极限代入总跃迁概率的积分，由于 $\delta(\omega_{fi})$ 将末态能量锁定在 $E_f = E_i$，
+    矩阵元和态密度可以提到积分号外（取 $E_f = E_i$ 处的值）：
+  </p>
+
+  <Fragment set:html={defined.PifSumResult} />
+
+  <p>概率随 $t$ 线性增长，由此定义跃迁速率（单位时间跃迁概率）：</p>
+
+  <Fragment set:html={defined.decayRate} />
+
+  <p>这就是著名的<strong>费米黄金规则</strong>（Fermi's golden rule）：</p>
+
+  <Fragment set:html={defined.fgrRate} />
+
+  <InsightBox title="费米黄金规则的物理内涵">
+    <p>
+      费米黄金规则的深刻之处在于将量子跃迁分解为两个独立因素：
+      <strong>矩阵元</strong> $|\langle f|V|i\rangle|^2$ 描述微扰的"耦合强度"——微观动力学；
+      <strong>态密度</strong> <Fragment set:html={defined.rhoEf} /> 描述末态的"可用空间"——运动学（相空间）。
+      前者取决于具体的相互作用形式，后者取决于末态的运动学约束。
+      粒子物理中计算散射截面和衰变率时，矩阵元由 Feynman 图给出，
+      态密度则由相空间积分（Lorentz 不变相空间）给出——两者的分离正源于费米黄金规则的结构。
+    </p>
+  </InsightBox>
+
+  <h3>周期性微扰与光的吸收和发射</h3>
+
+  <p>
+    在光与物质的相互作用中，微扰是以频率 $\omega$ 振荡的电磁场。
+    最一般的 Hermite 周期性微扰可以写为：
+  </p>
+
+  <Fragment set:html={defined.periodicV} />
+
+  <p>
+    其中 $V_0$ 不含时间。一阶跃迁振幅为：
+  </p>
+
+  <Fragment set:html={defined.cf1periodic} />
+
+  <p>
+    积分中的两项分别包含振荡因子 $e^{i(\omega_{fi}-\omega)t}$ 和 $e^{i(\omega_{fi}+\omega)t}$。
+    只有当振荡因子的频率接近零时，积分才能累积产生显著贡献：
+  </p>
+
+  <ul>
+    <li>
+      <strong>吸收</strong>（absorption）：<Fragment set:html={defined.absorpCond} />，即
+      <Fragment set:html={defined.absorpCondMeaning} />。
+      系统吸收一个能量为 <Fragment set:html={defined.hbar} />$\omega$ 的光子，
+      从低能级跃迁到高能级。对应的跃迁速率为：
+      <Fragment set:html={defined.fgrPeriodic} />
+    </li>
+    <li>
+      <strong>受激发射</strong>（stimulated emission）：<Fragment set:html={defined.emissCond} />，即
+      <Fragment set:html={defined.emissCondMeaning} />。
+      系统释放一个光子，从高能级跃迁到低能级。对应的跃迁速率为：
+      <Fragment set:html={defined.fgrPeriodicEmiss} />
+    </li>
+  </ul>
+
+  <p>
+    注意吸收和受激发射的速率具有完全对称的结构。
+    对于 Hermite 微扰 $V_0^\dagger = V_0$（自伴），两者的矩阵元模方相等——
+    这就是 Einstein 的 $B$ 系数相等（$B_{i \to f} = B_{f \to i}$）的微观基础。
+  </p>
+
+  <h3>选择定则</h3>
+
+  <p>
+    费米黄金规则告诉我们，跃迁速率正比于矩阵元 $|\langle f|V|i\rangle|^2$。
+    当矩阵元为零时，对应的跃迁被<strong>禁止</strong>——这就是<strong>选择定则</strong>（selection rules）的起源。
+  </p>
+
+  <p>
+    对于原子与光的相互作用，在电偶极近似下，微扰算符正比于电偶极算符
+    <Fragment set:html={defined.dipoleOp} />。跃迁速率正比于
+    $|\langle f|\hat{\mathbf{r}}|i\rangle|^2$。利用球谐函数的正交性和宇称性质，可以严格证明：
+  </p>
+
+  <ul>
+    <li>
+      <strong>角量子数选择定则</strong>：<Fragment set:html={defined.selRuleDeltaL} />。
+      这源于 $\hat{\mathbf{r}}$ 是矢量算符（$l = 1$ 的球张量），
+      Wigner-Eckart 定理要求 $|l_f - l_i| \leq 1 \leq l_f + l_i$ 且 $l_f \neq l_i$
+      （因为 <Fragment set:html={defined.selRuleParity} />，宇称必须改变）。
+    </li>
+    <li>
+      <strong>磁量子数选择定则</strong>：<Fragment set:html={defined.selRuleDeltaM} />。
+      这分别对应线偏振光（$\Delta m = 0$）和圆偏振光（$\Delta m = \pm 1$）。
+    </li>
+  </ul>
+
+  <ThinkingBox title="选择定则的深层来源：对称性">
+    <p>
+      选择定则并非偶然的数学巧合，而是对称性的直接后果。
+      $\Delta l = \pm 1$ 来自宇称守恒——电偶极辐射改变宇称，因此初末态宇称必须相反。
+      $\Delta m = 0, \pm 1$ 来自角动量守恒——光子携带角动量 $\hbar$，
+      因此原子角动量的 $z$ 分量最多改变 $\hbar$。
+      更高阶的多极辐射（磁偶极 M1、电四极 E2 等）有不同的选择定则，
+      但跃迁速率远小于电偶极跃迁——这就是为什么"禁戒跃迁"虽然不是绝对禁止，
+      但速率被极大地压低。
+    </p>
+  </ThinkingBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.5.7：费米黄金规则</li>
+      <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.9.2-9.3：正弦微扰与光的吸收和发射</li>
+      <li>曾谨言,《量子力学》卷II, 第四章 &sect;4.3-4.5：常微扰、周期微扰与跃迁速率</li>
+      <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, &sect;42-44：跃迁概率与选择定则</li>
+    </ul>
+  </ReferenceBox>
+
+  <!-- ================================================================== -->
+  <!-- 7.3 绝热近似与Berry相 -->
+  <!-- ================================================================== -->
+  <h2 id="adiabatic">7.3 绝热近似与Berry相</h2>
+
+  <h3>绝热定理</h3>
+
+  <p>
+    考虑 Hamilton 量依赖于一组缓慢变化的外部参数 <Fragment set:html={defined.Rpar} />（如磁场的方向和大小），
+    即 <Fragment set:html={defined.HofR} />。在每一个瞬间 $t$，Hamilton 量 $H(\mathbf{R}(t))$
+    都有一组瞬时本征态和本征值：
+  </p>
+
+  <Fragment set:html={defined.instantEigen} />
+
+  <p>
+    <strong>绝热定理</strong>（adiabatic theorem）指出：如果参数变化足够缓慢，
+    且系统初始时处于 $H$ 的某个非简并本征态 $|n(\mathbf{R}(0))\rangle$，
+    则在之后的演化中，系统将始终保持在 $H(\mathbf{R}(t))$ 的瞬时本征态 $|n(\mathbf{R}(t))\rangle$ 上
+    （至多差一个相位因子）——不会发生到其他能级的跃迁。
+  </p>
+
+  <p>
+    "缓慢"的精确含义由<strong>绝热条件</strong>给出：
+  </p>
+
+  <Fragment set:html={defined.adiabaticCondCompact} />
+
+  <p>
+    即微扰引起的不同能级之间的耦合矩阵元远小于能级间隔的平方除以 <Fragment set:html={defined.hbar} />。
+    等价地写为：
+  </p>
+
+  <Fragment set:html={defined.adiabaticCond} />
+
+  <p>
+    左端是"参数变化导致的能级间耦合"的强度，右端是 Bohr 频率——绝热条件要求
+    参数变化的特征频率远小于 Bohr 频率。
+  </p>
+
+  <InsightBox title="绝热定理的直觉">
+    <p>
+      绝热定理的经典类比是缓慢改变单摆摆长：如果摆长变化远慢于摆动周期，
+      摆的"量子数"（振幅与频率的比值，即作用量变量 $J$）保持不变。
+      在量子力学中，这意味着"量子数不变"——系统留在同一本征态上。
+      绝热条件的本质是避免共振：只有当外界驱动的频率接近 Bohr 频率时，
+      才能有效地激发跃迁。缓慢驱动远离共振，因此跃迁被抑制。
+    </p>
+  </InsightBox>
+
+  <h3>动力学相与几何相的分离</h3>
+
+  <p>
+    在绝热近似下，系统保持在瞬时本征态上，但会获得相位因子。
+    将态矢量写为：
+  </p>
+
+  <Fragment set:html={defined.psiAdiabatic} />
+
+  <p>
+    其中 <Fragment set:html={defined.dynamicPhaseInline} /> 是<strong>动力学相</strong>（dynamical phase），
+    它是定态相位 $e^{-iEt/\hbar}$ 的自然推广——将瞬时能量对时间积分。
+    关键在于，除了动力学相之外，还有一个额外的相位 $\gamma_n(t)$，它的存在并不平凡。
+  </p>
+
+  <Derivation title="绝热近似的严格推导与Berry相的出现">
+    <p>
+      将态矢量在瞬时本征态上做最一般的展开：
+    </p>
+    <Fragment set:html={defined.adiaFullExpand} />
+    <p>
+      其中动力学相 <Fragment set:html={defined.dynamicPhaseInline} /> 已被显式提取。
+      代入 Schrodinger 方程 $i\hbar\partial_t|\psi\rangle = H|\psi\rangle$：
+    </p>
+    <Fragment set:html={defined.adiaSubstSE} />
+    <p>
+      利用 $H|n(t)\rangle = E_n(t)|n(t)\rangle$ 和 $i\hbar\dot{\theta}_n = -E_n$，
+      方程简化为 $\sum_n \dot{c}_n\,e^{i\theta_n}|n\rangle = -\sum_n c_n\,e^{i\theta_n}|\dot{n}\rangle$。
+      左乘 $\langle m|$ 得到：
+    </p>
+    <Fragment set:html={defined.adiaSimplify} />
+    <p>
+      其中对 $H|n\rangle = E_n|n\rangle$ 关于时间求导并左乘 $\langle m|$（$m \neq n$）可得：
+    </p>
+    <Fragment set:html={defined.adiaOffDiag} />
+    <p>
+      绝热条件保证 $m \neq n$ 时的非对角耦合 $\langle m|\dot{n}\rangle$ 可以忽略
+      （因为 $\langle m|\dot{H}|n\rangle/(E_n - E_m)$ 远小于相位因子 $e^{i(\theta_n-\theta_m)}$ 的振荡频率）。
+      保留对角项 $m = n$：
+    </p>
+    <Fragment set:html={defined.adiaNeglect} />
+    <p>
+      这个方程的解为：
+    </p>
+    <Fragment set:html={defined.cnSol} />
+    <p>
+      即 <Fragment set:html={defined.cnPhase} />，其中
+    </p>
+    <Fragment set:html={defined.gammaDef} />
+    <p>
+      利用链式法则 $\frac{\partial}{\partial t}|n(\mathbf{R}(t))\rangle = (\nabla_{\mathbf{R}}|n\rangle) \cdot \dot{\mathbf{R}}$，
+      时间积分可以转化为参数空间中的路径积分。
+      当参数沿闭合回路 $\mathcal{C}$ 演化一周后，$\gamma_n$ 成为一个仅依赖于回路几何形状的相位——这就是 Berry 相。
+    </p>
+  </Derivation>
+
+  <h3>Berry相</h3>
+
+  <p>
+    当参数 <Fragment set:html={defined.Rpar} /> 沿闭合回路 $\mathcal{C}$ 缓慢演化一周回到起点时，
+    系统获得的几何相位为：
+  </p>
+
+  <Fragment set:html={defined.berryPhase} />
+
+  <p>
+    这就是<strong>Berry相</strong>（Berry phase），由 Michael Berry 于 1984 年发现。
+    与动力学相不同，Berry 相不依赖于参数变化的速度（只要满足绝热条件），
+    而仅依赖于参数空间中闭合回路的<strong>几何形状</strong>。
+  </p>
+
+  <h3>Berry联络与Berry曲率</h3>
+
+  <p>
+    定义<strong>Berry 联络</strong>（Berry connection）：
+  </p>
+
+  <Fragment set:html={defined.berryConnection} />
+
+  <p>
+    Berry 联络在参数空间中扮演"规范势"的角色（类比电磁学中的矢势 $\mathbf{A}$）。Berry 相可以写为：
+  </p>
+
+  <p>$$\gamma_n = \oint_{\mathcal{C}} \mathbf{A}_n \cdot d\mathbf{R}$$</p>
+
+  <p>
+    定义<strong>Berry 曲率</strong>（Berry curvature）：
+  </p>
+
+  <Fragment set:html={defined.berryCurvature} />
+
+  <p>
+    类比电磁学中的磁场 $\mathbf{B} = \nabla \times \mathbf{A}$。利用 Stokes 定理：
+  </p>
+
+  <Fragment set:html={defined.berryStokes} />
+
+  <p>
+    其中 $\mathcal{S}$ 是以 $\mathcal{C}$ 为边界的任意曲面。
+    Berry 相可以通过 Berry 曲率在曲面上的通量来计算——这比直接做环路积分更方便，
+    因为 Berry 曲率是规范不变的量。
+  </p>
+
+  <h3>规范不变性与拓扑性质</h3>
+
+  <p>
+    量子力学中本征态的相位是任意的——可以自由地做"规范变换"：
+  </p>
+
+  <Fragment set:html={defined.gaugeTransform} />
+
+  <p>
+    其中 $\chi_n(\mathbf{R})$ 是参数空间中的任意实函数。在此变换下：
+  </p>
+
+  <ul>
+    <li>Berry 联络变换为 <Fragment set:html={defined.AunderGauge} />——它是规范<strong>不</strong>不变的（类比矢势）。</li>
+    <li>Berry 曲率不变 <Fragment set:html={defined.FgaugeInvariant} />——它是规范不变的（类比磁场）。</li>
+    <li>
+      Berry 相对闭合回路是规范不变的：<Fragment set:html={defined.gammaGaugeInvariant} />，
+      因为沿闭合回路 $\nabla_{\mathbf{R}}\chi_n$ 的环路积分为零
+      （当 $\chi_n$ 是单值函数时）。
+    </li>
+  </ul>
+
+  <p>
+    更深刻的是，Berry 相具有<strong>拓扑性质</strong>。Berry 曲率在整个参数空间上的通量给出一个拓扑不变量——<strong>Chern 数</strong>：
+  </p>
+
+  <p>
+    $$C_n = \frac{1}{2\pi}\oint_{\mathcal{S}} \mathbf{F}_n \cdot d\mathbf{S} \in \mathbb{Z}$$
+  </p>
+
+  <p>
+    Chern 数必须是整数，这是纤维丛的拓扑性质的体现。
+    它在量子霍尔效应中扮演核心角色——霍尔电导的量子化
+    $\sigma_{xy} = \frac{e^2}{h}C$ 正是 Chern 数的整数性的直接物理后果。
+  </p>
+
+  <ThinkingBox title="Berry相与规范理论的深层联系">
+    <p>
+      Berry 相的数学结构与规范场论完全平行：参数空间对应时空，
+      Berry 联络对应规范势（connection），Berry 曲率对应场强（curvature），
+      Berry 相对应 Wilson 环（holonomy）。
+      这并非巧合——两者都是纤维丛上的联络的不同实例。
+      在 Berry 的情况中，纤维丛的底空间是参数空间，纤维是 $U(1)$ 相位。
+      当多个能级简并时，$U(1)$ Berry 相推广为非阿贝尔 Berry 相（Wilczek-Zee 相），
+      对应于非阿贝尔规范场——这与 Yang-Mills 理论有直接的数学联系。
+    </p>
+  </ThinkingBox>
+
+  <h3>例子：磁场中自旋-1/2的Berry相</h3>
+
+  <p>
+    考虑自旋-1/2粒子处于缓慢旋转的磁场中。设磁场方向绕 $z$ 轴以极角 $\alpha$（固定）
+    做锥面运动，方位角 $\phi(t)$ 缓慢地从 $0$ 增加到 $2\pi$：
+  </p>
+
+  <Fragment set:html={defined.Bfield} />
+
+  <p>
+    Hamilton 量为 <Fragment set:html={defined.spinHamiltonian} />，
+    其中 $\omega_0 = eB_0/m_e$，$\hat{\mathbf{n}}(t) = \mathbf{B}(t)/B_0$ 是磁场方向的单位矢量。
+    瞬时本征态是沿 $\hat{\mathbf{n}}$ 方向的自旋上态和下态：
+  </p>
+
+  <Fragment set:html={defined.spinUpInstant} />
+  <Fragment set:html={defined.spinDownInstant} />
+
+  <p>
+    计算 Berry 联络。由于磁场方向仅依赖于 $\phi$（$\alpha$ 固定），
+    Berry 联络只有 $\phi$ 分量：
+  </p>
+
+  <Fragment set:html={defined.spinBerryA} />
+
+  <Derivation title="自旋-1/2 Berry联络和Berry相的计算">
+    <p>
+      对于自旋上态 $|+;\hat{\mathbf{n}}\rangle = \cos\frac{\alpha}{2}|\!\uparrow\rangle + \sin\frac{\alpha}{2}\,e^{i\phi}|\!\downarrow\rangle$，
+      计算 $\frac{\partial}{\partial\phi}|+;\hat{\mathbf{n}}\rangle$：
+    </p>
+    <p>
+      $$\frac{\partial}{\partial\phi}|+;\hat{\mathbf{n}}\rangle = i\sin\frac{\alpha}{2}\,e^{i\phi}|\!\downarrow\rangle$$
+    </p>
+    <p>
+      因此
+    </p>
+    <p>
+      $$\langle +;\hat{\mathbf{n}}|\frac{\partial}{\partial\phi}|+;\hat{\mathbf{n}}\rangle = \left(\cos\frac{\alpha}{2}\langle\uparrow| + \sin\frac{\alpha}{2}\,e^{-i\phi}\langle\downarrow|\right)\left(i\sin\frac{\alpha}{2}\,e^{i\phi}|\!\downarrow\rangle\right) = i\sin^2\frac{\alpha}{2}$$
+    </p>
+    <p>
+      Berry 联络为 $A_\phi = i \cdot i\sin^2\frac{\alpha}{2} = -\sin^2\frac{\alpha}{2}$。
+      Berry 相为
+    </p>
+    <p>
+      $$\gamma_+ = \oint_0^{2\pi} A_\phi\,d\phi = -2\pi\sin^2\frac{\alpha}{2}$$
+    </p>
+    <p>
+      利用半角公式 $\sin^2\frac{\alpha}{2} = \frac{1 - \cos\alpha}{2}$：
+    </p>
+    <p>
+      $$\gamma_+ = -\pi(1 - \cos\alpha)$$
+    </p>
+    <p>
+      而 $2\pi(1 - \cos\alpha)$ 恰好是磁场方向 $\hat{\mathbf{n}}$ 在单位球面上扫过的
+      <strong>立体角</strong> <Fragment set:html={defined.solidAngle} />。因此 $\gamma_+ = -\Omega/2$。
+    </p>
+  </Derivation>
+
+  <p>
+    磁场方向沿闭合回路旋转一周后，自旋上态获得的 Berry 相为：
+  </p>
+
+  <Fragment set:html={defined.spinBerryPhase} />
+
+  <p>
+    其几何意义极为优美：<Fragment set:html={defined.solidAngle} /> 是磁场方向 $\hat{\mathbf{n}}$
+    在单位球面上扫过的立体角，Berry 相等于立体角的负一半：
+  </p>
+
+  <Fragment set:html={defined.solidAngleFormula} />
+
+  <p>
+    Berry 曲率可以直接计算（或者由 Berry 相对立体角的关系推出），
+    在参数空间（以磁场分量为坐标）中为：
+  </p>
+
+  <Fragment set:html={defined.spinBerryF} />
+
+  <p>
+    这恰好是参数空间原点处一个<strong>磁单极</strong>的场——Berry 曲率的"源"
+    对应参数空间中的能级简并点（$\mathbf{B} = 0$ 时自旋上下态简并）。
+    磁单极强度为 $-1/2$，对应自旋-1/2。
+  </p>
+
+  <InsightBox title="Berry相的实验验证与物理应用">
+    <p>
+      Berry 相并非纯粹的理论构造，它有大量可观测的物理效果：
+    </p>
+    <ul>
+      <li>
+        <strong>Aharonov-Bohm 效应</strong>是 Berry 相的特例：带电粒子绕磁通量管运动获得的相位
+        $\gamma = e\Phi/(c\hbar)$ 正是参数空间中的 Berry 相。
+      </li>
+      <li>
+        <strong>分子物理中的几何相</strong>：在 Born-Oppenheimer 近似中，
+        电子态随核坐标（参数）的绝热演化产生 Berry 相，
+        导致分子光谱中可观测的相位效应。
+      </li>
+      <li>
+        <strong>量子霍尔效应</strong>：霍尔电导的量子化直接来自布洛赫带的 Berry 曲率在布里渊区上的积分（Chern 数）。
+      </li>
+      <li>
+        <strong>拓扑绝缘体</strong>：其表面态的存在受拓扑量子数（由 Berry 曲率决定）保护，
+        这是当代凝聚态物理中最活跃的研究领域之一。
+      </li>
+    </ul>
+  </InsightBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>Sakurai, <em>Modern Quantum Mechanics</em>, Ch.5.6：绝热近似与Berry相</li>
+      <li>Griffiths, <em>Introduction to Quantum Mechanics</em>, Ch.10：绝热近似</li>
+      <li>曾谨言,《量子力学》卷II, 第四章 &sect;4.8：绝热近似</li>
+      <li>Landau &amp; Lifshitz, <em>Quantum Mechanics</em>, &sect;53：绝热变化下不变性</li>
+      <li>Berry, M. V. (1984). "Quantal phase factors accompanying adiabatic changes." <em>Proc. R. Soc. Lond. A</em> <strong>392</strong>, 45-57.</li>
+      <li>Xiao, D., Chang, M.-C. &amp; Niu, Q. (2010). "Berry phase effects on electronic properties." <em>Rev. Mod. Phys.</em> <strong>82</strong>, 1959.</li>
+    </ul>
+  </ReferenceBox>
+
+</ChapterLayout>

@@ -1,0 +1,768 @@
+---
+import ChapterLayout from '../../layouts/ChapterLayout.astro';
+import InsightBox from '../../components/InsightBox.astro';
+import ThinkingBox from '../../components/ThinkingBox.astro';
+import Derivation from '../../components/Derivation.astro';
+import ReferenceBox from '../../components/ReferenceBox.astro';
+
+const clausiusClapeyron = `$$\\frac{dP}{dT}\\bigg|_{\\text{coex}} = \\frac{L}{T\\,\\Delta v} = \\frac{s_2 - s_1}{v_2 - v_1}$$`;
+const isingHamiltonian = `$$H = -J\\sum_{\\langle i,j\\rangle} s_i s_j - h\\sum_i s_i, \\qquad s_i = \\pm 1$$`;
+const transferMatrix = `$$\\mathbf{T} = \\begin{pmatrix} e^{\\beta(J+h)} & e^{-\\beta J} \\\\ e^{-\\beta J} & e^{\\beta(J-h)} \\end{pmatrix}$$`;
+const partitionTransfer = `$$Z_N = \\text{Tr}\\,\\mathbf{T}^N = \\lambda_+^N + \\lambda_-^N$$`;
+const eigenvaluesTransfer = `$$\\lambda_{\\pm} = e^{\\beta J}\\left[\\cosh(\\beta h) \\pm \\sqrt{\\sinh^2(\\beta h) + e^{-4\\beta J}}\\,\\right]$$`;
+const freeEnergy1D = `$$f = -k_BT\\ln\\lambda_+ = -J - k_BT\\ln\\left[\\cosh(\\beta h) + \\sqrt{\\sinh^2(\\beta h) + e^{-4\\beta J}}\\,\\right]$$`;
+const onsagerTc = `$$\\sinh\\!\\left(\\frac{2J}{k_BT_c}\\right) = 1 \\qquad \\Longrightarrow \\qquad \\frac{k_BT_c}{J} = \\frac{2}{\\ln(1+\\sqrt{2})} \\approx 2.269$$`;
+const onsagerMagnetization = `$$m(T) = \\left[1 - \\sinh^{-4}\\!\\left(\\frac{2J}{k_BT}\\right)\\right]^{1/8} \\qquad (T < T_c,\\; h = 0^+)$$`;
+const meanFieldSelfConsistent = `$$m = \\tanh\\!\\left[\\beta\\,(h + zJm)\\right]$$`;
+const meanFieldTc = `$$k_BT_c^{\\text{MF}} = zJ$$`;
+const meanFieldBetaCritical = `$$m \\approx \\left(\\frac{3(T_c - T)}{T_c}\\right)^{1/2} \\propto (T_c - T)^{1/2} \\qquad (T \\lesssim T_c)$$`;
+const meanFieldSusceptibility = `$$\\chi = \\frac{\\partial m}{\\partial h}\\bigg|_{h=0} = \\frac{1}{k_B(T - T_c)} \\qquad (T > T_c)$$`;
+const meanFieldIsotherm = `$$h \\approx \\frac{k_BT_c}{3}\\,m^3 \\qquad (T = T_c)$$`;
+const ginzburgCriterion = `$$\\text{Gi} = \\frac{\\langle (\\delta m)^2\\rangle}{m^2} \\sim \\frac{k_BT_c\\,\\xi^{-d}}{a_0^2/b} \\ll 1$$`;
+const ginzburgNumber = `$$|t| \\gg \\text{Gi} \\sim \\left(\\frac{k_BT_c}{\\Delta F\\,\\xi_0^d}\\right)^{\\!2/(4-d)}$$`;
+const landauFreeEnergy = `$$F(m,T) = F_0(T) + a(T)\\,m^2 + b\\,m^4 + \\cdots$$`;
+const landauCoeffA = `$$a(T) = a_0(T - T_c), \\qquad a_0 > 0$$`;
+const landauEquilibrium = `$$\\frac{\\partial F}{\\partial m} = 2a\\,m + 4b\\,m^3 = 0 \\qquad \\Longrightarrow \\qquad m = \\begin{cases} 0, & T > T_c \\\\ \\pm\\sqrt{\\dfrac{a_0(T_c - T)}{2b}}, & T < T_c \\end{cases}$$`;
+const landauFirstOrder = `$$F(m) = F_0 + a(T)\\,m^2 + b\\,m^4 + c\\,m^6, \\qquad b < 0,\\; c > 0$$`;
+const scalingFreeEnergy = `$$f_{\\text{sing}}(t, h) = |t|^{2-\\alpha}\\,\\Phi_{\\pm}\\!\\left(\\frac{h}{|t|^{\\Delta}}\\right)$$`;
+const correlationLength = `$$\\xi(T) \\sim \\xi_0\\,|t|^{-\\nu}, \\qquad t \\equiv \\frac{T - T_c}{T_c}$$`;
+const correlationFunction = `$$G(\\mathbf{r}) = \\langle s(\\mathbf{0})\\,s(\\mathbf{r})\\rangle - \\langle s\\rangle^2 \\sim \\begin{cases} \\dfrac{e^{-r/\\xi}}{r^{d-2+\\eta}}, & T \\neq T_c \\\\[8pt] \\dfrac{1}{r^{d-2+\\eta}}, & T = T_c \\end{cases}$$`;
+const rgTransform = `$$H'(\\{s'\\}) = \\mathcal{R}_b\\,[H(\\{s\\})]$$`;
+---
+
+<ChapterLayout title="第八章 相变与临界现象" courseId="stat" chapterId="ch08">
+
+  <h1>第八章 相变与临界现象</h1>
+
+  <p>
+    相变是自然界中最壮观的集体行为之一——在特定的温度或压力下，由天文数目粒子组成的宏观系统突然改变其性质：水结冰、铁磁体失去磁性、超导体变为正常金属。这些现象的共同特征是：微观相互作用的微小改变，通过多体关联的累积放大，导致宏观态的质变。本章将系统建立相变理论的框架——从唯象分类出发，经过精确可解模型和平均场近似，最终到达Landau对称性破缺理论和标度律，触及现代统计力学的核心：<strong>普适性</strong>与<strong>重整化群</strong>。
+  </p>
+
+  <!-- ============================================================ -->
+  <h2 id="classification">8.1 相变的唯象分类</h2>
+  <!-- ============================================================ -->
+
+  <h3>Ehrenfest分类</h3>
+  <p>
+    相变的最早系统分类由Ehrenfest（1933）提出，基于Gibbs自由能 $G(T,P)$ 的解析性：
+  </p>
+  <ul>
+    <li>
+      <strong>一阶相变</strong>：$G$ 本身连续（热力学平衡要求），但其对温度或压力的<strong>一阶偏导数</strong>不连续：
+      $$
+        \Delta S = -\Delta\!\left(\frac{\partial G}{\partial T}\right)_P \neq 0, \qquad \Delta V = \Delta\!\left(\frac{\partial G}{\partial P}\right)_T \neq 0
+      $$
+      存在<strong>潜热</strong> $L = T\,\Delta S$ 和<strong>体积突变</strong> $\Delta V$。典型例子：液-气相变（沸腾）、固-液相变（熔化）、铁磁体在外场中的磁化翻转。
+    </li>
+    <li>
+      <strong>二阶（连续）相变</strong>：$G$ 的一阶导数连续（无潜热、无体积突变），但<strong>二阶偏导数</strong>不连续或发散：
+      $$
+        C_P = -T\left(\frac{\partial^2 G}{\partial T^2}\right)_P, \quad \kappa_T = -\frac{1}{V}\left(\frac{\partial^2 G}{\partial P^2}\right)_T, \quad \alpha_P = \frac{1}{V}\frac{\partial^2 G}{\partial T\,\partial P}
+      $$
+      即比热、等温压缩率、热膨胀系数在相变点发散或出现跳变。典型例子：铁磁-顺磁转变（Curie点）、超流转变（$\lambda$-点）、超导转变（零场）。
+    </li>
+  </ul>
+  <p>
+    Ehrenfest的分类虽然概念清晰，但对于<strong>连续相变</strong>（临界点处的相变）不够精确——实际上二阶导数通常不是简单的跳变，而是按幂律发散。现代分类更简洁：相变分为<strong>一阶</strong>（有潜热）和<strong>连续</strong>（无潜热，关联长度发散）两类。
+  </p>
+
+  <h3>序参量</h3>
+  <p>
+    描述相变的核心概念是<strong>序参量</strong>（order parameter）——由Landau引入的物理量，在有序相中非零，在无序相中为零：
+  </p>
+  <ul>
+    <li><strong>铁磁体</strong>：自发磁化强度 $\mathbf{M}$（矢量，$n=3$ 分量）</li>
+    <li><strong>液-气临界点</strong>：密度差 $\rho_l - \rho_g$（标量，$n=1$）</li>
+    <li><strong>超流</strong>：凝聚体波函数 $\psi = |\psi|e^{i\phi}$（复数，$n=2$）</li>
+    <li><strong>超导</strong>：Cooper对凝聚序参量（复数，$n=2$）</li>
+    <li><strong>反铁磁体</strong>：交错磁化强度（矢量）</li>
+    <li><strong>液晶</strong>：取向序张量（张量序参量）</li>
+  </ul>
+  <p>
+    序参量的选取体现了相变中<strong>对称性的降低</strong>：高温相具有较高的对称性（例如各向同性），低温相的对称性较低（出现某个优选方向）。序参量的维度 $n$（即分量数）是决定相变普适性类的关键参数之一。
+  </p>
+
+  <h3>相图基本结构</h3>
+  <p>
+    以液-气系统为原型，$P$-$T$ 相图包含以下基本要素：
+  </p>
+  <ul>
+    <li><strong>共存线</strong>（coexistence curve）：两相平衡共存的 $(T,P)$ 曲线，由Gibbs自由能相等条件 $G_1(T,P) = G_2(T,P)$ 确定。共存线上相变为一阶（有潜热）。</li>
+    <li><strong>三相点</strong>（triple point）：三条共存线的交点，三相同时平衡共存。这是由Gibbs相律 $f = C - P + 2$ 确定的不变量点（单组分 $C=1$，三相 $P=3$，自由度 $f=0$）。</li>
+    <li><strong>临界点</strong>（critical point）：液-气共存线的终端。超过临界点 $(T_c, P_c)$ 后，液相和气相之间不再有本质区别——可以通过超临界路径连续地从一相转变到另一相。临界点处，液-气密度差 $\rho_l - \rho_g \to 0$（序参量趋于零），相变由一阶转变为连续。</li>
+  </ul>
+
+  <h3>Clausius-Clapeyron方程</h3>
+  <p>
+    沿共存线，两相Gibbs自由能始终相等：$G_1 = G_2$。取全微分 $dG_1 = dG_2$，利用 $dG = -SdT + VdP$，得
+  </p>
+  <Fragment set:html={clausiusClapeyron} />
+  <p>
+    其中 $L = T(s_2 - s_1)$ 是每单位质量的潜热，$\Delta v = v_2 - v_1$ 是比体积之差。这就是<strong>Clausius-Clapeyron方程</strong>，给出了共存线的斜率。
+  </p>
+
+  <Derivation title="Clausius-Clapeyron方程的推导">
+    <p>在共存线上，两相的摩尔Gibbs自由能相等：$g_1(T,P) = g_2(T,P)$。沿共存线微小移动 $(dT, dP)$ 后仍需满足平衡：</p>
+    $$
+      g_1(T+dT, P+dP) = g_2(T+dT, P+dP)
+    $$
+    <p>展开至一阶：</p>
+    $$
+      -s_1\,dT + v_1\,dP = -s_2\,dT + v_2\,dP
+    $$
+    <p>其中用了 $(\partial g/\partial T)_P = -s$，$(\partial g/\partial P)_T = v$。整理得</p>
+    $$
+      \frac{dP}{dT} = \frac{s_2 - s_1}{v_2 - v_1} = \frac{L}{T\,\Delta v}
+    $$
+    <p>对于液-气转变，$L > 0$（汽化吸热），$\Delta v = v_g - v_l > 0$（气相体积大），因此 $dP/dT > 0$——沸点随压力升高而升高。若进一步用理想气体近似 $v_g \approx k_BT/P$ 且忽略 $v_l$，得到</p>
+    $$
+      \frac{dP}{dT} \approx \frac{LP}{k_BT^2} \qquad \Longrightarrow \qquad P(T) \propto e^{-L/(k_BT)}
+    $$
+    <p>这就是共存曲线的Clausius-Clapeyron指数近似。</p>
+  </Derivation>
+
+  <h3>临界点处响应函数的发散</h3>
+  <p>
+    临界点的物理特殊性在于：两相之间的差异消失（序参量趋于零），而系统对外部微扰的<strong>响应函数发散</strong>。定义约化温度 $t \equiv (T - T_c)/T_c$，临界指数刻画发散行为：
+  </p>
+  <ul>
+    <li>序参量：$m \sim |t|^{\beta}$（$t \to 0^-$，即从低温侧趋近临界点）</li>
+    <li>磁化率/压缩率：$\chi \sim |t|^{-\gamma}$（$t \to 0$）</li>
+    <li>比热：$C \sim |t|^{-\alpha}$（$t \to 0$）</li>
+    <li>临界等温线：$h \sim |m|^{\delta}\,\text{sgn}(m)$（$t = 0$）</li>
+    <li>关联长度：$\xi \sim |t|^{-\nu}$（$t \to 0$）</li>
+    <li>关联函数（$T = T_c$）：$G(r) \sim r^{-(d-2+\eta)}$</li>
+  </ul>
+  <p>
+    这六个临界指数 $\alpha, \beta, \gamma, \delta, \nu, \eta$ 完整刻画了临界点附近的奇异行为。如我们将在后面看到，它们之间并非独立，而是受到<strong>标度关系</strong>的约束，只有两个是独立的。
+  </p>
+
+  <InsightBox title="响应函数发散的物理图像">
+    <p>
+      在临界点附近，关联长度 $\xi$ 趋于无穷大——系统中出现所有尺度的涨落。这意味着一个局部的微扰（如施加微小外场 $h$）会影响整个系统，因此响应（磁化率 $\chi$、压缩率 $\kappa_T$）发散。从微观看，临界点处既不是"全部有序"也不是"全部无序"，而是出现大小各异的有序区域（"临界涨落"），其尺度分布满足幂律——系统呈现<strong>自相似</strong>（scale invariance）结构。正是这种无特征长度的自相似性导致了热力学量的幂律奇异行为，并最终解释了普适性：当关联长度远大于微观尺度时，细节不再重要，只有少数几个"相关"参量（维度 $d$、序参量维度 $n$）决定临界行为。
+    </p>
+  </InsightBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>Pathria &amp; Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 12.1</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 14.1-14.2</li>
+      <li>汪志诚,《热力学·统计物理》, 第6版, &sect;11.1-11.2</li>
+      <li>Landau &amp; Lifshitz, <em>Statistical Physics Part 1</em>, &sect;83, &sect;152</li>
+      <li>H.E. Stanley, <em>Introduction to Phase Transitions and Critical Phenomena</em>, Ch. 1</li>
+    </ul>
+  </ReferenceBox>
+
+  <!-- ============================================================ -->
+  <h2 id="ising">8.2 Ising模型与精确解</h2>
+  <!-- ============================================================ -->
+
+  <h3>Ising模型的定义</h3>
+  <p>
+    Ising模型是最简单但最深刻的相变模型，由Lenz（1920）提出、Ising（1925）首先研究。其Hamiltonian为
+  </p>
+  <Fragment set:html={isingHamiltonian} />
+  <p>
+    其中 $s_i = \pm 1$ 是格点 $i$ 上的自旋变量，$J > 0$ 是<strong>铁磁耦合常数</strong>（最近邻相互作用），$h$ 是外磁场，$\langle i,j\rangle$ 表示对所有最近邻对求和。当 $J > 0$ 时，能量在所有自旋平行时最低——系统倾向于铁磁有序。
+  </p>
+  <p>
+    Ising模型的序参量是每格点磁化强度 $m = N^{-1}\sum_i \langle s_i \rangle$。核心问题是：在 $h = 0$ 时，是否存在有限温度 $T_c$，使得 $T < T_c$ 时 $m \neq 0$（自发磁化）？
+  </p>
+
+  <h3>一维Ising模型：转移矩阵方法</h3>
+  <p>
+    考虑一维链上 $N$ 个自旋，周期性边界条件 $s_{N+1} = s_1$。配分函数为
+  </p>
+  $$
+    Z_N = \sum_{\{s_i = \pm 1\}} \exp\!\left[\beta J\sum_{i=1}^{N} s_i s_{i+1} + \beta h\sum_{i=1}^{N} s_i\right]
+  $$
+  <p>
+    关键技巧是将每一对相邻自旋的Boltzmann权重写成 $2\times 2$ <strong>转移矩阵</strong>的矩阵元 $T_{s_i, s_{i+1}} = \exp[\beta J s_i s_{i+1} + \frac{1}{2}\beta h(s_i + s_{i+1})]$：
+  </p>
+  <Fragment set:html={transferMatrix} />
+  <p>
+    利用周期性边界条件，配分函数化为矩阵的迹：
+  </p>
+  <Fragment set:html={partitionTransfer} />
+  <p>
+    其中 $\lambda_\pm$ 是转移矩阵的两个特征值：
+  </p>
+  <Fragment set:html={eigenvaluesTransfer} />
+
+  <Derivation title="一维Ising配分函数的转移矩阵推导">
+    <p>将配分函数改写为矩阵乘积的形式。对于每一对相邻自旋 $(s_i, s_{i+1})$，定义</p>
+    $$
+      T_{s_i, s_{i+1}} = \exp\!\left[\beta J s_i s_{i+1} + \tfrac{1}{2}\beta h(s_i + s_{i+1})\right]
+    $$
+    <p>注意外场项被对称地分配到左右两个自旋上。配分函数变为</p>
+    $$
+      Z_N = \sum_{s_1}\sum_{s_2}\cdots\sum_{s_N} T_{s_1 s_2}\,T_{s_2 s_3}\cdots T_{s_N s_1} = \text{Tr}\,\mathbf{T}^N
+    $$
+    <p>对角化 $\mathbf{T}$，设特征值为 $\lambda_+ \geq \lambda_-$（$\lambda_+ > \lambda_-$ 当 $T > 0$），则</p>
+    $$
+      Z_N = \lambda_+^N + \lambda_-^N = \lambda_+^N\left[1 + \left(\frac{\lambda_-}{\lambda_+}\right)^N\right]
+    $$
+    <p>在热力学极限 $N \to \infty$ 中，$(\lambda_-/\lambda_+)^N \to 0$，因此</p>
+    $$
+      Z_N \to \lambda_+^N, \qquad f = -k_BT\ln\lambda_+
+    $$
+    <p>自由能仅由<strong>最大特征值</strong> $\lambda_+$ 决定。由特征方程 $\det(\mathbf{T} - \lambda\mathbf{I}) = 0$ 解得</p>
+    $$
+      \lambda_{\pm} = e^{\beta J}\!\left[\cosh(\beta h) \pm \sqrt{\sinh^2(\beta h) + e^{-4\beta J}}\,\right]
+    $$
+    <p>每格点自由能为</p>
+    $$
+      f = -J - k_BT\ln\!\left[\cosh(\beta h) + \sqrt{\sinh^2(\beta h) + e^{-4\beta J}}\,\right]
+    $$
+  </Derivation>
+
+  <p>
+    在热力学极限 $N \to \infty$ 中，每格点自由能由最大特征值决定：
+  </p>
+  <Fragment set:html={freeEnergy1D} />
+  <p>
+    <strong>关键结论：一维Ising模型在有限温度下没有相变。</strong>当 $h = 0$ 时，$\lambda_+ = 2\cosh(\beta J)$，$\lambda_- = 2\sinh(\beta J)$。磁化强度
+  </p>
+  $$
+    m = -\frac{\partial f}{\partial h}\bigg|_{h=0} = 0 \qquad \text{对任意 } T > 0
+  $$
+  <p>
+    自由能 $f(T, h=0) = -k_BT\ln[2\cosh(\beta J)]$ 是温度的解析函数——没有非解析性，没有相变。只有在 $T = 0$ 时，$m \to 1$（完全有序）。
+  </p>
+
+  <ThinkingBox title="一维系统为何没有有限温度相变？">
+    <p>
+      物理上，可以用Peierls论证理解。考虑 $h = 0$ 的一维链，完全有序的基态（所有自旋向上）能量为 $E_0 = -NJ$。在链的某处插入一个畴壁（domain wall）——左侧自旋向上，右侧自旋向下——的能量代价仅为 $\Delta E = 2J$（只破坏一对最近邻键）。但畴壁可以放在 $N-1$ 个位置中的任何一个，带来熵增 $\Delta S = k_B\ln(N-1) \approx k_B\ln N$。自由能变化为
+    </p>
+    $$
+      \Delta F = \Delta E - T\Delta S = 2J - k_BT\ln N
+    $$
+    <p>
+      在热力学极限 $N \to \infty$ 中，<strong>对任意 $T > 0$</strong>，$\Delta F \to -\infty$——畴壁的产生在自由能上总是有利的。因此有序态不稳定，系统中充满畴壁，长程序被破坏。
+    </p>
+    <p>
+      在 $d \geq 2$ 维中，畴壁是 $(d-1)$ 维面，能量代价 $\Delta E \propto L^{d-1}$（$L$ 为系统线度），而畴壁的熵虽然也增大，但面的构型数的熵增长不足以补偿 $d \geq 2$ 时的能量代价。因此存在临界温度 $T_c > 0$：在 $T < T_c$ 时畴壁受到能量压制，有序态稳定。这就是维度在相变中起关键角色的根本原因。
+    </p>
+  </ThinkingBox>
+
+  <h3>二维Ising模型：Onsager精确解</h3>
+  <p>
+    1944年，Onsager给出了二维正方格子Ising模型（$h = 0$）的精确解——这是统计力学史上的里程碑之一，首次严格证明了格子模型可以发生有限温度相变。
+  </p>
+  <p>
+    <strong>临界温度</strong>由以下方程确定（正方格子，$J_1 = J_2 = J$）：
+  </p>
+  <Fragment set:html={onsagerTc} />
+  <p>
+    <strong>自发磁化</strong>（由Yang于1952年精确求出）：
+  </p>
+  <Fragment set:html={onsagerMagnetization} />
+  <p>
+    在 $T \to T_c^-$ 时，$m(T) \propto (T_c - T)^{1/8}$，给出临界指数 $\beta = 1/8$。
+  </p>
+
+  <p>
+    二维Ising模型的<strong>完整临界指数</strong>：
+  </p>
+  <table style="width: auto; margin: 1rem 0; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="border-bottom: 2px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">临界指数</th>
+        <th style="border-bottom: 2px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">二维Ising精确值</th>
+        <th style="border-bottom: 2px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">定义</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$\alpha$</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$0$（对数发散）</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem;">$C \sim \ln|t|$</td>
+      </tr>
+      <tr>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$\beta$</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$1/8$</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem;">$m \sim |t|^\beta$</td>
+      </tr>
+      <tr>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$\gamma$</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$7/4$</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem;">$\chi \sim |t|^{-\gamma}$</td>
+      </tr>
+      <tr>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$\delta$</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$15$</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem;">$h \sim |m|^\delta$（$T = T_c$）</td>
+      </tr>
+      <tr>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$\nu$</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$1$</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem;">$\xi \sim |t|^{-\nu}$</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.5rem 1rem; text-align: center;">$\eta$</td>
+        <td style="padding: 0.5rem 1rem; text-align: center;">$1/4$</td>
+        <td style="padding: 0.5rem 1rem;">$G(r) \sim r^{-(d-2+\eta)}$（$T = T_c$）</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    可以验证这些精确值满足所有标度关系（见8.5节）：
+  </p>
+  <ul>
+    <li>Rushbrooke：$\alpha + 2\beta + \gamma = 0 + 2 \times 1/8 + 7/4 = 2$ ✓</li>
+    <li>Widom：$\gamma = \beta(\delta - 1) = (1/8)(15-1) = 7/4$ ✓</li>
+    <li>Fisher：$\gamma = \nu(2-\eta) = 1 \times (2 - 1/4) = 7/4$ ✓</li>
+    <li>Josephson（$d=2$）：$2 - \alpha = d\nu = 2 \times 1 = 2$ ✓</li>
+  </ul>
+
+  <InsightBox title="维度与相变——上临界维度 d_c = 4">
+    <p>
+      Ising模型的相变行为深刻地依赖于空间维度 $d$：
+    </p>
+    <ul>
+      <li>$d = 1$：<strong>无有限温度相变</strong>（Ising 1925，转移矩阵精确解）</li>
+      <li>$d = 2$：<strong>有相变</strong>，精确可解（Onsager 1944），临界指数非平凡（如 $\beta = 1/8$）</li>
+      <li>$d = 3$：<strong>有相变</strong>，不可精确求解，临界指数只能通过数值方法（Monte Carlo、高温展开、共形Bootstrap）获得，如 $\beta \approx 0.3265$, $\gamma \approx 1.2372$, $\nu \approx 0.6300$</li>
+      <li>$d \geq d_c = 4$：<strong>平均场理论精确</strong>，临界指数取平均场值 $\beta = 1/2$, $\gamma = 1$ 等（可能有对数修正）</li>
+    </ul>
+    <p>
+      $d_c = 4$ 称为<strong>上临界维度</strong>。在 $d < d_c$ 时，涨落强烈修正平均场结果；在 $d > d_c$ 时，涨落在临界点附近变得不重要（Ginzburg判据自动满足）。从重整化群的角度看，$d = d_c$ 对应于非平凡不动点与Gauss（平均场）不动点合并。$\epsilon = 4 - d$ 展开（Wilson-Fisher, 1972）是处理 $d < 4$ 临界现象的强有力工具。
+    </p>
+  </InsightBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>Pathria &amp; Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 13.2-13.4</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 14.3-14.5, Ch. 15</li>
+      <li>汪志诚,《热力学·统计物理》, 第6版, &sect;11.2-11.3</li>
+      <li>L. Onsager, <em>Phys. Rev.</em> <strong>65</strong>, 117 (1944) — 二维Ising精确解</li>
+      <li>C.N. Yang, <em>Phys. Rev.</em> <strong>85</strong>, 808 (1952) — 自发磁化精确解</li>
+      <li>B.M. McCoy &amp; T.T. Wu, <em>The Two-Dimensional Ising Model</em>, 2nd ed.</li>
+    </ul>
+  </ReferenceBox>
+
+  <!-- ============================================================ -->
+  <h2 id="mean-field">8.3 平均场理论</h2>
+  <!-- ============================================================ -->
+
+  <h3>平均场近似的思想</h3>
+  <p>
+    精确求解多体问题通常不可能。平均场理论（mean-field theory）的核心思想是：每个自旋感受到的来自邻居的相互作用被替换为一个<strong>有效场</strong>（effective field）——所有邻居的平均效应。对于Ising模型，格点 $i$ 的 $z$ 个最近邻自旋 $s_j$ 被替换为其平均值 $\langle s_j \rangle = m$：
+  </p>
+  $$
+    H_i^{\text{eff}} = -\left(h + J\sum_{j \in \text{n.n.}(i)} s_j\right)s_i \approx -\left(h + zJm\right)s_i \equiv -h_{\text{eff}}\,s_i
+  $$
+  <p>
+    其中 $h_{\text{eff}} = h + zJm$ 是有效磁场，包含外场 $h$ 和分子场 $zJm$（Weiss分子场, 1907）。在此近似下，多体问题简化为<strong>单自旋</strong>在有效场中的问题，其磁化强度为
+  </p>
+  <Fragment set:html={meanFieldSelfConsistent} />
+  <p>
+    这是一个<strong>自洽方程</strong>——$m$ 既是输出（左边的 $\tanh$ 给出单自旋在有效场中的平均值），又是输入（有效场本身依赖于 $m$）。
+  </p>
+
+  <Derivation title="平均场自洽方程及临界温度的推导">
+    <p>在有效场 $h_{\text{eff}} = h + zJm$ 中，单个自旋的配分函数为</p>
+    $$
+      z_1 = \sum_{s=\pm 1} e^{\beta h_{\text{eff}}\,s} = 2\cosh(\beta h_{\text{eff}})
+    $$
+    <p>磁化强度（自旋的热力学平均值）为</p>
+    $$
+      m = \langle s \rangle = \frac{\sum_{s=\pm 1} s\,e^{\beta h_{\text{eff}}\,s}}{z_1} = \tanh(\beta h_{\text{eff}}) = \tanh[\beta(h + zJm)]
+    $$
+    <p>这就是自洽方程。在 $h = 0$ 时简化为 $m = \tanh(\beta zJm)$。</p>
+    <p><strong>临界温度</strong>：在 $h = 0$ 且 $T$ 较高时，$m = 0$ 是唯一解。当温度降低到某个 $T_c$ 以下，非零解 $m \neq 0$ 首次出现。将 $\tanh$ 在 $m = 0$ 附近展开：$\tanh(x) \approx x - x^3/3 + \cdots$，得</p>
+    $$
+      m \approx \beta zJ m - \frac{(\beta zJ m)^3}{3} + \cdots
+    $$
+    <p>非零解出现的条件是线性项系数 $\beta zJ \geq 1$，即</p>
+    $$
+      k_BT_c^{\text{MF}} = zJ
+    $$
+    <p>在 $T$ 略低于 $T_c$ 时，保留至三次项：$m \approx \beta_c zJ m[1 - (\beta_c zJm)^2/3] = m[1 - m^2/3]$（在 $T_c$ 处 $\beta_c zJ = 1$），加上温度修正得</p>
+    $$
+      m \approx \sqrt{\frac{3(T_c - T)}{T_c}} \propto (T_c - T)^{1/2}
+    $$
+    <p>因此平均场给出临界指数 $\beta = 1/2$。</p>
+  </Derivation>
+
+  <h3>平均场临界温度</h3>
+  <Fragment set:html={meanFieldTc} />
+  <p>
+    其中 $z$ 是配位数（最近邻数目）。对比：正方格子 $z = 4$，$k_BT_c^{\text{MF}} = 4J$，而Onsager精确值为 $k_BT_c \approx 2.269J$——平均场<strong>高估</strong>了临界温度约76%。这是因为平均场忽略了涨落的效应：涨落使有效有序减弱，降低了真实的 $T_c$。
+  </p>
+
+  <h3>平均场临界指数</h3>
+  <p>
+    从自洽方程出发，可以系统地导出所有平均场临界指数。
+  </p>
+  <p>
+    <strong>序参量</strong>（$h = 0$，$T \lesssim T_c$）：
+  </p>
+  <Fragment set:html={meanFieldBetaCritical} />
+  <p>
+    <strong>磁化率</strong>（$h \to 0$，$T > T_c$）：对自洽方程在 $m = 0$ 附近关于 $h$ 微分：
+  </p>
+  <Fragment set:html={meanFieldSusceptibility} />
+  <p>
+    这就是<strong>Curie-Weiss定律</strong>，给出 $\gamma = 1$。在 $T < T_c$ 时，$\chi \propto |T - T_c|^{-1}$，但系数不同（放大一倍）。
+  </p>
+  <p>
+    <strong>临界等温线</strong>（$T = T_c$，$h \neq 0$）：在 $T_c$ 处 $\tanh$ 的一次项恰好抵消，三次项主导：
+  </p>
+  <Fragment set:html={meanFieldIsotherm} />
+  <p>
+    因此 $h \propto m^3$，即 $\delta = 3$。
+  </p>
+  <p>
+    <strong>比热</strong>：平均场给出 $C$ 在 $T_c$ 处有一个有限的<strong>跳变</strong>（类似BCS超导），即 $\alpha = 0$（跳变，非发散，也非对数）。
+  </p>
+
+  <p>
+    <strong>平均场临界指数汇总</strong>：
+  </p>
+  <table style="width: auto; margin: 1rem 0; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="border-bottom: 2px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">指数</th>
+        <th style="border-bottom: 2px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$\alpha$</th>
+        <th style="border-bottom: 2px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$\beta$</th>
+        <th style="border-bottom: 2px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$\gamma$</th>
+        <th style="border-bottom: 2px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$\delta$</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">平均场值</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$0$（跳变）</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$1/2$</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$1$</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$3$</td>
+      </tr>
+      <tr>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">2D Ising</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$0$（log）</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$1/8$</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$7/4$</td>
+        <td style="border-bottom: 1px solid var(--color-border); padding: 0.5rem 1rem; text-align: center;">$15$</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.5rem 1rem; text-align: center;">3D Ising（数值）</td>
+        <td style="padding: 0.5rem 1rem; text-align: center;">$\approx 0.110$</td>
+        <td style="padding: 0.5rem 1rem; text-align: center;">$\approx 0.326$</td>
+        <td style="padding: 0.5rem 1rem; text-align: center;">$\approx 1.237$</td>
+        <td style="padding: 0.5rem 1rem; text-align: center;">$\approx 4.79$</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    平均场指数与2D、3D精确/数值结果有显著偏差，说明在低维（$d < 4$）中涨落效应不可忽略。
+  </p>
+
+  <h3>Ginzburg判据：平均场何时失效？</h3>
+  <p>
+    平均场理论忽略了序参量的<strong>空间涨落</strong>。要判断涨落是否重要，需要比较涨落的大小与平均值。在关联体积 $\xi^d$ 内，序参量的涨落为
+  </p>
+  <Fragment set:html={ginzburgCriterion} />
+  <p>
+    当涨落远小于均值（$\text{Gi} \ll 1$）时平均场可靠。定义约化温度 $t = (T - T_c)/T_c$，Ginzburg判据给出平均场<strong>有效</strong>的条件为
+  </p>
+  <Fragment set:html={ginzburgNumber} />
+  <p>
+    其中 $\xi_0$ 是关联长度的微观尺度。关键依赖于维度 $d$：
+  </p>
+  <ul>
+    <li>$d > 4$：Ginzburg数 $\text{Gi} \to 0$，平均场在任意接近 $T_c$ 时均有效</li>
+    <li>$d = 4$：对数修正，平均场基本有效</li>
+    <li>$d < 4$：存在有限的Ginzburg区间 $|t| < \text{Gi}$，在此区间内平均场失效，需要考虑涨落修正</li>
+  </ul>
+  <p>
+    对于常规铁磁体和液-气转变，$\xi_0 \sim$ 原子间距，Ginzburg区间非常窄，平均场在远离 $T_c$ 时是好的近似。但对于超导体（BCS理论中 $\xi_0 \sim 10^{-4}$ cm远大于原子尺度），Ginzburg区间极窄（$\text{Gi} \sim 10^{-12}$），平均场几乎完全精确——这就是为什么BCS理论（本质上是平均场）能如此成功地描述超导。
+  </p>
+
+  <ThinkingBox title="为什么d=4是分界线？">
+    <p>
+      物理直觉来自涨落的"密度"。在关联体积 $\xi^d$ 内的自由度数为 $N_\xi \sim (\xi/a)^d$（$a$ 为格点间距）。根据大数定律，$N_\xi$ 个自由度的涨落相对于均值之比为 $\sim N_\xi^{-1/2} \sim (\xi/a)^{-d/2}$。另一方面，序参量在 $T_c$ 附近的均值 $m \sim |t|^\beta \sim (\xi/\xi_0)^{-\beta/\nu}$。平均场给出 $\beta/\nu = 1$，涨落与均值之比为
+    </p>
+    $$
+      \frac{\text{涨落}}{\text{均值}} \sim \frac{(\xi/a)^{-d/2}}{(\xi/\xi_0)^{-1}} \sim \xi^{1-d/2}
+    $$
+    <p>
+      当 $\xi \to \infty$（趋近 $T_c$）时：若 $d > 4$，此比值趋于零——涨落变得不重要，平均场自洽；若 $d < 4$，此比值发散——涨落不可忽略，平均场失败。$d = 4$ 恰好是分界点。
+    </p>
+    <p>
+      从场论角度：Ising模型的连续极限是 $\phi^4$ 标量场论。耦合常数 $u$（$\phi^4$ 项的系数）的量纲为 $[u] = L^{d-4}$。当 $d > 4$ 时，$u$ 具有负的质量量纲——在长距离（低能）极限 $u_{\text{eff}} \to 0$（不相关算符），高斯（自由场）不动点稳定，平均场精确。当 $d < 4$ 时，$u$ 为相关算符，$\phi^4$ 相互作用在大尺度上增强，涨落主导临界行为。
+    </p>
+  </ThinkingBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>Pathria &amp; Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 12.5-12.6</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 16.1-16.3</li>
+      <li>汪志诚,《热力学·统计物理》, 第6版, &sect;11.4-11.5</li>
+      <li>P. Weiss, <em>J. Phys.</em> <strong>6</strong>, 661 (1907) — 分子场理论</li>
+      <li>V.L. Ginzburg, <em>Sov. Phys. Solid State</em> <strong>2</strong>, 1824 (1960) — Ginzburg判据</li>
+      <li>M. Kardar, <em>Statistical Physics of Fields</em>, Ch. 5.2</li>
+    </ul>
+  </ReferenceBox>
+
+  <!-- ============================================================ -->
+  <h2 id="landau">8.4 Landau理论与对称性破缺</h2>
+  <!-- ============================================================ -->
+
+  <h3>Landau自由能</h3>
+  <p>
+    Landau理论（1937）是平均场理论的系统推广和优雅表述。其核心思想是：在相变点附近，序参量 $m$ 很小，可以将自由能展开为 $m$ 的幂级数。展开中只保留与系统<strong>对称性</strong>相容的项。
+  </p>
+  <p>
+    对于具有 $Z_2$（上下）对称性的系统（如Ising模型，$h = 0$ 时 $H$ 在 $s_i \to -s_i$ 下不变），自由能必须是 $m$ 的偶函数：
+  </p>
+  <Fragment set:html={landauFreeEnergy} />
+  <p>
+    其中展开系数 $a(T)$ 和 $b$ 取决于微观模型。Landau理论的关键假设是：
+  </p>
+  <Fragment set:html={landauCoeffA} />
+  <p>
+    即系数 $a$ 在 $T_c$ 处变号——这是相变发生的核心机制。而 $b > 0$ 保证自由能在大 $|m|$ 处增大（稳定性条件）。
+  </p>
+
+  <h3>二阶相变（$b > 0$）</h3>
+  <p>
+    平衡态由自由能极小化确定：
+  </p>
+  <Fragment set:html={landauEquilibrium} />
+  <p>
+    这正是平均场给出的行为。Landau理论的威力在于其<strong>普遍性</strong>：只要序参量是标量且系统有 $Z_2$ 对称性，无论微观Hamiltonian的具体形式如何，相变的临界行为都由上述自由能函数决定——临界指数仅取决于展开的结构，即 $\beta = 1/2$, $\gamma = 1$, $\delta = 3$, $\alpha = 0$。
+  </p>
+
+  <Derivation title="Landau理论给出的比热跳变">
+    <p>在 $h = 0$ 时，平衡自由能为：</p>
+    <ul>
+      <li>$T > T_c$：$m = 0$，$F = F_0(T)$</li>
+      <li>$T < T_c$：$m^2 = a_0(T_c - T)/(2b)$，代入自由能：
+        $$
+          F = F_0(T) - \frac{a_0^2}{4b}(T_c - T)^2
+        $$
+      </li>
+    </ul>
+    <p>熵 $S = -\partial F/\partial T$：</p>
+    <ul>
+      <li>$T > T_c$：$S = S_0(T)$</li>
+      <li>$T < T_c$：$S = S_0(T) - a_0^2(T_c - T)/(2b)$</li>
+    </ul>
+    <p>$S$ 在 $T_c$ 处连续（因为 $T_c - T \to 0$），没有潜热——确认是连续相变。但比热 $C = T(\partial S/\partial T)$ 出现跳变：</p>
+    $$
+      \Delta C = C(T_c^-) - C(T_c^+) = \frac{a_0^2\,T_c}{2b} > 0
+    $$
+    <p>比热在 $T_c$ 处有一个正的、有限的跳变——低温侧的比热更大（有序态的涨落贡献额外的比热）。这与BCS超导转变、liquid helium的比热跳变定性吻合。</p>
+  </Derivation>
+
+  <h3>一阶相变（$b < 0$）</h3>
+  <p>
+    如果展开中 $b < 0$，$m^4$ 项不能保证稳定性，需要保留六次项：
+  </p>
+  <Fragment set:html={landauFirstOrder} />
+  <p>
+    此时自由能有多个极小值，当温度变化时可以发生从 $m = 0$ 到 $m \neq 0$ 的<strong>不连续跳变</strong>——一阶相变。具体地：
+  </p>
+  <ul>
+    <li>存在温度 $T_0 > T_c$（$a(T_0) = 3b^2/(16c)$），在此温度以下 $F(m)$ 出现次极小值（亚稳态）</li>
+    <li>在温度 $T_1$（$a(T_1) = b^2/(4c)$），次极小值与 $m = 0$ 的自由能相等——发生一阶相变</li>
+    <li>$T_1 > T_c$：相变发生在 $a > 0$ 时（此时二阶相变尚未发生），序参量从零不连续地跳变到有限值</li>
+  </ul>
+  <p>
+    一阶相变伴随亚稳态（过冷、过热）和成核过程，这是日常生活中常见的现象（过冷水、过热液体）。
+  </p>
+
+  <h3>自发对称性破缺</h3>
+  <p>
+    在 $h = 0$ 时，Ising模型的Hamiltonian在 $s_i \to -s_i$ 变换下不变（$Z_2$ 对称性）。在 $T > T_c$ 时，平衡态 $m = 0$ 尊重这个对称性。但在 $T < T_c$ 时，系统必须"选择"$m = +|m_0|$ 或 $m = -|m_0|$ 中的一个——平衡态的对称性<strong>低于</strong>Hamiltonian的对称性。这就是<strong>自发对称性破缺</strong>（spontaneous symmetry breaking, SSB）。
+  </p>
+  <p>
+    SSB是现代物理学的核心概念，贯穿凝聚态物理（磁性、超导、超流）和粒子物理（Higgs机制、手征对称性破缺）：
+  </p>
+  <ul>
+    <li><strong>离散对称性</strong>（$Z_2$）的SSB：Ising铁磁体。破缺后出现简并的基态（$+m_0$ 或 $-m_0$），但没有连续的Goldstone模式。</li>
+    <li><strong>连续对称性</strong>的SSB：XY模型（$O(2)$）、Heisenberg模型（$O(3)$）。当连续对称性自发破缺时，<strong>Goldstone定理</strong>保证存在无能隙（gapless）的激发模式——<strong>Goldstone玻色子</strong>（或Nambu-Goldstone模式）。</li>
+  </ul>
+
+  <InsightBox title="Goldstone定理——对称性破缺的普遍后果">
+    <p>
+      <strong>Goldstone定理</strong>（1961）：如果系统的Hamiltonian具有连续对称群 $G$，而基态（有序相）只保留其子群 $H \subset G$（即 $G$ 自发破缺到 $H$），则必然存在 $\dim(G/H)$ 个无能隙的集体激发模式（Goldstone模式）。
+    </p>
+    <ul>
+      <li><strong>铁磁体</strong>：$O(3) \to O(2)$，破缺2个生成元，存在2个Goldstone模式——<strong>自旋波</strong>（magnon），色散 $\omega \propto k^2$</li>
+      <li><strong>超流 $^4$He</strong>：$U(1) \to \mathbb{1}$，破缺1个生成元，存在1个Goldstone模式——<strong>声子</strong>（第二声的微观对应），色散 $\omega \propto k$</li>
+      <li><strong>晶体</strong>：连续平移对称性破缺到离散平移对称性，Goldstone模式是<strong>声学声子</strong></li>
+      <li><strong>粒子物理</strong>：手征对称性 $SU(2)_L \times SU(2)_R \to SU(2)_V$ 的破缺给出 $\pi$ 介子（近似Goldstone玻色子，因为手征对称性只是近似的）</li>
+    </ul>
+    <p>
+      Goldstone模式的存在深刻影响了系统的低能物理：它们主导了低温热力学（如铁磁体的 $C \propto T^{3/2}$，反铁磁体的 $C \propto T^3$），也通过增强涨落可能破坏低维系统的长程序（Mermin-Wagner定理：$d \leq 2$ 时连续对称性不能自发破缺）。值得注意的是，超导体中的 $U(1)$ 对称性破缺是规范对称性的破缺——此时Goldstone模式被"吃掉"（Anderson-Higgs机制），规范场获得质量，Goldstone定理以不同方式实现。
+    </p>
+  </InsightBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>Landau &amp; Lifshitz, <em>Statistical Physics Part 1</em>, &sect;143-150</li>
+      <li>Pathria &amp; Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 12.7</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 16.4-16.6, Ch. 17.1</li>
+      <li>汪志诚,《热力学·统计物理》, 第6版, &sect;11.6</li>
+      <li>L.D. Landau, <em>Phys. Z. Sowjet.</em> <strong>11</strong>, 26 (1937) — Landau相变理论</li>
+      <li>J. Goldstone, <em>Nuovo Cimento</em> <strong>19</strong>, 154 (1961) — Goldstone定理</li>
+      <li>P.W. Anderson, <em>Phys. Rev.</em> <strong>130</strong>, 439 (1963) — Anderson-Higgs机制</li>
+    </ul>
+  </ReferenceBox>
+
+  <!-- ============================================================ -->
+  <h2 id="scaling">8.5 标度律与普适性</h2>
+  <!-- ============================================================ -->
+
+  <h3>临界指数间的标度关系</h3>
+  <p>
+    六个临界指数 $\alpha, \beta, \gamma, \delta, \nu, \eta$ 并非独立，它们之间存在严格的<strong>标度关系</strong>（scaling relations），将看似不相关的物理量的临界行为联系起来：
+  </p>
+  <ul>
+    <li>
+      <strong>Rushbrooke等式</strong>（1963）：
+      $$\alpha + 2\beta + \gamma = 2$$
+      联系了比热、序参量和磁化率的临界行为。物理含义：比热的奇异性可以由序参量涨落 $\langle m^2 \rangle - \langle m \rangle^2 \sim \chi$ 的温度依赖导出。
+    </li>
+    <li>
+      <strong>Widom等式</strong>（1965）：
+      $$\gamma = \beta(\delta - 1)$$
+      联系了零场磁化率、序参量和临界等温线指数。
+    </li>
+    <li>
+      <strong>Fisher等式</strong>（1964）：
+      $$\gamma = \nu(2 - \eta)$$
+      将磁化率（热力学量）与关联长度和关联函数（微观量）联系起来。$\chi = \int G(\mathbf{r})\,d^d r$——磁化率是关联函数的空间积分。
+    </li>
+    <li>
+      <strong>Josephson（超标度）等式</strong>（1967）：
+      $$2 - \alpha = d\nu$$
+      这是唯一<strong>显含空间维度 $d$</strong> 的标度关系，因此称为"超标度关系"（hyperscaling relation）。它在 $d \leq d_c = 4$ 时成立，在 $d > d_c$ 时被违反（平均场给出 $\alpha = 0$, $\nu = 1/2$，而 $d\nu = d/2 \neq 2$）。
+    </li>
+  </ul>
+  <p>
+    四个等式、六个指数——只有<strong>两个独立</strong>的临界指数（例如取 $\nu$ 和 $\eta$，其余都可以推出）。
+  </p>
+
+  <Derivation title="标度关系的推导——基于标度假说">
+    <p><strong>标度假说</strong>（Widom, 1965）：在临界点附近，自由能的奇异部分是约化温度 $t$ 和外场 $h$ 的<strong>广义齐次函数</strong>：</p>
+    $$
+      f_{\text{sing}}(t, h) = |t|^{2-\alpha}\,\Phi_\pm\!\left(\frac{h}{|t|^\Delta}\right)
+    $$
+    <p>其中 $\Phi_\pm$ 是 $t > 0$ 和 $t < 0$ 时的标度函数，$\Delta = \beta\delta$ 是gap指数。</p>
+    <p><strong>Rushbrooke等式</strong>：磁化强度 $m = -\partial f/\partial h \sim |t|^{2-\alpha-\Delta}\,\Phi'$，在 $h \to 0$ 时 $m \sim |t|^\beta$，因此 $\beta = 2 - \alpha - \Delta$。磁化率 $\chi = -\partial^2 f/\partial h^2 \sim |t|^{2-\alpha-2\Delta}$，在 $h \to 0$ 时 $\chi \sim |t|^{-\gamma}$，因此 $\gamma = 2\Delta - (2 - \alpha)$。将两式相加：$\beta + \gamma = \Delta - (2-\alpha) + 2\Delta - (2-\alpha) = 2\Delta + \alpha - 2 + \beta$，即 $\gamma = 2\Delta - 2 + \alpha = 2\beta\delta - 2 + \alpha$。利用 $\Delta = \beta + \gamma$（从 $\beta = 2 - \alpha - \Delta$ 和 $\gamma = 2\Delta - 2 + \alpha$ 推出），得 $\alpha + 2\beta + \gamma = 2$。</p>
+    <p><strong>Widom等式</strong>：在临界等温线 $t = 0$ 上，$f_{\text{sing}}(0, h) \sim h^{(2-\alpha)/\Delta}$（由齐次性），$m \sim h^{(2-\alpha)/\Delta - 1} = h^{1/\delta}$。因此 $(2-\alpha)/\Delta = 1 + 1/\delta$，即 $\Delta = \beta\delta$，给出 $\gamma = \beta(\delta - 1)$。</p>
+    <p><strong>Josephson等式</strong>：自由能密度的量纲为 $[f] = \text{能量}/\text{体积}$。在临界点附近，唯一的相关长度标度是关联长度 $\xi \sim |t|^{-\nu}$。奇异自由能密度应满足 $f_{\text{sing}} \sim k_BT/\xi^d \sim |t|^{d\nu}$。与 $f_{\text{sing}} \sim |t|^{2-\alpha}$ 比较，得 $2 - \alpha = d\nu$。</p>
+  </Derivation>
+
+  <h3>标度假说与齐次性</h3>
+  <p>
+    标度关系的深层基础是<strong>标度假说</strong>：在临界点附近，奇异自由能是其论证的齐次函数
+  </p>
+  <Fragment set:html={scalingFreeEnergy} />
+  <p>
+    等价地，在重标度变换 $t \to \lambda t$, $h \to \lambda^\Delta h$ 下，$f_{\text{sing}} \to \lambda^{2-\alpha} f_{\text{sing}}$。标度假说的物理内容是：在临界点附近，系统只有一个相关的长度标度 $\xi$，所有热力学奇异性都来自 $\xi \to \infty$ 的发散。一旦接受这个假说，所有标度关系都是数学推论。
+  </p>
+  <p>
+    标度假说在重整化群（RG）框架中得到严格的证明和理解：RG变换在参数空间中诱导流，临界点对应<strong>不动点</strong>，在不动点附近的线性化（相关算符的标度维度）直接给出临界指数和标度关系。
+  </p>
+
+  <h3>普适性</h3>
+  <p>
+    实验和理论都揭示了一个深刻的事实：<strong>不同的物理系统可以有完全相同的临界指数</strong>。例如，液-气临界点的 $\beta \approx 0.326$ 与三维Ising铁磁体的 $\beta$ 完全一致——尽管一个是流体、另一个是磁体，微观Hamiltonian完全不同。
+  </p>
+  <p>
+    这种现象称为<strong>普适性</strong>（universality）：临界指数只取决于少数几个全局特征：
+  </p>
+  <ul>
+    <li><strong>空间维度 $d$</strong></li>
+    <li><strong>序参量的维度 $n$</strong>（也称对称性指数）：$n = 1$（Ising/$Z_2$），$n = 2$（XY/$O(2)$），$n = 3$（Heisenberg/$O(3)$）</li>
+    <li><strong>相互作用的范围</strong>（短程 vs 长程）</li>
+  </ul>
+  <p>
+    具有相同 $(d, n)$ 和同类相互作用的系统属于同一<strong>普适性类</strong>（universality class），共享相同的临界指数和标度函数。这是为什么统计力学如此强大的原因：不需要知道微观细节就可以预言临界行为。
+  </p>
+
+  <h3>关联长度的核心角色</h3>
+  <p>
+    普适性的物理根源在于<strong>关联长度 $\xi$ 的发散</strong>：
+  </p>
+  <Fragment set:html={correlationLength} />
+  <p>
+    关联函数 $G(\mathbf{r})$ 刻画了不同位置序参量涨落的关联：
+  </p>
+  <Fragment set:html={correlationFunction} />
+  <p>
+    当 $T \to T_c$ 时，$\xi \to \infty$，系统中出现<strong>所有长度尺度</strong>的涨落——从微观（格点间距 $a$）到宏观（$\xi$）。由于 $\xi \gg a$，系统在大尺度上表现出<strong>自相似性</strong>（scale invariance）——无论用什么"放大镜"观察，看到的统计性质都一样。在这种情况下，微观细节（格点结构、精确的相互作用形式）变得不相关——只有少数几个"相关"的大尺度特征（$d$, $n$）决定临界行为。这就是普适性的微观起源。
+  </p>
+
+  <h3>重整化群基本思想</h3>
+  <p>
+    <strong>重整化群</strong>（renormalization group, RG）由Kadanoff（1966）定性提出、Wilson（1971-72）发展为完整的理论框架，为普适性和标度律提供了深刻的数学基础。其核心操作分三步：
+  </p>
+  <ol>
+    <li>
+      <strong>粗粒化</strong>（coarse-graining）：将原始系统中 $b^d$ 个相邻自旋组成的块（block）用一个新的有效自旋 $s'$ 代替（$b > 1$ 为重标度因子）。具体方式可以是多数规则（majority rule）或对短波长模式积分。
+    </li>
+    <li>
+      <strong>重标度</strong>（rescaling）：将长度单位缩小 $b$ 倍，$\mathbf{r}' = \mathbf{r}/b$，使新系统与原系统具有相同的格点间距。
+    </li>
+    <li>
+      <strong>重新参数化</strong>：新的有效Hamiltonian $H'$ 一般具有修改过的耦合常数。RG变换定义了耦合常数空间中的一个映射（"RG流"）：
+    </li>
+  </ol>
+  <Fragment set:html={rgTransform} />
+  <p>
+    RG流的<strong>不动点</strong> $H^* = \mathcal{R}_b[H^*]$ 对应标度不变的系统——即<strong>临界点</strong>。不动点处的线性化分析给出：
+  </p>
+  <ul>
+    <li><strong>相关算符</strong>（relevant operators）：对应的耦合常数在RG流中增长，偏离不动点——这些参量决定系统是否在临界点上（典型如温度偏差 $t$ 和外场 $h$）</li>
+    <li><strong>不相关算符</strong>（irrelevant operators）：对应的耦合常数在RG流中衰减，趋向不动点——这些正是微观细节的贡献，解释了为什么微观差异在临界点不重要</li>
+    <li><strong>边际算符</strong>（marginal operators）：需要更高阶分析，可能导致对数修正</li>
+  </ul>
+  <p>
+    同一不动点的<strong>吸引域</strong>（basin of attraction）中的所有Hamiltonian在长距离行为上完全等价——它们属于同一<strong>普适性类</strong>，共享相同的临界指数。临界指数由相关算符在不动点处的<strong>标度维度</strong>（RG特征值）决定。
+  </p>
+
+  <ThinkingBox title="重整化群——从物理直觉到数学结构">
+    <p>
+      重整化群的思想可以用一个物理比喻来理解。想象从飞机上俯瞰一片正在经历临界点的系统（如液-气临界乳光）。当飞机在高空时，你看到大尺度的密度涨落团；降低高度，看到更小尺度的涨落嵌套在大涨落之中；继续降低，更小的涨落出现——<strong>各个尺度上看到的统计图案是一样的</strong>。这就是标度不变性，或称"自相似"。
+    </p>
+    <p>
+      RG的数学核心是：对短距离自由度（高频模式）的积分（粗粒化）不改变长距离物理，只是重新定义了有效的相互作用强度。反复执行这一操作，系统的参数在"理论空间"中流动。如果流向一个不动点——系统在大尺度上是标度不变的——这就是临界态。不动点的性质（特征值）完全决定了临界指数。
+    </p>
+    <p>
+      Wilson（1971-72）的突破在于将这一思想转化为系统的计算工具。特别是 $\epsilon = 4 - d$ 展开使得在 $d < 4$ 维中计算临界指数成为可能。例如，对于 $n$-矢量模型：
+    </p>
+    $$
+      \nu = \frac{1}{2} + \frac{n+2}{4(n+8)}\,\epsilon + O(\epsilon^2)
+    $$
+    <p>
+      对 $n = 1$, $d = 3$（$\epsilon = 1$），这给出 $\nu \approx 0.583$，与精确值 $\nu \approx 0.630$ 定性一致（更高阶展开和Borel重求和给出定量精确的结果）。Wilson因"关于相变的临界现象理论"获得1982年Nobel物理学奖。
+    </p>
+  </ThinkingBox>
+
+  <InsightBox title="从Ising模型到标准模型——相变物理的统一视野">
+    <p>
+      本章讨论的概念——序参量、对称性破缺、Goldstone模式、重整化群、普适性——远远超出了统计力学的范畴。粒子物理的标准模型中，电弱对称性 $SU(2)_L \times U(1)_Y$ 自发破缺到 $U(1)_{\text{em}}$，Higgs场扮演序参量的角色（类比Landau理论中的 $m$），3个Goldstone玻色子被 $W^\pm$ 和 $Z^0$ 规范玻色子"吃掉"（Anderson-Higgs机制），使它们获得质量。量子色动力学中的手征对称性破缺产生了近似Goldstone玻色子（$\pi$ 介子）。量子场论中的重整化群与统计力学中的Wilson RG在数学上完全等价——这一深刻联系由Wilson本人阐明。可以说，理解相变与临界现象是理解整个现代理论物理的基石。
+    </p>
+  </InsightBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>Pathria &amp; Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 12.8-12.10, Ch. 13</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 17.2-17.6</li>
+      <li>汪志诚,《热力学·统计物理》, 第6版, &sect;11.7-11.8</li>
+      <li>Landau &amp; Lifshitz, <em>Statistical Physics Part 1</em>, &sect;146-150</li>
+      <li>M. Kardar, <em>Statistical Physics of Fields</em>, Ch. 5-6 — 标度律与重整化群的系统处理</li>
+      <li>K.G. Wilson, <em>Phys. Rev. B</em> <strong>4</strong>, 3174; 3184 (1971) — 重整化群与 $\epsilon$ 展开</li>
+      <li>K.G. Wilson &amp; J. Kogut, <em>Phys. Rep.</em> <strong>12</strong>, 75 (1974) — 经典综述</li>
+      <li>L.P. Kadanoff, <em>Physics</em> <strong>2</strong>, 263 (1966) — 块自旋与标度律</li>
+      <li>N. Goldenfeld, <em>Lectures on Phase Transitions and the Renormalization Group</em></li>
+      <li>J. Cardy, <em>Scaling and Renormalization in Statistical Physics</em></li>
+    </ul>
+  </ReferenceBox>
+
+</ChapterLayout>

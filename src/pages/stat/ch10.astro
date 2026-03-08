@@ -1,0 +1,476 @@
+---
+import ChapterLayout from '../../layouts/ChapterLayout.astro';
+import InsightBox from '../../components/InsightBox.astro';
+import ThinkingBox from '../../components/ThinkingBox.astro';
+import Derivation from '../../components/Derivation.astro';
+import ReferenceBox from '../../components/ReferenceBox.astro';
+
+const freeEnergyDensity = `$$f(T, n) = \\lim_{\\substack{N\\to\\infty,\\, V\\to\\infty \\\\ N/V = n}} \\frac{F(T, V, N)}{N}$$`;
+const largeDeviation = `$$P(x) \\asymp e^{-N\\,I(x)}$$`;
+const rateFunction = `$$I(x) = \\sup_\\lambda \\bigl[\\lambda x - \\ln\\langle e^{\\lambda X_1}\\rangle\\bigr]$$`;
+const legendreSTF = `$$\\frac{1}{T} = \\frac{\\partial S(E,V,N)}{\\partial E}\\bigg|_{V,N} \\quad \\Longleftrightarrow \\quad F(T,V,N) = E - TS = \\inf_E\\!\\bigl[E - T\\,S(E,V,N)\\bigr]$$`;
+const legendreFPhi = `$$\\frac{\\mu}{T} = -\\frac{\\partial}{\\partial N}\\left(\\frac{F}{T}\\right)\\bigg|_{T,V} \\quad \\Longleftrightarrow \\quad \\Phi(T,V,\\mu) = F - \\mu N = \\inf_N\\!\\bigl[F(T,V,N) - \\mu N\\bigr]$$`;
+const microcanonicalEntropy = `$$S(E) = k_B \\ln \\Omega(E)$$`;
+const canonicalZ = `$$Z(\\beta) = \\int \\Omega(E)\\,e^{-\\beta E}\\,dE = \\int \\exp\\!\\bigl[S(E)/k_B - \\beta E\\bigr]\\,dE$$`;
+const saddlePoint = `$$\\frac{\\partial S}{\\partial E}\\bigg|_{E^*} = \\frac{1}{T} = k_B\\beta \\quad \\Longrightarrow \\quad E^* = E^*(\\beta)$$`;
+const freeEnergyFromSaddle = `$$F(T) = -k_BT\\ln Z \\approx E^* - T\\,S(E^*) \\quad (N\\to\\infty)$$`;
+const concavityCondition = `$$\\frac{\\partial^2 S}{\\partial E^2} \\leq 0 \\quad \\Longleftrightarrow \\quad C_V \\geq 0$$`;
+const canonicalCvPositive = `$$C_V = \\frac{\\langle(\\Delta E)^2\\rangle}{k_BT^2} \\geq 0$$`;
+const jaynesMaxEnt = `$$S[\\rho] = -k_B\\,\\text{Tr}\\,(\\hat{\\rho}\\ln\\hat{\\rho}) \\to \\max$$`;
+const jaynesResult = `$$\\hat{\\rho} = \\frac{1}{Z}\\exp\\!\\left(-\\sum_i \\lambda_i \\hat{O}_i\\right)$$`;
+const partitionEquivalence = `$$\\frac{1}{N}\\ln Z_\\text{can} = \\frac{1}{N}\\ln Z_\\text{gc} + O\\!\\left(\\frac{\\ln N}{N}\\right)$$`;
+const gravitationalNegativeCv = `$$E_{\\text{tot}} = -\\frac{3}{2}Nk_BT \\quad \\Longrightarrow \\quad C_V = -\\frac{3}{2}Nk_B < 0$$`;
+---
+
+<ChapterLayout title="第十章 系综等价性与热力学极限" courseId="stat" chapterId="ch10">
+
+  <h1>第十章 系综等价性与热力学极限</h1>
+
+  <p>
+    统计力学的整座大厦建立在一个隐含而深刻的假设之上：在<strong>热力学极限</strong>（$N \to \infty$）下，微正则系综、正则系综和巨正则系综给出相同的热力学结果。前面各章中我们在不同系综之间自由切换——用正则系综计算能量，用巨正则系综处理量子气体——从未质疑其合法性。本章将严格审视这一等价性：它在什么条件下成立？什么时候会失效？热力学极限的精确数学含义是什么？最后，我们将对统计力学的逻辑体系做一次全景回顾，以Jaynes最大熵原理作为统一视角，并指出通向非平衡统计力学的开放问题。
+  </p>
+
+  <!-- ============================================================ -->
+  <h2 id="thermodynamic-limit">10.1 热力学极限</h2>
+  <!-- ============================================================ -->
+
+  <h3>精确定义</h3>
+  <p>
+    <strong>热力学极限</strong>（thermodynamic limit）的精确含义是：
+  </p>
+  $$
+    N \to \infty, \quad V \to \infty, \quad \frac{N}{V} = n \;\text{（固定）}
+  $$
+  <p>
+    在此极限下，<strong>广延量</strong>（$E$, $S$, $F$, $N$）正比于系统大小，<strong>强度量</strong>（$T$, $P$, $\mu$, $n$）保持有限。热力学极限的核心要求是：广延量的<strong>密度</strong>（单位粒子或单位体积的量）趋于确定的极限值。
+  </p>
+
+  <h3>自由能密度的存在性</h3>
+  <p>
+    热力学极限下最基本的数学问题是：自由能密度
+  </p>
+  <Fragment set:html={freeEnergyDensity} />
+  <p>
+    是否存在且唯一？这个问题的严格证明由Ruelle（1963）和Fisher（1964）给出，需要对粒子间相互作用满足两个条件：
+  </p>
+  <ul>
+    <li><strong>短程排斥</strong>（稳定性条件）：势能有下界，$\sum_{i < j}u(r_{ij}) \geq -BN$（对某个常数 $B > 0$），即粒子不能无限制地重叠以获取无穷负能量。这排除了无硬核的纯吸引相互作用。</li>
+    <li><strong>长程衰减</strong>（可积性条件/tempered condition）：相互作用势 $u(r)$ 在大距离衰减足够快，使得远处粒子的贡献可控。对于 $d$ 维系统，通常要求 $u(r) < Cr^{-(d+\varepsilon)}$（$\varepsilon > 0$），即比体积元 $r^{d-1}dr$ 的增长更快地衰减。</li>
+  </ul>
+  <p>
+    当这两个条件满足时，可以严格证明 $f(T, n)$ 存在，且作为 $T$ 和 $n$ 的函数具有良好的凸性质（$f$ 关于 $1/T$ 是凸函数，关于 $n$ 是凸函数）。
+  </p>
+
+  <InsightBox title="热力学极限——为何统计力学需要N很大">
+    <p>
+      热力学极限不仅是数学上的便利——它是统计力学理论<strong>内在逻辑一致性</strong>的必要条件。没有热力学极限：(1) 不同系综可能给出不同结果——你无法自由选择"方便的"系综进行计算；(2) 配分函数作为有限多个指数函数之和，是关于其参数的<strong>解析函数</strong>——不可能出现热力学函数的非解析行为，因此<strong>不可能存在相变</strong>；(3) 广延量的涨落与均值可比，"热力学量"没有确定值。正是在 $N \to \infty$ 极限下，这些问题同时消除：系综变得等价，相变成为可能，涨落相对消失。热力学极限是连接微观统计力学与宏观热力学的桥梁，是"统计"变成"热力学"的数学保证。
+    </p>
+  </InsightBox>
+
+  <h3>有限系统与相变的数学起源</h3>
+  <p>
+    对于有限 $N$ 粒子系统，正则配分函数
+  </p>
+  $$
+    Z(\beta) = \text{Tr}\,e^{-\beta\hat{H}}
+  $$
+  <p>
+    是 $\beta$ 的<strong>解析函数</strong>（有限多个正指数函数之和/积分，处处收敛且可微）。因此自由能 $F = -k_BT\ln Z$ 也是解析的——不存在奇异性。然而，热力学中的相变恰恰表现为自由能（或其导数）的<strong>非解析行为</strong>：一阶相变中 $\partial F/\partial T$ 不连续，连续相变中 $\partial^2 F/\partial T^2$ 发散。
+  </p>
+  <p>
+    解析函数不可能有非解析行为——因此：
+  </p>
+  <p style="text-align: center; font-weight: bold;">
+    有限系统严格来说<strong>不存在相变</strong>。
+  </p>
+  <p>
+    相变只在热力学极限 $N \to \infty$ 下才能严格发生：无穷多个解析函数之和（$Z = \sum_n e^{-\beta E_n}$，$n$ 遍历无穷多能级）可以产生非解析行为。Lee和Yang（1952）严格证明了：<strong>相变对应于配分函数的零点在热力学极限下逼近实轴</strong>——有限系统的零点在复平面上远离实轴，不影响物理；$N \to \infty$ 时零点密集趋近实轴，产生奇异性。
+  </p>
+
+  <Derivation title="配分函数零点与相变——Lee-Yang定理">
+    <p>以巨配分函数 $\mathcal{Z}(z, T) = \sum_{N=0}^{\infty} z^N Z_N(T)$ 为例，其中 $z = e^{\beta\mu}$ 是逸度。对于有限体积 $V$，$\mathcal{Z}$ 是 $z$ 的多项式（截断到 $N_{\max}$ 项），其零点 $\{z_i\}$ 在复 $z$ 平面上。</p>
+    <p>Lee-Yang定理（1952年证明了Ising模型的特殊情形）：对于许多物理系统，这些零点分布在复 $z$ 平面的某条曲线上，且与正实轴有距离。当 $V \to \infty$ 时：</p>
+    <ul>
+      <li>零点数目趋于无穷，密集分布在特定曲线上；</li>
+      <li>如果零点在某点 $z_c > 0$ 处逼近正实轴——该点对应的 $\mu_c$ 处出现相变；</li>
+      <li>零点的密度分布决定了相变的阶和临界指数。</li>
+    </ul>
+    <p>巨势密度 $\phi(z) = -(k_BT/V)\ln\mathcal{Z}$ 在零点逼近实轴的位置变得非解析——这就是相变的数学起源。对于一阶相变，零点以有限密度穿越实轴；对于连续相变，零点以特定方式趋近临界点。</p>
+    <p>这一框架赋予"相变需要热力学极限"以精确的数学含义，也解释了为何有限系统的模拟和实验中相变总是"平滑的"——有限尺寸效应将真正的奇异性圆整为急剧但连续的变化。</p>
+  </Derivation>
+
+  <h3>大数定律与中心极限定理的角色</h3>
+  <p>
+    统计力学中 $N \to \infty$ 极限的数学本质可以从概率论的角度理解：
+  </p>
+  <ul>
+    <li><strong>大数定律</strong>（LLN）：广延量的密度（如 $E/N$, $M/N$）在 $N \to \infty$ 时<strong>几乎必然</strong>趋于其期望值。这保证了热力学量的确定性——对于宏观系统，测量一次就得到"正确"的值。</li>
+    <li><strong>中心极限定理</strong>（CLT）：广延量围绕均值的涨落满足高斯分布，标准差 $\propto \sqrt{N}$，相对涨落 $\propto 1/\sqrt{N} \to 0$。这解释了为何Einstein涨落公式中涨落分布是高斯的（对于无关联或短程关联的系统）。</li>
+  </ul>
+  <p>
+    对于非相互作用系统，这些定律直接适用（粒子贡献独立）。对于有短程相互作用的系统，关联长度 $\xi$ 有限时，系统可以被划分为 $\sim V/\xi^d$ 个近似独立的"块"，大数定律和CLT仍然成立。但在<strong>临界点</strong>处，$\xi \to \infty$，不再存在独立的"块"——CLT失效，涨落的分布不再是高斯的，涨落的相对大小不再以 $1/\sqrt{N}$ 趋于零。这正是临界现象中出现反常涨落和非平凡标度指数的根本原因。
+  </p>
+
+  <h3>大偏差理论初步</h3>
+  <p>
+    大数定律告诉我们 $X = E/N$ 趋于 $\langle X\rangle$，但没有告诉我们偏离均值的<strong>罕见事件</strong>的概率。<strong>大偏差理论</strong>（large deviation theory）精确地回答了这个问题：
+  </p>
+  <Fragment set:html={largeDeviation} />
+  <p>
+    其中 $I(x) \geq 0$ 是<strong>速率函数</strong>（rate function），满足 $I(\langle x\rangle) = 0$（最可能值处速率函数为零）。$\asymp$ 表示取对数后逐渐相等，即 $\lim_{N\to\infty}(-1/N)\ln P(x) = I(x)$。
+  </p>
+  <p>
+    速率函数通过<strong>Legendre-Fenchel变换</strong>与矩母函数联系：
+  </p>
+  <Fragment set:html={rateFunction} />
+  <p>
+    这正是累积量生成函数的Legendre变换。在统计力学的语境下，大偏差理论将热力学势函数（自由能、熵等）赋予了概率论的精确含义：
+  </p>
+  <ul>
+    <li><strong>微正则熵</strong> $s(e) = S(e)/N$ 就是能量密度 $e = E/N$ 的速率函数（取负号后）；</li>
+    <li><strong>自由能密度</strong> $f(\beta)$ 是熵的Legendre变换；</li>
+    <li>Legendre变换在速率函数和累积量生成函数之间的对偶性，精确对应于<strong>微正则系综与正则系综之间的关系</strong>。</li>
+  </ul>
+
+  <ThinkingBox title="大偏差理论——统计力学的概率论基础">
+    <p>
+      大偏差理论为统计力学提供了最干净的数学基础。核心思想是：在 $N$ 很大时，宏观量 $X = (1/N)\sum_i x_i$ 的概率分布集中在均值附近（大数定律），偏离均值的概率以 $e^{-NI(x)}$ 指数衰减。速率函数 $I(x)$ 恰好就是（负的）熵密度（相对于平衡值）。
+    </p>
+    <p>
+      从这个视角看，整个平衡统计力学可以重新表述为：<strong>热力学势函数就是大偏差速率函数</strong>，不同系综之间的Legendre变换就是速率函数与累积量生成函数之间的大偏差对偶性。系综等价性成立当且仅当速率函数是严格凸的（Legendre变换可逆）。速率函数的非凸区域对应一阶相变中的相共存——此时微正则和正则系综可能不等价。
+    </p>
+    <p>
+      这一观点由Ellis、Touchette等人在2000年代系统发展，为统计力学提供了数学上最严格和概念上最清晰的框架。对于有兴趣深入了解的读者，推荐Touchette的综述 <em>Physics Reports</em> <strong>478</strong>, 1 (2009)。
+    </p>
+  </ThinkingBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>D. Ruelle, <em>Statistical Mechanics: Rigorous Results</em>, World Scientific (1999) &mdash; 热力学极限的严格数学理论</li>
+      <li>M.E. Fisher, <em>Arch. Rational Mech. Anal.</em> <strong>17</strong>, 377 (1964) &mdash; 自由能存在性</li>
+      <li>C.N. Yang & T.D. Lee, <em>Phys. Rev.</em> <strong>87</strong>, 404 (1952) &mdash; 配分函数零点理论</li>
+      <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 15 &amp; Appendix</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 15.1-15.3</li>
+      <li>H. Touchette, <em>Physics Reports</em> <strong>478</strong>, 1 (2009) &mdash; 大偏差理论与统计力学</li>
+    </ul>
+  </ReferenceBox>
+
+  <!-- ============================================================ -->
+  <h2 id="equivalence">10.2 系综等价性的条件与失效</h2>
+  <!-- ============================================================ -->
+
+  <h3>Legendre变换的热力学含义</h3>
+  <p>
+    不同系综之间的联系本质上是<strong>Legendre变换</strong>——热力学中最基本的数学结构。Legendre变换在统计力学中同时具有热力学和概率论两重含义：
+  </p>
+
+  <h4>微正则 $\leftrightarrow$ 正则：$S(E) \leftrightarrow F(T)$</h4>
+  <p>
+    微正则系综以能量 $E$ 为自变量，基本热力学势为熵 $S(E)$。正则系综以温度 $T$（即 $\beta = 1/k_BT$）为自变量，基本热力学势为自由能 $F(T)$。两者通过Legendre变换联系：
+  </p>
+  <Fragment set:html={legendreSTF} />
+  <p>
+    微观上，这对应于从微正则配分函数（态密度）到正则配分函数的<strong>Laplace变换</strong>：
+  </p>
+  <Fragment set:html={canonicalZ} />
+  <p>
+    在热力学极限 $N \to \infty$ 下，被积函数中 $S(E)$ 和 $\beta E$ 都 $\propto N$，积分由鞍点主导：
+  </p>
+  <Fragment set:html={saddlePoint} />
+  <p>
+    鞍点条件给出的 $E^*(\beta)$ 恰好就是正则系综中的平均能量 $\langle E\rangle$。鞍点近似给出
+  </p>
+  <Fragment set:html={freeEnergyFromSaddle} />
+  <p>
+    这正是Legendre变换 $F = E - TS$。因此，<strong>正则系综与微正则系综的等价性本质上是 $N \to \infty$ 下Laplace积分的鞍点近似</strong>。
+  </p>
+
+  <h4>正则 $\leftrightarrow$ 巨正则：$F(T, N) \leftrightarrow \Phi(T, \mu)$</h4>
+  <p>
+    类似地，从正则到巨正则的过渡也是一个Legendre变换：
+  </p>
+  <Fragment set:html={legendreFPhi} />
+  <p>
+    其中 $\Phi = F - \mu N = -PV$ 是巨势。微观上对应于对粒子数 $N$ 的求和（巨配分函数 $\mathcal{Z} = \sum_N z^N Z_N$），在热力学极限下由最大项主导。
+  </p>
+
+  <Derivation title="鞍点近似与系综等价性">
+    <p>考虑正则配分函数作为态密度的Laplace变换：</p>
+    $$
+      Z(\beta) = \int_0^{\infty} \Omega(E)\,e^{-\beta E}\,dE = \int_0^{\infty} \exp\!\bigl[N\,s(e) - N\beta e\bigr]\,N\,de
+    $$
+    <p>其中 $s(e) = S(E)/(Nk_B)$ 是每粒子熵密度，$e = E/N$ 是每粒子能量密度。被积函数的指数 $\phi(e) = s(e) - \beta e$ 在 $N \to \infty$ 下主导积分行为。</p>
+    <p>鞍点条件 $\phi'(e^*) = 0$ 给出 $s'(e^*) = \beta$，即 $1/T = \partial S/\partial E$。在鞍点展开：</p>
+    $$
+      \phi(e) \approx \phi(e^*) + \frac{1}{2}\phi''(e^*)(e-e^*)^2
+    $$
+    <p>其中 $\phi''(e^*) = s''(e^*)$。高斯积分给出</p>
+    $$
+      Z \approx N\,\exp\!\bigl[N\phi(e^*)\bigr]\sqrt{\frac{2\pi}{N|s''(e^*)|}}\,
+    $$
+    <p>因此</p>
+    $$
+      \frac{1}{N}\ln Z = \phi(e^*) + O\!\left(\frac{\ln N}{N}\right) = s(e^*) - \beta e^* + O\!\left(\frac{\ln N}{N}\right)
+    $$
+    <p>即 $-\beta f = s(e^*) - \beta e^*$，或 $f = e^* - Ts(e^*)$——Legendre变换。鞍点近似成立的条件是 $\phi''(e^*) = s''(e^*) < 0$，即<strong>熵是能量的严格凹函数</strong>。</p>
+    <p>鞍点处 $e$ 的高斯涨落宽度为 $\sigma_e \sim 1/\sqrt{N|s''|}$，相对涨落 $\sigma_e/e^* \sim 1/\sqrt{N} \to 0$——在热力学极限下能量涨落消失，微正则和正则给出相同的能量。</p>
+  </Derivation>
+
+  <h3>等价成立的条件</h3>
+  <p>
+    从上面的鞍点分析可以看出，系综等价性成立的充要条件是：
+  </p>
+  <Fragment set:html={concavityCondition} />
+  <p>
+    即微正则熵 $S(E)$ 必须是能量 $E$ 的<strong>凹函数</strong>（concave function）。这等价于正则系综中热容 $C_V \geq 0$（热力学稳定性条件）。
+  </p>
+  <p>
+    几何上的含义：如果 $S(E)$ 是凹函数，则 Legendre 变换 $S(E) \to F(T)$ 是<strong>可逆的</strong>（双射），从 $F(T)$ 可以通过逆 Legendre 变换唯一地恢复 $S(E)$。两个系综包含完全相同的热力学信息——它们<strong>等价</strong>。
+  </p>
+  <p>
+    更一般地，不同系综对之间的等价条件可以统一表述为：<strong>被变换的热力学势必须是其自然变量的凹函数（或凸函数，取决于约定）</strong>。
+  </p>
+  <p>
+    在热力学极限下，不同系综的配分函数在对数尺度上趋于一致：
+  </p>
+  <Fragment set:html={partitionEquivalence} />
+  <p>
+    差异是 $O(\ln N/N)$——对于宏观系统可以忽略。
+  </p>
+
+  <InsightBox title="Legendre变换的不可逆性与一阶相变">
+    <p>
+      当 $S(E)$ 不是严格凹的——例如在一阶相变中 $S(E)$ 包含一段<strong>凸区域</strong>（对应相共存区域，$\partial^2 S/\partial E^2 > 0$）——Legendre变换变得不可逆。正则系综的自由能 $F(T)$ 对应于 $S(E)$ 的<strong>凹包络</strong>（concave envelope），即将凸区域替换为直线段（Maxwell等面积构造的数学本质）。从 $F(T)$ 反变换无法恢复 $S(E)$ 的凸部分——信息丢失了。然而，对于短程相互作用系统，这种"不等价"仅出现在一阶相变的共存区域内部，且两种系综对相变温度和共存态的预测仍然一致——它们只是在相变区域内以不同方式描述同一物理（微正则允许相共存态的连续描述，正则则直接跳过共存区）。这是一种"弱不等价"，通常不影响物理结论。
+    </p>
+  </InsightBox>
+
+  <h3>系综等价失效：长程相互作用系统</h3>
+  <p>
+    对于<strong>长程相互作用</strong>系统——相互作用势衰减慢于 $r^{-d}$（如引力 $\propto r^{-1}$、非屏蔽Coulomb力、平均场模型）——情况发生根本变化。此时能量不再具有广延性（$E$ 不正比于 $N$），热力学极限的标准证明失效，系综等价可以<strong>严格失效</strong>。
+  </p>
+
+  <h4>微正则系综中的负热容</h4>
+  <p>
+    在微正则系综（固定 $E$）中，热容 $C_V = (\partial T/\partial E)^{-1}$。如果 $S(E)$ 包含凸区域（$\partial^2 S/\partial E^2 > 0$），则 $T(E) = (\partial S/\partial E)^{-1}$ 随 $E$ 增加而<strong>减小</strong>——对应<strong>负热容</strong> $C_V < 0$。
+  </p>
+  <p>
+    最著名的例子是<strong>自引力系统</strong>（如恒星、星团）。由位力定理，自引力 $N$ 体系统满足 $\langle K\rangle = -(1/2)\langle U\rangle$，其中 $K$ 是动能，$U < 0$ 是引力势能。总能量 $E = K + U = -K = (1/2)U < 0$。因此
+  </p>
+  <Fragment set:html={gravitationalNegativeCv} />
+  <p>
+    物理直觉：向自引力系统中<strong>抽取</strong>能量（$E$ 减小），系统收缩，引力势能变得更负，但动能（$\propto T$）反而增大——温度升高！这就是自引力系统的"负热容"和"引力热力学不稳定性"。
+  </p>
+
+  <h4>正则系综中热容恒非负</h4>
+  <p>
+    然而，在正则系综（固定 $T$）中，热容是能量涨落的度量：
+  </p>
+  <Fragment set:html={canonicalCvPositive} />
+  <p>
+    $\langle(\Delta E)^2\rangle \geq 0$ 恒成立（涨落是非负的），因此正则系综中 $C_V \geq 0$ <strong>恒成立</strong>——正则系综<strong>无法描述</strong>负热容状态。
+  </p>
+
+  <h4>两种系综给出不同的物理</h4>
+  <p>
+    对于长程相互作用系统，这导致了系综的<strong>真正不等价</strong>：
+  </p>
+  <ul>
+    <li><strong>微正则</strong>：$S(E)$ 可能包含凸区域，系统可以稳定地处于负热容状态。相变可以是连续的（例如，经历一系列 $C_V < 0$ 的态连续变化）。</li>
+    <li><strong>正则</strong>：$F(T)$ 取 $S(E)$ 的凹包络，凸区域被"跳过"——对应于一阶相变（$E$ 不连续跳跃）。系统永远不会处于负热容状态。</li>
+    <li>两种系综给出<strong>不同的相图</strong>：微正则中的连续过渡在正则中变为一阶相变；微正则相图中的某些态在正则中根本不存在。</li>
+  </ul>
+
+  <ThinkingBox title="负热容——违反热力学第二定律吗？">
+    <p>
+      负热容的存在似乎与日常直觉矛盾：向系统抽取热量，温度反而升高？但这并不违反热力学定律——它只是说明了热力学教科书中隐含的假设（短程相互作用、广延性）不总是满足。
+    </p>
+    <p>
+      关键在于区分两种热力学环境：
+    </p>
+    <ul>
+      <li><strong>孤立系统</strong>（微正则）：系统的能量固定。如果系统自发地将一部分区域加热、另一部分冷却（引力坍缩的核心变热、外层膨胀变冷），只要总能量守恒，负热容状态是稳定的。这正是恒星演化中发生的事情。</li>
+      <li><strong>与热库接触</strong>（正则）：系统与温度为 $T$ 的热库交换能量。如果系统在某个能量区域具有负热容，微小的能量涨落会被热库放大——系统从负热容区域"逃逸"到热容为正的稳定态。因此，负热容状态在正则描述中不稳定，被一阶相变取代。</li>
+    </ul>
+    <p>
+      这说明系综等价的失效不仅是数学上的微妙——它意味着系统的<strong>实际热力学行为</strong>取决于其物理边界条件（孤立还是与热库接触）。对于自引力系统（恒星、星系团），它们通常是近似孤立的，微正则描述更合适。对于实验室中通过温度控制的系统，正则描述更合适。选择哪个系综不再是"方便"的问题，而是<strong>物理</strong>的问题。
+    </p>
+  </ThinkingBox>
+
+  <ReferenceBox>
+    <ul>
+      <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 15.5 &amp; Appendix D</li>
+      <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;21, &sect;35</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 15.4-15.5</li>
+      <li>汪志诚,《热力学&middot;统计物理》, 第6版, &sect;7.5</li>
+      <li>T. Dauxois, S. Ruffo, E. Arimondo, M. Wilkens (eds.), <em>Dynamics and Thermodynamics of Systems with Long-Range Interactions</em>, Lecture Notes in Physics <strong>602</strong>, Springer (2002)</li>
+      <li>M. Costeniuc, R.S. Ellis, H. Touchette, B. Turkington, <em>J. Stat. Phys.</em> <strong>119</strong>, 1283 (2005) &mdash; 系综不等价的严格理论</li>
+      <li>D. Lynden-Bell & R. Wood, <em>Mon. Not. Roy. Astron. Soc.</em> <strong>138</strong>, 495 (1968) &mdash; 自引力系统的负热容</li>
+    </ul>
+  </ReferenceBox>
+
+  <!-- ============================================================ -->
+  <h2 id="unified-review">10.3 统一回顾</h2>
+  <!-- ============================================================ -->
+
+  <h3>统计力学逻辑体系全景图</h3>
+  <p>
+    回顾整个课程，统计力学的逻辑体系可以概括为以下层次：
+  </p>
+  <ol>
+    <li><strong>微观动力学</strong>（Hamilton力学/量子力学）$\to$ 系统的所有微观态 $\{|n\rangle\}$ 及其能量 $\{E_n\}$。</li>
+    <li><strong>统计假说</strong>（等概率原理/最大熵原理）$\to$ 在给定宏观约束下，微观态的概率分布 $\{p_n\}$。</li>
+    <li><strong>系综构造</strong>：
+      <ul>
+        <li>微正则：固定 $(E, V, N)$ $\to$ $S(E,V,N) = k_B\ln\Omega$</li>
+        <li>正则：固定 $(T, V, N)$ $\to$ $F(T,V,N) = -k_BT\ln Z$</li>
+        <li>巨正则：固定 $(T, V, \mu)$ $\to$ $\Phi(T,V,\mu) = -k_BT\ln\mathcal{Z}$</li>
+      </ul>
+    </li>
+    <li><strong>Legendre变换</strong>连接不同系综——在热力学极限下等价。</li>
+    <li><strong>热力学</strong>：从热力学势函数通过求导获得所有热力学量和状态方程。</li>
+    <li><strong>涨落与响应</strong>：从热力学势的二阶导数（或关联函数）获得涨落幅度和线性响应——涨落-耗散定理。</li>
+    <li><strong>相变与临界现象</strong>：热力学极限下热力学势的非解析行为——需要重正化群理论。</li>
+  </ol>
+
+  <h3>各系综关系网络</h3>
+  <p>
+    统计力学中各系综及其热力学势之间的关系可以用Legendre变换的层级结构来统一理解：
+  </p>
+  $$
+    S(E, V, N) \;\xrightarrow{\text{L.T. over } E}\; F(T, V, N) \;\xrightarrow{\text{L.T. over } N}\; \Phi(T, V, \mu) \;\xrightarrow{\text{L.T. over } V}\; \text{（完全开放系统）}
+  $$
+  <p>
+    每一步Legendre变换将一个广延量（$E$, $N$, $V$）替换为其共轭强度量（$T$, $\mu$, $P$），对应于从一个系综过渡到"更开放"的系综：
+  </p>
+  <ul>
+    <li>$S(E,V,N)$：微正则——完全孤立系统，所有广延量固定。</li>
+    <li>$F(T,V,N) = E - TS$：正则——与热库接触（$E$ 涨落，$T$ 固定）。</li>
+    <li>$\Phi(T,V,\mu) = F - \mu N = -PV$：巨正则——与热库和粒子库接触（$E, N$ 涨落，$T, \mu$ 固定）。</li>
+    <li>$G(T,P,N) = F + PV$：等温等压系综——实验室最常见的条件。</li>
+  </ul>
+  <p>
+    Legendre变换的数学结构保证了所有这些描述在凹性/凸性条件满足时包含相同的热力学信息。
+  </p>
+
+  <h3>Jaynes最大熵原理作为统一框架</h3>
+  <p>
+    Jaynes（1957）提出了统计力学最优雅的公理化方案：<strong>平衡态的概率分布是在给定宏观约束下使信息熵最大化的分布</strong>。即：
+  </p>
+  <Fragment set:html={jaynesMaxEnt} />
+  <p>
+    在约束条件 $\text{Tr}(\hat{\rho}\,\hat{O}_i) = \langle O_i\rangle$（$i = 1, 2, \ldots$）和归一化 $\text{Tr}\,\hat{\rho} = 1$ 下。Lagrange乘子法立即给出
+  </p>
+  <Fragment set:html={jaynesResult} />
+  <p>
+    其中 $\lambda_i$ 是与约束 $\langle O_i\rangle$ 共轭的Lagrange乘子，$Z = \text{Tr}\,\exp(-\sum_i\lambda_i\hat{O}_i)$ 是广义配分函数。
+  </p>
+  <p>
+    不同系综对应不同的约束条件：
+  </p>
+  <ul>
+    <li><strong>微正则</strong>：约束 $E$ 严格固定 $\to$ 等权分布 $\rho = 1/\Omega$（熵最大化在所有态上均匀分布）。</li>
+    <li><strong>正则</strong>：约束 $\langle E\rangle$ $\to$ $\hat{\rho} \propto e^{-\beta\hat{H}}$，$\beta = 1/k_BT$ 是Lagrange乘子。</li>
+    <li><strong>巨正则</strong>：约束 $\langle E\rangle$ 和 $\langle N\rangle$ $\to$ $\hat{\rho} \propto e^{-\beta(\hat{H}-\mu\hat{N})}$。</li>
+  </ul>
+
+  <InsightBox title="最大熵原理——统计力学的逻辑最简基础">
+    <p>
+      Jaynes最大熵原理将统计力学的逻辑基础从物理假说（遍历性、等概率原理）转移到了信息论的推理原则：在已知信息的约束下，选择最无偏（最大熵）的概率分布。这个方案的优点在于：(1) 不需要遍历性假说——最大熵分布不依赖于系统是否遍历，而是给定约束下逻辑上最合理的推断；(2) 所有系综自然统一——只需改变约束条件；(3) 概念清晰——熵不是物质的"属性"，而是关于系统微观状态的<strong>不确定性度量</strong>。
+    </p>
+    <p>
+      然而，最大熵方案也面临批评：(1) 它没有解释<strong>为什么</strong>热平衡态是最大熵态——遍历性问题仍然存在；(2) 对于非平衡系统，约束条件的选择变得主观和困难；(3) 它将统计力学简化为概率推断，某种程度上回避了动力学的作用。尽管如此，作为一个组织已知结果的统一框架，最大熵原理具有不可替代的简洁性和概念清晰性。
+    </p>
+  </InsightBox>
+
+  <h3>开放问题：遍历性</h3>
+  <p>
+    统计力学最基本的理论问题之一是<strong>遍历性假说</strong>（ergodic hypothesis）：一个孤立系统的长时间演化是否会遍历其可达的所有微观态？如果成立，时间平均等于系综平均，统计力学的"等概率原理"就有了动力学基础。
+  </p>
+  <p>
+    现代理解的要点：
+  </p>
+  <ul>
+    <li><strong>严格遍历性极难证明</strong>。Sinai（1963）证明了二维硬球气体的遍历性（获Fields奖），但对于一般Hamiltonian系统，遍历性仍然是open problem。</li>
+    <li><strong>KAM定理</strong>（Kolmogorov-Arnold-Moser）表明，近可积系统中存在大量不变环面，相空间不完全遍历。然而，对于多体系统（$N \gg 1$），KAM环面的测度变得极小，系统在实践上"足够遍历"。</li>
+    <li><strong>量子遍历性</strong>更加微妙。量子系统的演化是酉的，不存在经典意义的"遍历性"。近年来，<strong>本征态热化假说</strong>（ETH, Eigenstate Thermalization Hypothesis, Deutsch 1991; Srednicki 1994）提供了量子系统热化的微观机制：如果Hamiltonian的本征态中力学量的矩阵元满足特定统计性质，则系统局部可观测量的长时间平均值等于微正则平均值。ETH对于通用（非可积）量子系统被广泛认为成立，但严格证明仍然缺乏。</li>
+    <li><strong>多体局域化</strong>（many-body localization, MBL）：对于强无序的量子系统，ETH可能失效——系统永远不会热化，保留初态的记忆。这是遍历性破缺的一个重要例子，目前仍是活跃的研究领域。</li>
+  </ul>
+
+  <h3>通向非平衡统计力学</h3>
+  <p>
+    本课程系统地发展了<strong>平衡</strong>统计力学。平衡理论之所以优美和完整，关键在于Gibbs系综方法和最大熵原理提供了一个普适的数学框架。然而，自然界中大量现象——输运过程、化学反应、生物系统、湍流、宇宙演化——本质上是<strong>非平衡</strong>的。
+  </p>
+  <p>
+    非平衡统计力学面临根本性的困难：
+  </p>
+  <ul>
+    <li><strong>不存在普适的概率分布</strong>：平衡态有Boltzmann-Gibbs分布 $\rho \propto e^{-\beta H}$，非平衡态没有类似的普适公式。概率分布依赖于具体的动力学和初始条件。</li>
+    <li><strong>不存在普适的热力学势</strong>：平衡态有自由能的最小化原则，非平衡态没有类似的变分原理。最小熵产生原理（Prigogine）仅在近平衡线性区域成立。</li>
+    <li><strong>时间箭头问题</strong>：微观动力学时间反演对称，宏观热力学第二定律不对称——不可逆性的微观起源仍有争议（Boltzmann的H定理、粗粒化、初始条件假设等）。</li>
+  </ul>
+  <p>
+    尽管如此，非平衡理论在近几十年取得了重要进展：
+  </p>
+  <ul>
+    <li><strong>涨落定理</strong>（Evans-Searles 1994, Crooks 1999, Jarzynski 1997）：将等式形式的热力学第二定律推广到任意远离平衡的过程。Jarzynski等式 $\langle e^{-\beta W}\rangle = e^{-\beta\Delta F}$ 将非平衡功与平衡自由能差精确联系。</li>
+    <li><strong>随机热力学</strong>（stochastic thermodynamics）：为单分子水平的热力学过程建立了完整的理论框架。</li>
+    <li><strong>宏观涨落理论</strong>（macroscopic fluctuation theory）：为扩散系统的大偏差建立了变分原理。</li>
+  </ul>
+
+  <ThinkingBox title=""热力学是大数的力学"">
+    <p>
+      纵观统计力学的整个体系，可以用一句话概括其核心思想：<strong>热力学是大数的力学</strong>。
+    </p>
+    <p>
+      当粒子数 $N$ 从1增长到 $10^{23}$，发生了一系列质的飞跃：
+    </p>
+    <ul>
+      <li><strong>$N = 1$</strong>：完全的力学描述。每个自由度的运动都是确定的（经典）或由波函数描述的（量子）。没有"温度"、"熵"的概念。</li>
+      <li><strong>$N \sim 10^1 - 10^2$</strong>：开始出现统计行为，但涨落很大（$\sim 1/\sqrt{N} \sim 10\% - 30\%$）。系综不等价，热力学概念模糊。</li>
+      <li><strong>$N \sim 10^6$</strong>：统计规律清晰，涨落 $\sim 0.1\%$，但有限尺寸效应仍可观测。介观物理（量子点、纳米颗粒）的领域。</li>
+      <li><strong>$N \sim 10^{23}$</strong>：涨落 $\sim 10^{-12}$——完全可以忽略。热力学量有确定值，系综完全等价，相变变为严格的非解析行为。热力学描述精确有效。</li>
+    </ul>
+    <p>
+      统计力学的全部内容，从微正则系综到涨落-耗散定理，从Bose-Einstein凝聚到相变理论，都是这个简单事实的展开：<strong>当自由度数目足够大时，概率论的大数定律将微观的随机性转化为宏观的确定性，而罕见的偏离（涨落）蕴含着系统动力学最深刻的信息</strong>。这就是统计力学——也许是理论物理中最成功的推理范式——的本质所在。
+    </p>
+  </ThinkingBox>
+
+  <Derivation title="Jaynes最大熵原理的推导——以正则系综为例">
+    <p>要求在约束条件 $\sum_n p_n = 1$ 和 $\sum_n p_n E_n = \langle E\rangle$ 下，最大化Shannon熵</p>
+    $$
+      S = -k_B\sum_n p_n \ln p_n
+    $$
+    <p>引入Lagrange乘子 $\alpha$（对应归一化）和 $\beta$（对应能量约束），构造泛函</p>
+    $$
+      \mathcal{L} = -k_B\sum_n p_n\ln p_n - \alpha\!\left(\sum_n p_n - 1\right) - \beta\!\left(\sum_n p_n E_n - \langle E\rangle\right)
+    $$
+    <p>对 $p_n$ 变分 $\delta\mathcal{L}/\delta p_n = 0$：</p>
+    $$
+      -k_B(\ln p_n + 1) - \alpha - \beta E_n = 0 \quad \Longrightarrow \quad p_n = e^{-(1+\alpha/k_B)}\,e^{-\beta E_n/k_B}
+    $$
+    <p>归一化条件确定 $\alpha$：$\sum_n p_n = 1$ 给出 $e^{1+\alpha/k_B} = Z = \sum_n e^{-\beta E_n/k_B}$。因此</p>
+    $$
+      p_n = \frac{e^{-\beta E_n/k_B}}{Z}
+    $$
+    <p>令 $\beta/k_B = 1/(k_BT)$，即 $\beta = 1/T$，恢复正则分布 $p_n = e^{-E_n/(k_BT)}/Z$。这里 $\beta$ 不是事先假定的，而是由约束 $\langle E\rangle$ <strong>自动确定</strong>的Lagrange乘子——温度的倒数。类似地，对巨正则系综，增加约束 $\langle N\rangle$，对应的Lagrange乘子就是 $-\mu/T$。</p>
+    <p>最大熵原理的优美之处在于：整个统计力学的数学结构（配分函数、自由能、系综等价性）全部从一个简单的变分问题中自然涌现。</p>
+  </Derivation>
+
+  <ReferenceBox>
+    <ul>
+      <li>E.T. Jaynes, <em>Phys. Rev.</em> <strong>106</strong>, 620 (1957); <strong>108</strong>, 171 (1957) &mdash; 最大熵原理与统计力学</li>
+      <li>Pathria & Beale, <em>Statistical Mechanics</em>, 4th ed., Ch. 1, 3, 15 (回顾与综合)</li>
+      <li>Landau & Lifshitz, <em>Statistical Physics Part 1</em>, &sect;1-5, &sect;35</li>
+      <li>K. Huang, <em>Statistical Mechanics</em>, 2nd ed., Ch. 6, 15</li>
+      <li>汪志诚,《热力学&middot;统计物理》, 第6版, &sect;7, &sect;14</li>
+      <li>M. Kardar, <em>Statistical Physics of Particles</em>, Ch. 4.9 (系综等价性)</li>
+      <li>M. Kardar, <em>Statistical Physics of Fields</em>, Ch. 1, 10</li>
+      <li>J.M. Deutsch, <em>Phys. Rev. A</em> <strong>43</strong>, 2046 (1991) &mdash; 本征态热化假说</li>
+      <li>M. Srednicki, <em>Phys. Rev. E</em> <strong>50</strong>, 888 (1994) &mdash; 量子热化</li>
+      <li>C. Jarzynski, <em>Phys. Rev. Lett.</em> <strong>78</strong>, 2690 (1997) &mdash; Jarzynski等式</li>
+      <li>G.E. Crooks, <em>Phys. Rev. E</em> <strong>60</strong>, 2721 (1999) &mdash; Crooks涨落定理</li>
+      <li>H. Touchette, <em>Physics Reports</em> <strong>478</strong>, 1 (2009) &mdash; 大偏差理论综述</li>
+    </ul>
+  </ReferenceBox>
+
+</ChapterLayout>
